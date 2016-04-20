@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/accueil"
+        android:icon="@drawable/ic_file_upload_black_24dp"
+        app:showAsAction="ifRoom"
+        android:title="Accueil" />
+    <item android:id="@+id/spot"
+        android:title="Spots"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_format_align_justify_black_24dp"/>
+    <item android:id="@+id/create_new"
+        android:title="Nouveau"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_add_a_photo_black_24dp"/>
+    <item android:id="@+id/disconnect"
+        android:title="Deconnexion"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_all_out_black_24dp"/>
+</menu>

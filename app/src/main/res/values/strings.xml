@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">SpotIt</string>
+    <string name="facebook_app_id">266488693686761</string>
+    <string name="google_app_id">63279613137</string>
+    <string name="title_activity_maps">Map</string>
+    <string-array name="visibility">
+        <item>Moi</item>
+        <item>Amis</item>
+        <item>Public</item>
+    </string-array>
+    <string name="title_activity_map">MapActivity</string>
+    <string name="title_activity_spot_on_map">Liste des Spots</string>
+    <string name="title_activity_main_activitytest">MainActivitytest</string>
+    <string name="title_activity_main_activity_test">MainActivityTest</string>
+    <string name="slogan">Spot It and The World is yours</string>
+    <string name="policy">By signing in you agree to our </string>
+    <string name="warning">Terms and Privacy</string>
+</resources>

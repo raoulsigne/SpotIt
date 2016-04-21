@@ -1,5 +1,6 @@
 package techafrkix.work.com.spot.spotit;
 
+import android.support.v4.app.Fragment;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
@@ -7,6 +8,8 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,7 +36,7 @@ import java.util.List;
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
 
-public class ListeSpots extends AppCompatActivity {
+public class ListeSpots extends Fragment {
 
     private SpotsDBAdapteur dbAdapteur;
     private SQLiteDatabase db;
@@ -46,38 +49,49 @@ public class ListeSpots extends AppCompatActivity {
     private GoogleApiClient client;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_liste_spots);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_liste_spots, container, false);
 
-        btnMap = (Button) findViewById(R.id.btnMap);
+        btnMap = (Button) view.findViewById(R.id.btnMap);
 
         loadSpots();
         btnMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent it = new Intent(getApplicationContext(), SpotOnMap.class);
+                Intent it = new Intent(getActivity(), SpotOnMap.class);
                 if (spots != null)
                     it.putExtra("spots", (Serializable) spots);
                 startActivity(it);
             }
         });
 
-        RecyclerView rv = (RecyclerView) findViewById(R.id.rv);
-//        rv.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(getApplicationContext());
+        RecyclerView rv = (RecyclerView) view.findViewById(R.id.rv);
+        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         rv.setLayoutManager(llm);
         RVAdapter adapter = new RVAdapter(spots);
         rv.setAdapter(adapter);
+
+        return view;
     }
 
     private void loadSpots() {
-        dbAdapteur = new SpotsDBAdapteur(getApplicationContext());
+        dbAdapteur = new SpotsDBAdapteur(getActivity());
         spots = new ArrayList<>();
         db = dbAdapteur.open();
         if (db != null) {
             spots = dbAdapteur.getAllSpots();
             db.close();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        final FragmentManager fragManager = this.getFragmentManager();
+        final Fragment fragment = fragManager.findFragmentById(R.id.vg_list_spot);
+        if(fragment!=null){
+            fragManager.beginTransaction().remove(fragment).commit();
         }
     }
 }

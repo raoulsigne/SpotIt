@@ -34,7 +34,7 @@ public class Connexion extends AppCompatActivity {
         setContentView(R.layout.activity_connexion);
         callbackManager = CallbackManager.Factory.create();
 
-        final Intent mapintent = new Intent(this,MapsActivity.class);
+        final Intent mapintent = new Intent(this,MainActivity.class);
 
         LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions("user_friends");

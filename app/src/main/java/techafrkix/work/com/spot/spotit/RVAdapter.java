@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,10 +55,13 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.SpotViewHolder>{
 
     @Override
     public void onBindViewHolder(SpotViewHolder spotViewHolder, int i) {
-        spotViewHolder.spotDate.setText(spots.get(i).getDate());
-        spotViewHolder.spotHash.setText(spots.get(i).getGeohash());
-        Bitmap bitmap = BitmapFactory.decodeFile(spots.get(i).getPhoto());
-        spotViewHolder.spotPhoto.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 350, 250, false));
+        try {
+            spotViewHolder.spotDate.setText(spots.get(i).getDate());
+            spotViewHolder.spotHash.setText(spots.get(i).getGeohash());
+            Bitmap bitmap = BitmapFactory.decodeFile(spots.get(i).getPhoto());
+            spotViewHolder.spotPhoto.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 350, 250, false));
+        }catch (Exception e){
+            Log.e("spot", e.getMessage());}
     }
 
     @Override

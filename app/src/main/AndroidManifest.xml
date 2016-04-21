@@ -62,7 +62,7 @@
             android:name=".SpotOnMap"
             android:label="@string/title_activity_spot_on_map" />
         <activity android:name="techafrkix.work.com.spot.techafrkix.work.com.spot.test.ThreeButtonsActivity" />
-        <activity android:name=".BaseActivity" />
+        <activity android:name=".MainActivity"></activity>
     </application>
 
 </manifest>

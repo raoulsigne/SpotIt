@@ -5,15 +5,20 @@
     android:orientation="vertical"
     android:id="@+id/vg_list_spot"
     android:name="techafrkix.work.com.spot.spotit.ListeSpots">
-
-    <Button
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:id="@+id/btnMap"
-        android:text="view on map"
-        android:theme="@style/MyButton"
-        android:elevation="10dp"/>
+        android:background="#FF5D4037">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnMap"
+            android:text="view on map"
+            android:theme="@style/MyButton"
+            android:elevation="10dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+    </RelativeLayout>
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"

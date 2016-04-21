@@ -6,6 +6,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Shader;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -125,10 +128,17 @@ public class SpotOnMap extends FragmentActivity implements OnMapReadyCallback {
         View promptView = layoutInflater.inflate(R.layout.detail_spot, null);
         alertDialogBuilder.setView(promptView);
 
+        final TextView titre = (TextView) promptView.findViewById(R.id.titre);
         final EditText latitude = (EditText) promptView.findViewById(R.id.latitude);
         final EditText longitude = (EditText) promptView.findViewById(R.id.longitude);
         final ImageView image = (ImageView) promptView.findViewById(R.id.spot);
         final Spinner visibilite = (Spinner) promptView.findViewById(R.id.visibilite);
+
+        Shader shader = new LinearGradient(
+                0, 0, 0, titre.getTextSize(),
+                Color.RED, Color.BLUE,
+                Shader.TileMode.CLAMP);
+        titre.getPaint().setShader(shader);
 
         ArrayAdapter<CharSequence> dataAdapter = ArrayAdapter.createFromResource(this,
                 R.array.visibility, android.R.layout.simple_spinner_item);

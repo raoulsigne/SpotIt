@@ -173,7 +173,7 @@ public class SpotsDBAdapteur {
 		valeurs.put(COLONNE_GEOHASH, spotToUpdate.getGeohash());
 		valeurs.put(COLONNE_DATE, spotToUpdate.getDate());
 		return maBaseDonnees.update(TABLE_SPOTS, valeurs, COLONNE_ID + " = "
-		+ id, null);
+				+ id, null);
 	}
 	
 	public int updateSpot(ContentValues valeurs, String where,
@@ -200,5 +200,11 @@ public class SpotsDBAdapteur {
 	public int removeSpot(int id) {
 		return maBaseDonnees.delete(TABLE_SPOTS, COLONNE_ID + " = " + id,
 				null);
+	}
+	/**
+	 * compte le nombre de spots dans la bd
+	 */
+	public int countSpot() {
+		return getAllSpots().size();
 	}
 }

@@ -3,6 +3,9 @@ package techafrkix.work.com.spot.spotit;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Shader;
 import android.support.v4.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.ContentValues;
@@ -26,6 +29,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.appevents.AppEventsLogger;
@@ -35,6 +39,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.BottomBarBadge;
 import com.roughike.bottombar.OnMenuTabSelectedListener;
 
 import techafrkix.work.com.spot.bd.Spot;
@@ -49,6 +54,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
     private static final int CAMERA_REQUEST = 1;
     private static final int WRITE_REQUEST = 2;
+    private int NB_SPOTS;
     Bitmap photo;
     LocationManager locationManager;
     GoogleApiClient mGoogleApiClient;
@@ -59,6 +65,8 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
     private GeoHash geoHash;
     private SpotsDBAdapteur dbAdapteur;
     SQLiteDatabase db;
+
+    BottomBarBadge nbspots;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,9 +97,10 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
             public void onMenuItemSelected(int itemId) {
                 switch (itemId) {
                     case R.id.accueil_item:
-                        //remove the fragment containing list of spots if it exists
                         try {
+                            //remove all others fragments if there exists
                             getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+                            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
                             // add the new fragment containing the main map
                             getSupportFragmentManager().beginTransaction()
                                     .add(R.id.fragment_container, fgAccueil, "ACCUEIL")
@@ -102,63 +111,81 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
 
                         break;
                     case R.id.spots_item:
-                        //remove the fragment containing the main map if it exists
                         try {
+                            //remove all others fragments if there exists
+                            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
                             getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
 
                             // add the new fragment containing the list of spots
                             getSupportFragmentManager().beginTransaction()
-                                .add(R.id.fragment_container, fgSpots, "SPOTS")
-                                .commit();
-                        }catch(Exception e){
+                                    .add(R.id.fragment_container, fgSpots, "SPOTS")
+                                    .commit();
+                        } catch (Exception e) {
                             Log.e("fragment", e.getMessage());
                         }
-                break;
-                case R.id.spot_item:
-                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                    // Should we show an explanation?
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.CAMERA)) {
+                        break;
+                    case R.id.spot_item:
+                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                            // Should we show an explanation?
+                            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.CAMERA)) {
 
-                    } else {
+                            } else {
 
-                        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA},
-                                CAMERA_REQUEST);
-                    }
-                } else {
-                    Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                    ContentValues values = new ContentValues();
-                    values.put(MediaStore.Images.Media.TITLE, "img-" + System.currentTimeMillis() + ".jpg");
-                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                        // Should we show an explanation?
-                        if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-
+                                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA},
+                                        CAMERA_REQUEST);
+                            }
                         } else {
+                            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                            ContentValues values = new ContentValues();
+                            values.put(MediaStore.Images.Media.TITLE, "img-" + System.currentTimeMillis() + ".jpg");
+                            if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                // Should we show an explanation?
+                                if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
 
-                            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                    WRITE_REQUEST);
+                                } else {
+
+                                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                            WRITE_REQUEST);
+                                }
+                            } else {
+                                mCapturedImageURI = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedImageURI);
+                                Log.i("camera", "debut de l'activité");
+                                startActivityForResult(cameraIntent, CAMERA_REQUEST);
+                            }
+
                         }
-                    } else {
-                        mCapturedImageURI = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedImageURI);
-                        Log.i("camera", "debut de l'activité");
-                        startActivityForResult(cameraIntent, CAMERA_REQUEST);
-                    }
 
+                        break;
+                    case R.id.deconnection_item:
+                        Intent itdeconnect = new Intent(getApplicationContext(), Connexion.class);
+                        finish();
+                        startActivity(itdeconnect);
+                        break;
                 }
-                break;
-                case R.id.deconnection_item:
-                Intent itdeconnect = new Intent(getApplicationContext(), Connexion.class);
-                finish();
-                startActivity(itdeconnect);
-                break;
             }
-        }
-    });
+        });
 
         bottomBar.mapColorForTab(0, "#FF9800");
         bottomBar.mapColorForTab(1, 0xFF5D4037);
         bottomBar.mapColorForTab(2, "#7B1FA2");
         bottomBar.mapColorForTab(3, "#FF5252");
+
+        db = dbAdapteur.open();
+        NB_SPOTS = dbAdapteur.countSpot();
+        db.close();
+
+        // Make a Badge for the second tab, with red background color and a value of "nb_spots".
+        nbspots = bottomBar.makeBadgeForTabAt(1, "#FF0000", NB_SPOTS);
+
+        // Control the badge's visibility
+        nbspots.show();
+
+        // Change the show / hide animation duration.
+        nbspots.setAnimationDuration(200);
+
+        // If you want the badge be shown always after unselecting the tab that contains it.
+        nbspots.setAutoShowAfterUnSelection(true);
 
     }
 
@@ -186,9 +213,16 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
             View promptView = layoutInflater.inflate(R.layout.input_spot, null);
             alertDialogBuilder.setView(promptView);
 
+            final TextView titre = (TextView) promptView.findViewById(R.id.titre);
             final EditText latitude = (EditText) promptView.findViewById(R.id.latitude);
             final EditText longitude = (EditText) promptView.findViewById(R.id.longitude);
             final Spinner visibilite = (Spinner) promptView.findViewById(R.id.visibilite);
+
+            Shader shader = new LinearGradient(
+                    0, 0, 0, titre.getTextSize(),
+                    Color.RED, Color.BLUE,
+                    Shader.TileMode.CLAMP);
+            titre.getPaint().setShader(shader);
 
             if (mLastLocation != null) {
                 longitude.setText(String.valueOf(mLastLocation.getLongitude()));
@@ -204,7 +238,6 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
 
             // setup a dialog window
             alertDialogBuilder
-                    .setTitle("DETAIL DU SPOT")
                     .setCancelable(true)
                     .setPositiveButton("Sauvegarder", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
@@ -221,8 +254,11 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
 
                             db = dbAdapteur.open();
                             long cle = dbAdapteur.insertSpot(spot);
-                            if (cle != -1)
-                                Toast.makeText(getApplicationContext(),"Enregistrement effectué avec succès",Toast.LENGTH_SHORT).show();
+                            if (cle != -1) {
+                                // Change the displayed count for this badge.
+                                NB_SPOTS ++;
+                                nbspots.setCount(NB_SPOTS);
+                            }
                             db.close();
                         }
                     })

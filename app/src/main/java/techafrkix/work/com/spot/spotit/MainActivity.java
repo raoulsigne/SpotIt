@@ -166,10 +166,10 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
             }
         });
 
-        bottomBar.mapColorForTab(0, "#FF9800");
-        bottomBar.mapColorForTab(1, 0xFF5D4037);
-        bottomBar.mapColorForTab(2, "#7B1FA2");
-        bottomBar.mapColorForTab(3, "#FF5252");
+        bottomBar.mapColorForTab(0, "#50C878");
+        bottomBar.mapColorForTab(1, "#50C878");
+        bottomBar.mapColorForTab(2, "#50C878");
+        bottomBar.mapColorForTab(3, "#50C878");
 
         db = dbAdapteur.open();
         NB_SPOTS = dbAdapteur.countSpot();

@@ -8,16 +8,19 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FF5D4037">
+        android:background="#50C878">
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:id="@+id/btnMap"
             android:text="view on map"
-            android:theme="@style/MyButton"
             android:elevation="10dp"
             android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true" />
+            android:layout_centerHorizontal="true"
+            android:background="#3b5998"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"/>
     </RelativeLayout>
 
     <android.support.v7.widget.RecyclerView

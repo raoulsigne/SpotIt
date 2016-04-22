@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -68,10 +70,12 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         mMap = googleMap;
         UiSettings settings = mMap.getUiSettings();
         settings.setCompassEnabled(true);
-        settings.setZoomControlsEnabled(true);
         settings.setIndoorLevelPickerEnabled(true);
         settings.setMapToolbarEnabled(true);
-//        settings.setMyLocationButtonEnabled(true);
+        settings.setAllGesturesEnabled(true);
+        settings.setMyLocationButtonEnabled(true);
+
+        mMap.setPadding(0, 0, 0, 150);
 
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -90,18 +94,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         {
             mMap.setMyLocationEnabled(true);
         }
-
-//        // Add a marker in Sydney and move the camera
-//        if (mLastLocation == null) {
-////            LatLng sydney = new LatLng(-34, 151);
-////            mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-////            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-//        }
-//        else {
-//            LatLng sydney = new LatLng(mLastLocation.getLongitude(), mLastLocation.getLatitude());
-//            mMap.addMarker(new MarkerOptions().position(sydney).title("Your location"));
-//            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-//        }
     }
 
     @Override
@@ -124,4 +116,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
                 .build();
     }
 
+    @Override
+    public void onViewCreated (View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+    }
 }

@@ -15,5 +15,5 @@
     <item
         android:id="@+id/deconnection_item"
         android:icon="@drawable/ic_exit_to_app_black_24dp"
-        android:title="Deconnexion" />
+        android:title="Log out" />
 </menu>

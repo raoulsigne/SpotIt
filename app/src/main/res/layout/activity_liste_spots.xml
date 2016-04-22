@@ -8,7 +8,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#50C878">
+        android:background="#FFEEAA">
         <Button
             android:layout_width="150dp"
             android:layout_height="wrap_content"
@@ -17,7 +17,7 @@
             android:elevation="10dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:background="#3b5998"
+            android:background="#50C878"
             android:textColor="#FFFFFF"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"/>

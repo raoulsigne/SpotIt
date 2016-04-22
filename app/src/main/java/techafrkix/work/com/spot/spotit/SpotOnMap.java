@@ -68,10 +68,16 @@ public class SpotOnMap extends FragmentActivity implements OnMapReadyCallback {
         mMap = googleMap;
         UiSettings settings = mMap.getUiSettings();
         settings.setCompassEnabled(true);
-        settings.setZoomControlsEnabled(true);
+//        settings.setZoomControlsEnabled(true);
         settings.setIndoorLevelPickerEnabled(true);
         settings.setMapToolbarEnabled(true);
-//        settings.setMyLocationButtonEnabled(true);
+        settings.setMyLocationButtonEnabled(true);
+
+        //try to position the location button in the sreen bottom
+        int width = this.getResources().getDisplayMetrics().widthPixels;
+        int height = this.getResources().getDisplayMetrics().heightPixels;
+        Log.i("size", width + " " + height);
+        mMap.setPadding(0, height - 220, 0, 0);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

@@ -75,7 +75,11 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         settings.setAllGesturesEnabled(true);
         settings.setMyLocationButtonEnabled(true);
 
-        mMap.setPadding(0, 0, 0, 150);
+        //try to position the location button in the sreen bottom
+        int width = this.getResources().getDisplayMetrics().widthPixels;
+        int height = this.getResources().getDisplayMetrics().heightPixels;
+        Log.i("size",width+ " " + height);
+        mMap.setPadding(0, height - 220, 0, 0);
 
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

@@ -50,9 +50,9 @@ import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
 
 public class MainActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, DetailSpot.OnFragmentInteractionListener{
+        GoogleApiClient.OnConnectionFailedListener, DetailSpot.OnFragmentInteractionListener, FragmentAccueil.OnFragmentInteractionListener{
 
-    MapsActivity fgAccueil;
+    FragmentAccueil fgAccueil;
     ListeSpots fgSpots;
     DetailSpot fgSpot;
     FragmentTransaction ft;
@@ -79,7 +79,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        fgAccueil = new MapsActivity();
+        fgAccueil = new FragmentAccueil();
         fgSpots = new ListeSpots();
         fgSpot = new DetailSpot();
 

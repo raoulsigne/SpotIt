@@ -111,6 +111,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
                             //remove all others fragments if there exists
                             getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
                             getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+                            getSupportFragmentManager().beginTransaction().remove(fgSpot).commit();
                             // add the new fragment containing the main map
                             getSupportFragmentManager().beginTransaction()
                                     .add(R.id.fragment_container, fgAccueil, "ACCUEIL")
@@ -125,7 +126,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
                             //remove all others fragments if there exists
                             getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
                             getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-
+                            getSupportFragmentManager().beginTransaction().remove(fgSpot).commit();
                             // add the new fragment containing the list of spots
                             getSupportFragmentManager().beginTransaction()
                                     .add(R.id.fragment_container, fgSpots, "SPOTS")

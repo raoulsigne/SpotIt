@@ -37,65 +37,30 @@
             android:layout_marginTop="10dp"
             android:textSize="22sp"/>
 
-        <com.facebook.login.widget.LoginButton
-            android:id="@+id/login_button"
-            android:layout_width="350dp"
-            android:layout_height="wrap_content"
-            android:paddingTop="12sp"
-            android:paddingBottom="12sp"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_gravity="center_horizontal"
-            android:layout_centerHorizontal="true"
-            android:background="@color/com_facebook_blue"
-            android:layout_marginTop="50dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="or use your email"
-            android:id="@+id/textView"
-            android:layout_gravity="center_horizontal"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="20dp"
-            android:textSize="22sp"/>
-
-        <EditText
-            android:layout_width="350dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="20dp"
-            android:inputType="textEmailAddress"
-            android:ems="10"
-            android:id="@+id/emailadress"
-            android:layout_gravity="center_horizontal"
-            android:background="#FFFFFF"
-            android:hint="Email"
-            android:radius="5dp"/>
-
-        <EditText
-            android:layout_width="350dp"
-            android:layout_height="40dp"
-            android:inputType="textPassword"
-            android:ems="10"
-            android:id="@+id/password"
-            android:layout_gravity="center_horizontal"
-            android:background="#FFFFFF"
-            android:hint="Password"
-            android:radius="5dp"/>
-
         <Button
             android:layout_width="350dp"
             android:layout_height="wrap_content"
             android:text="Log in"
-            android:id="@+id/button"
+            android:id="@+id/btnLogin"
             android:layout_gravity="center_horizontal"
-            android:background="@drawable/button_blue"
+            android:layout_marginTop="180dp"
+            android:background="@drawable/button_border"
+            android:alpha="0.65"
+            android:textColor="#FFFFFF"
+            android:textAllCaps="false"/>
+
+        <Button
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:text="Sign in"
+            android:id="@+id/btnSignin"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="10dp"
+            android:background="@drawable/button_blue"
             android:textColor="#FFFFFF"
             android:textAllCaps="false"/>
 
     </LinearLayout>
 
 </LinearLayout>
+

@@ -10,32 +10,6 @@
         android:orientation="vertical"
         android:background="#000000"
         android:alpha="0.65">
-        <ImageView
-            android:layout_width="80dp"
-            android:layout_height="110dp"
-            android:id="@+id/imageView"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/spotlogo"
-            android:layout_marginTop="20dp"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:textColor="#FFFFFF"
-            android:textSize="65sp"
-            android:text="@string/app_name" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/slogan_2"
-            android:id="@+id/textView7"
-            android:layout_gravity="center_horizontal"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="10dp"
-            android:textSize="22sp"/>
 
         <com.facebook.login.widget.LoginButton
             android:id="@+id/login_button"
@@ -59,13 +33,13 @@
             android:layout_gravity="center_horizontal"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="90dp"
             android:textSize="22sp"/>
 
         <EditText
             android:layout_width="350dp"
             android:layout_height="40dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="90dp"
             android:inputType="textEmailAddress"
             android:ems="10"
             android:id="@+id/emailadress"
@@ -85,17 +59,46 @@
             android:hint="Password"
             android:radius="5dp"/>
 
+        <EditText
+            android:layout_width="350dp"
+            android:layout_height="40dp"
+            android:inputType="date"
+            android:ems="10"
+            android:id="@+id/editText"
+            android:layout_gravity="center_horizontal"
+            android:background="#FFFFFF"
+            android:hint="Date de naissance"/>
+
         <Button
             android:layout_width="350dp"
             android:layout_height="wrap_content"
-            android:text="Log in"
+            android:text="Sign in"
             android:id="@+id/button"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/button_blue"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="30dp"
             android:textColor="#FFFFFF"
             android:textAllCaps="false"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/policy"
+            android:id="@+id/textView8"
+            android:layout_gravity="center_horizontal"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="40dp"/>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/warning"
+            android:id="@+id/textView9"
+            android:layout_gravity="center_horizontal"
+            android:textColor="#4A90E2" />
     </LinearLayout>
 
 </LinearLayout>

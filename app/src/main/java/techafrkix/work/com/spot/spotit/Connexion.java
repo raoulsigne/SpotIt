@@ -36,6 +36,7 @@ public class Connexion extends AppCompatActivity {
 
         final Intent mapintent = new Intent(this,MainActivity.class);
 
+        //bout de code pour gérer le bouton de connexion via facebook à l'application
         LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions("user_friends");
         LoginManager.getInstance().registerCallback(callbackManager,

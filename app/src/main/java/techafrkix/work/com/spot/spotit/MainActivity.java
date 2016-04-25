@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Shader;
+import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.ContentValues;
@@ -42,13 +43,18 @@ import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.BottomBarBadge;
 import com.roughike.bottombar.OnMenuTabSelectedListener;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
 
-public class MainActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
+public class MainActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, DetailSpot.OnFragmentInteractionListener{
 
     MapsActivity fgAccueil;
     ListeSpots fgSpots;
+    DetailSpot fgSpot;
     FragmentTransaction ft;
 
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
@@ -75,6 +81,8 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
 
         fgAccueil = new MapsActivity();
         fgSpots = new ListeSpots();
+        fgSpot = new DetailSpot();
+
         FragmentTransaction ft;
         dbAdapteur = new SpotsDBAdapteur(getApplicationContext());
         geoHash = new GeoHash();
@@ -193,9 +201,24 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
         if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
             // photo = (Bitmap) data.getExtras().get("data");
             selectedImagePath = getRealPathFromURI(mCapturedImageURI);
-            Log.v("log","filePath is : "+selectedImagePath);
+            Log.v("log", "filePath is : " + selectedImagePath);
 
-            showInputDialog(CAMERA_REQUEST);
+            //showInputDialog(CAMERA_REQUEST);
+
+            super.onPostResume();
+            try {
+                //remove all others fragments if there exists
+                getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+                getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+                getSupportFragmentManager().beginTransaction().remove(fgSpot).commit();
+                getSupportFragmentManager().executePendingTransactions();
+                // add the new fragment containing the list of spots
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.fragment_container, fgSpot, "SPOT")
+                        .commit();
+            } catch (Exception e) {
+                Log.e("fragment", e.getMessage());
+            }
         }
         else
             Log.i("camera","retour d'un code d'erreur");
@@ -343,14 +366,6 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
         });
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-//        if (mLastLocation != null) {
-//            String location = "Latitude: "+ String.valueOf(mLastLocation.getLatitude())+"Longitude: "+
-//                    String.valueOf(mLastLocation.getLongitude());
-//            Toast.makeText(getApplicationContext(),location,Toast.LENGTH_LONG).show();
-//            LatLng sydney = new LatLng(mLastLocation.getLongitude(), mLastLocation.getLatitude());
-//            mMap.addMarker(new MarkerOptions().position(sydney).title("Your location"));
-//            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-//        }
     }
 
     @Override
@@ -369,5 +384,9 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+    }
+
+    public void onFragmentInteraction(Uri uri){
+        //you can leave it empty
     }
 }

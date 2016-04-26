@@ -72,6 +72,7 @@ public class ListeSpots extends Fragment {
             spots = dbAdapteur.getAllSpots();
             db.close();
         }
+        Spot s = new Spot();
     }
 
     @Override

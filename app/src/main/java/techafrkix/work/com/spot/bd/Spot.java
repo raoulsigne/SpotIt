@@ -90,7 +90,7 @@ public class Spot implements Serializable{
 		this.photo = "";
 		this.geohash = "";
 		Calendar c = Calendar.getInstance();
-		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+		SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy à HH:mm");
 		this.date = sdf.format(c.getTime());
 	}
 }

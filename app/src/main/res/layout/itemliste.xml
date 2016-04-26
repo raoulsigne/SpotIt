@@ -7,27 +7,27 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="250dp"
+        android:scaleType="fitXY"
         android:id="@+id/imgSpot" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=""
-        android:textSize="12sp"
+        android:textSize="18sp"
         android:textColor="@color/datespot"
         android:id="@+id/txtDate"
         android:layout_marginTop="20dp"
-        android:layout_marginLeft="10dp"/>
+        android:layout_marginLeft="20dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=""
-        android:textSize="12sp"
+        android:textSize="16sp"
         android:textColor="@color/geohashspot"
         android:id="@+id/txtHash"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="20dp"
         android:layout_marginBottom="20dp"/>
 
 </LinearLayout>

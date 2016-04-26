@@ -22,6 +22,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -176,24 +177,23 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
                 }
             }
         });
-
         // Set the color for the active tab.
         bottomBar.setActiveTabColor("#E91E63");
         // Use the dark theme.
-        bottomBar.useDarkTheme();
+//        bottomBar.useDarkTheme();
 
         db = dbAdapteur.open();
         NB_SPOTS = dbAdapteur.countSpot();
         db.close();
 
         // Make a Badge for the second tab, with red background color and a value of "nb_spots".
-        nbspots = bottomBar.makeBadgeForTabAt(1, "#FF0000", NB_SPOTS);
+//        nbspots = bottomBar.makeBadgeForTabAt(1, "#FF0000", NB_SPOTS);
         // Control the badge's visibility
-        nbspots.show();
+//        nbspots.show();
         // Change the show / hide animation duration.
-        nbspots.setAnimationDuration(200);
+//        nbspots.setAnimationDuration(200);
         // If you want the badge be shown always after unselecting the tab that contains it.
-        nbspots.setAutoShowAfterUnSelection(true);
+//        nbspots.setAutoShowAfterUnSelection(true);
 
     }
 
@@ -204,6 +204,8 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
             selectedImagePath = getRealPathFromURI(mCapturedImageURI);
             Log.v("log", "filePath is : " + selectedImagePath);
 
+            Bundle bundle = new Bundle();
+            bundle.putString("image", selectedImagePath);
             //showInputDialog(CAMERA_REQUEST);
 
             super.onPostResume();
@@ -214,6 +216,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
                 getSupportFragmentManager().beginTransaction().remove(fgSpot).commit();
                 getSupportFragmentManager().executePendingTransactions();
                 // add the new fragment containing the list of spots
+                fgSpot.setArguments(bundle);
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.fragment_container, fgSpot, "SPOT")
                         .commit();
@@ -248,7 +251,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
             titre.getPaint().setShader(shader);
 
             if (mLastLocation != null) {
-                longitude.setText(String.valueOf(mLastLocation.getLongitude()));
+                    longitude.setText(String.valueOf(mLastLocation.getLongitude()));
                 latitude.setText(String.valueOf(mLastLocation.getLatitude()));
             }else
                 Toast.makeText(getApplicationContext(), "your location is null", Toast.LENGTH_SHORT).show();

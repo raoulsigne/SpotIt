@@ -2,18 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/accueil_item"
-        android:icon="@drawable/ic_home_black_24dp"
+        android:icon="@drawable/icon_home"
         android:title="Accueil" />
     <item
         android:id="@+id/spots_item"
-        android:icon="@drawable/ic_reorder_black_24dp"
+        android:icon="@drawable/icon_list"
         android:title="Spots" />
     <item
         android:id="@+id/spot_item"
-        android:icon="@drawable/ic_camera_alt_black_24dp"
-        android:title="Nouveau" />
+        android:icon="@drawable/icon_add"
+        android:title="Add spot" />
     <item
         android:id="@+id/deconnection_item"
-        android:icon="@drawable/ic_exit_to_app_black_24dp"
-        android:title="Log out" />
+        android:icon="@drawable/icon_deconnexion"
+        android:title="Logout" />
 </menu>

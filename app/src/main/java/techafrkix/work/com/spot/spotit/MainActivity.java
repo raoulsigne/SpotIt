@@ -103,6 +103,8 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
         BottomBar bottomBar = BottomBar.attach(this, savedInstanceState);
         // Show all titles even when there's more than three tabs.
         bottomBar.useFixedMode();
+
+//        bottomBar.setBackgroundColor(getResources().getColor(R.color.fbButton));
         bottomBar.setItemsFromMenu(R.menu.main_menu, new OnMenuTabSelectedListener() {
             @Override
             public void onMenuItemSelected(int itemId) {
@@ -177,24 +179,11 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
                 }
             }
         });
+
         // Set the color for the active tab.
         bottomBar.setActiveTabColor("#E91E63");
         // Use the dark theme.
-//        bottomBar.useDarkTheme();
-
-        db = dbAdapteur.open();
-        NB_SPOTS = dbAdapteur.countSpot();
-        db.close();
-
-        // Make a Badge for the second tab, with red background color and a value of "nb_spots".
-//        nbspots = bottomBar.makeBadgeForTabAt(1, "#FF0000", NB_SPOTS);
-        // Control the badge's visibility
-//        nbspots.show();
-        // Change the show / hide animation duration.
-//        nbspots.setAnimationDuration(200);
-        // If you want the badge be shown always after unselecting the tab that contains it.
-//        nbspots.setAutoShowAfterUnSelection(true);
-
+        // bottomBar.useDarkTheme();
     }
 
     @Override

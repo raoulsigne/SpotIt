@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 
 /**
@@ -72,7 +73,41 @@ public class DetailSpot extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_detail_spot, container, false);
+        View view = inflater.inflate(R.layout.fragment_detail_spot, container, false);
+
+        EditText lat = (EditText)view.findViewById(R.id.edtLatitude);
+        EditText lng = (EditText)view.findViewById(R.id.edtLongitude);
+        Button valider = (Button)view.findViewById(R.id.btnValider);
+        ImageButton vMoi = (ImageButton)view.findViewById(R.id.visibiliteMoi);
+        ImageButton vFriend = (ImageButton)view.findViewById(R.id.visibiliteFriend);
+        ImageButton vPublic = (ImageButton)view.findViewById(R.id.visibilitePublic);
+
+        vMoi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(),"moi clicked",Toast.LENGTH_SHORT).show();
+            }
+        });
+        vFriend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(),"friend clicked",Toast.LENGTH_SHORT).show();
+            }
+        });
+        vPublic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(),"public clicked",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        valider.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(),"validé clicked",Toast.LENGTH_SHORT).show();
+            }
+        });
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

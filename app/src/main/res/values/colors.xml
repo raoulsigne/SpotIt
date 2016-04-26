@@ -6,4 +6,7 @@
     <color name="indigo">#3F51B5</color>
     <color name="pink">#E91E63</color>
     <color name="bottombar_color">#50C878</color>
+    <color name="datespot">#494949</color>
+    <color name="geohashspot">#8E8E93</color>
+    <color name="fbButton">#3B5998</color>
 </resources>

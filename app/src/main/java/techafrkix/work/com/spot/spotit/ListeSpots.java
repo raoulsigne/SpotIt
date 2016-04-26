@@ -17,9 +17,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -41,7 +43,6 @@ public class ListeSpots extends Fragment {
     private SpotsDBAdapteur dbAdapteur;
     private SQLiteDatabase db;
     private ArrayList<Spot> spots;
-    private Button btnMap;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -53,24 +54,12 @@ public class ListeSpots extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_liste_spots, container, false);
 
-        btnMap = (Button) view.findViewById(R.id.btnMap);
-
         loadSpots();
-        btnMap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getActivity(), SpotOnMap.class);
-                if (spots != null)
-                    it.putExtra("spots", (Serializable) spots);
-                startActivity(it);
-            }
-        });
-
-        RecyclerView rv = (RecyclerView) view.findViewById(R.id.rv);
-        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
-        rv.setLayoutManager(llm);
-        RVAdapter adapter = new RVAdapter(spots);
-        rv.setAdapter(adapter);
+        ListView listView = (ListView) view.findViewById(R.id.listView);
+        // Create the adapter to convert the array to views
+        SpotAdapter adapter = new SpotAdapter(getActivity(), spots);
+        // Attach the adapter to a ListView
+        listView.setAdapter(adapter);
 
         return view;
     }

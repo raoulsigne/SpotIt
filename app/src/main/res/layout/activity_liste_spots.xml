@@ -5,28 +5,9 @@
     android:orientation="vertical"
     android:id="@+id/vg_list_spot"
     android:name="techafrkix.work.com.spot.spotit.ListeSpots">
-    <RelativeLayout
+
+    <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFEEAA">
-        <Button
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/btnMap"
-            android:text="view on map"
-            android:elevation="10dp"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:background="#50C878"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"/>
-    </RelativeLayout>
-
-    <android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="vertical"
-        android:id="@+id/rv" />
-
+        android:id="@+id/listView" />
 </LinearLayout>

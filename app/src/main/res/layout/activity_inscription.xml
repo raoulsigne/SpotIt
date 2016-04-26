@@ -1,104 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/backgroundgooglemap">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="#000000"
-        android:alpha="0.65">
+        android:background="@drawable/backgroundgooglemap">
 
-        <com.facebook.login.widget.LoginButton
-            android:id="@+id/login_button"
-            android:layout_width="350dp"
-            android:layout_height="wrap_content"
-            android:paddingTop="12sp"
-            android:paddingBottom="12sp"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_gravity="center_horizontal"
-            android:layout_centerHorizontal="true"
-            android:background="@color/com_facebook_blue"
-            android:layout_marginTop="50dp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="#000000"
+            android:alpha="0.65">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="or use your email"
-            android:id="@+id/textView"
-            android:layout_gravity="center_horizontal"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="90dp"
-            android:textSize="22sp"/>
+            <com.facebook.login.widget.LoginButton xmlns:facebook="http://schemas.android.com/apk/res-auto"
+                facebook:com_facebook_login_text="Sign in with Facebook"
+                android:id="@+id/login_button"
+                android:layout_width="350dp"
+                android:layout_height="wrap_content"
+                android:paddingTop="12sp"
+                android:paddingBottom="12sp"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_gravity="center_horizontal"
+                android:layout_centerHorizontal="true"
+                android:background="@color/fbButton"
+                android:layout_marginTop="50dp"/>
 
-        <EditText
-            android:layout_width="350dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="90dp"
-            android:inputType="textEmailAddress"
-            android:ems="10"
-            android:id="@+id/emailadress"
-            android:layout_gravity="center_horizontal"
-            android:background="#FFFFFF"
-            android:hint="Email"
-            android:radius="5dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="or use your email"
+                android:id="@+id/textView"
+                android:layout_gravity="center_horizontal"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="90dp"
+                android:textSize="22sp"/>
 
-        <EditText
-            android:layout_width="350dp"
-            android:layout_height="40dp"
-            android:inputType="textPassword"
-            android:ems="10"
-            android:id="@+id/password"
-            android:layout_gravity="center_horizontal"
-            android:background="#FFFFFF"
-            android:hint="Password"
-            android:radius="5dp"/>
+            <EditText
+                android:layout_width="350dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="90dp"
+                android:inputType="textEmailAddress"
+                android:ems="10"
+                android:id="@+id/emailadress"
+                android:layout_gravity="center_horizontal"
+                android:background="#FFFFFF"
+                android:hint="  Email"
+                android:radius="5dp"/>
 
-        <EditText
-            android:layout_width="350dp"
-            android:layout_height="40dp"
-            android:inputType="date"
-            android:ems="10"
-            android:id="@+id/editText"
-            android:layout_gravity="center_horizontal"
-            android:background="#FFFFFF"
-            android:hint="Date de naissance"/>
+            <EditText
+                android:layout_width="350dp"
+                android:layout_height="40dp"
+                android:inputType="textPassword"
+                android:ems="10"
+                android:id="@+id/password"
+                android:layout_gravity="center_horizontal"
+                android:background="#FFFFFF"
+                android:hint=" Password"
+                android:radius="5dp"/>
 
-        <Button
-            android:layout_width="350dp"
-            android:layout_height="wrap_content"
-            android:text="Sign in"
-            android:id="@+id/button"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/button_blue"
-            android:layout_marginTop="30dp"
-            android:textColor="#FFFFFF"
-            android:textAllCaps="false"/>
+            <EditText
+                android:layout_width="350dp"
+                android:layout_height="40dp"
+                android:inputType="date"
+                android:ems="10"
+                android:id="@+id/editText"
+                android:layout_gravity="center_horizontal"
+                android:background="#FFFFFF"
+                android:hint="  Date de naissance"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/policy"
-            android:id="@+id/textView8"
-            android:layout_gravity="center_horizontal"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="40dp"/>
+            <Button
+                android:layout_width="350dp"
+                android:layout_height="wrap_content"
+                android:text="Sign in"
+                android:id="@+id/button"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/button_blue"
+                android:layout_marginTop="30dp"
+                android:textColor="#FFFFFF"
+                android:textAllCaps="false"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/policy"
+                android:id="@+id/textView8"
+                android:layout_gravity="center_horizontal"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="40dp"/>
 
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/warning"
-            android:id="@+id/textView9"
-            android:layout_gravity="center_horizontal"
-            android:textColor="#4A90E2" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/warning"
+                android:id="@+id/textView9"
+                android:layout_gravity="center_horizontal"
+                android:textColor="#4A90E2" />
+        </LinearLayout>
     </LinearLayout>
 
-</LinearLayout>
+</ScrollView>

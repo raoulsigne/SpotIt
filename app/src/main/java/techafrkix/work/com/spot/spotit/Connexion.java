@@ -9,6 +9,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
@@ -25,6 +27,7 @@ import java.io.Console;
 public class Connexion extends AppCompatActivity {
 
     CallbackManager callbackManager;
+    EditText email, password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +39,13 @@ public class Connexion extends AppCompatActivity {
 
         final Intent mapintent = new Intent(this,MainActivity.class);
 
-        //bout de code pour gérer le bouton de connexion via facebook à l'application
+        //recuperation des elements de l'activité
+        email = (EditText)findViewById(R.id.editText2);
+        password = (EditText)findViewById(R.id.editText3);
         LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+        Button btnLogin = (Button)findViewById(R.id.btnConnexion);
+
+        //bout de code pour gérer le bouton de connexion via facebook à l'application
         loginButton.setReadPermissions("user_friends");
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
@@ -62,6 +70,15 @@ public class Connexion extends AppCompatActivity {
                         startActivity(mapintent);
                     }
                 });
+
+        // gestion du bouton login
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //ecrire le code correspondant au traitement à affectuer sur le click du bouton login
+
+            }
+        });
     }
 
     @Override

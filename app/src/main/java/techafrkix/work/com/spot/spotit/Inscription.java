@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -12,12 +13,14 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.ProfileTracker;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
@@ -38,11 +41,17 @@ public class Inscription extends AppCompatActivity {
     LoginButton fbSignin;
     Button signin;
     ProgressDialog progress;
-    private String facebook_id,f_name, m_name, l_name, gender, profile_image, full_name, email_id;
 
     UtilisateurDBAdapteur dbAdapteur;
     SQLiteDatabase db;
     CallbackManager callbackManager;
+    private static final String TAG = "Facebook";
+
+    private String fbUserID;
+    private String fbAuthToken;
+    private String fbProfileName;
+    private ProfileTracker profileTracker;
+    private AccessTokenTracker accessTokenTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,73 +96,100 @@ public class Inscription extends AppCompatActivity {
             }
         });
 
+        accessTokenTracker = new AccessTokenTracker() {
+            @Override
+            protected void onCurrentAccessTokenChanged(
+                    AccessToken oldAccessToken,
+                    AccessToken currentAccessToken) {
+                fbAuthToken = currentAccessToken.getToken();
+                fbUserID = currentAccessToken.getUserId();
+
+                Log.d(TAG, "User id: " + fbUserID);
+                Log.d(TAG, "Access token tracker: " + currentAccessToken.toString());
+
+            }
+        };
+        profileTracker = new ProfileTracker() {
+            @Override
+            protected void onCurrentProfileChanged(
+                    Profile oldProfile,
+                    Profile currentProfile) {
+                fbProfileName = currentProfile.getName();
+
+                Log.d(TAG, "User name: " + fbProfileName + " " + currentProfile.toString());
+            }
+        };
+
         fbSignin.setReadPermissions(Arrays.asList(
                 "public_profile", "email", "user_birthday", "user_friends"));
-        LoginManager.getInstance().registerCallback(callbackManager,
-                new FacebookCallback<LoginResult>() {
+        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         Toast.makeText(Inscription.this, "connexion reussi",
                                 Toast.LENGTH_LONG).show();
+                        final String token = loginResult.getAccessToken().getToken();
 
-                        progress.show();
-                        Profile profile = Profile.getCurrentProfile();
-                        if (profile != null) {
-                            facebook_id = profile.getId();
-                            f_name = profile.getFirstName();
-                            m_name = profile.getMiddleName();
-                            l_name = profile.getLastName();
-                            full_name = profile.getName();
-                            profile_image = profile.getProfilePictureUri(400, 400).toString();
-                            Log.i("FB", profile.toString());
-                        }
-                        Toast.makeText(Inscription.this, "Wait...", Toast.LENGTH_SHORT).show();
-                        GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
-                                new GraphRequest.GraphJSONObjectCallback() {
-                                    @Override
-                                    public void onCompleted(JSONObject object, GraphResponse response) {
-                                        try {
-                                            email_id = object.getString("email");
-                                            gender = object.getString("gender");
-                                            Log.i("FB", email_id + " " + gender);
-                                            //Record user informations into database
-                                            Intent i = new Intent();
-                                            i.putExtra("type", "facebook");
-                                            i.putExtra("facebook_id", facebook_id);
-                                            i.putExtra("f_name", f_name);
-                                            i.putExtra("m_name", m_name);
-                                            i.putExtra("l_name", l_name);
-                                            i.putExtra("full_name", full_name);
-                                            i.putExtra("profile_image", profile_image);
-                                            i.putExtra("email_id", email_id);
-                                            i.putExtra("gender", gender);
+                        //prepare fields with email
+                        String[] requiredFields = new String[]{"email"};
+                        Bundle parameters = new Bundle();
+                        parameters.putString("fields", TextUtils.join(",", requiredFields));
 
-                                            progress.dismiss();
-                                            startActivity(mainintent);
-                                            finish();
-                                        } catch (JSONException e) {
-                                            // TODO Auto-generated catch block
-                                            //  e.printStackTrace();
+                        GraphRequest requestEmail = new GraphRequest(loginResult.getAccessToken(), "me", parameters, null, new GraphRequest.Callback()
+                        {
+                            @Override
+                            public void onCompleted (GraphResponse response)
+                            {
+                                if (response != null)
+                                {
+                                    GraphRequest.GraphJSONObjectCallback callbackEmail = new GraphRequest.GraphJSONObjectCallback()
+                                    {
+                                        @Override
+                                        public void onCompleted (JSONObject me, GraphResponse response)
+                                        {
+                                            if (response.getError() != null)
+                                            {
+                                                Log.d(TAG, "FB: cannot parse email");
+                                            }
+                                            else
+                                            {
+                                                String email = me.optString("email");
+                                                Utilisateur user = new Utilisateur();
+                                                user.setDate_naissance("");
+                                                user.setEmail(email);
+                                                user.setPassword(fbProfileName.replaceAll("\\s","").toLowerCase());
+                                                db = dbAdapteur.open();
+                                                long cle = dbAdapteur.insertUtilisateur(user);
+                                                if (cle != -1) {
+                                                    Log.i("BD", "nouvel utilisateur enregistré");
+                                                    startActivity(mainintent);
+                                                } else
+                                                    Log.i("BD", "nouvel utilisateur non enregistré");
+                                                db.close();
+                                                Log.i(TAG, email);
+                                                startActivity(mainintent);
+                                                Toast.makeText(getApplicationContext(),"Vos informations ont été enregistrées",Toast.LENGTH_SHORT).show();
+                                            }
                                         }
+                                    };
 
-                                    }
+                                    callbackEmail.onCompleted(response.getJSONObject(), response);
+                                }
+                            }
+                        });
 
-                                });
-                        request.executeAsync();
+                        requestEmail.executeAsync();
                     }
 
                     @Override
                     public void onCancel() {
                         Toast.makeText(Inscription.this, "connexion echoue",
                                 Toast.LENGTH_LONG).show();
-                        progress.dismiss();
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
                         Toast.makeText(Inscription.this, "erreur survenue",
                                 Toast.LENGTH_LONG).show();
-                        progress.dismiss();
                     }
                 });
     }

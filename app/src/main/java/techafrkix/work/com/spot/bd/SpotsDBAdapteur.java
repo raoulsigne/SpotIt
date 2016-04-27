@@ -10,7 +10,7 @@ import android.util.Log;
 
 public class SpotsDBAdapteur {
 
-	private static final int BASE_VERSION = 1;
+	private static final int BASE_VERSION = 3;
 	private static final String BASE_NOM = "spots.db";
 	
 	private static final String TABLE_SPOTS = "table_spots";
@@ -29,13 +29,7 @@ public class SpotsDBAdapteur {
 	public static final int COLONNE_GEOHASH_ID = 5;
 	private static final String COLONNE_DATE = "date";
 	public static final int COLONNE_DATE_ID = 6;
-	
-	private static final String REQUETE_CREATION_BD = "create table "
-	+ TABLE_SPOTS + " (" + COLONNE_ID
-	+ " integer primary key autoincrement, " + COLONNE_LONGITUDE
-	+ " text not null, " + COLONNE_LATITUDE + " text not null, " + COLONNE_VISIBILITE + " text not null, " + COLONNE_PHOTO + " text not null, "
-	+ COLONNE_GEOHASH + " text not null, " + COLONNE_DATE + " text not null);";
-	
+
 	// L�instance de la base qui sera manipul�e au travers de cette classe.
 	private SQLiteDatabase maBaseDonnees;
 	private MaBaseOpenHelper baseHelper;

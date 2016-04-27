@@ -6,17 +6,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/backgroundgooglemap">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:background="#000000"
-            android:alpha="0.65">
+        android:orientation="vertical"
+        android:background="@drawable/background_new">
 
             <com.facebook.login.widget.LoginButton xmlns:facebook="http://schemas.android.com/apk/res-auto"
                 facebook:com_facebook_login_text="Sign in with Facebook"
+                facebook:com_facebook_logout_text="Sign out"
                 android:id="@+id/login_button"
                 android:layout_width="350dp"
                 android:layout_height="wrap_content"
@@ -27,7 +22,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_centerHorizontal="true"
                 android:background="@color/fbButton"
-                android:layout_marginTop="50dp"/>
+                android:layout_marginTop="30dp"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -50,7 +45,7 @@
                 android:id="@+id/emailadress"
                 android:layout_gravity="center_horizontal"
                 android:background="#FFFFFF"
-                android:hint="  Email"
+                android:hint="       Email"
                 android:radius="5dp"/>
 
             <EditText
@@ -61,7 +56,7 @@
                 android:id="@+id/password"
                 android:layout_gravity="center_horizontal"
                 android:background="#FFFFFF"
-                android:hint=" Password"
+                android:hint="   Password"
                 android:radius="5dp"/>
 
             <EditText
@@ -72,7 +67,7 @@
                 android:id="@+id/editText"
                 android:layout_gravity="center_horizontal"
                 android:background="#FFFFFF"
-                android:hint="  Date de naissance"/>
+                android:hint="       Date de naissance"/>
 
             <Button
                 android:layout_width="350dp"
@@ -83,7 +78,8 @@
                 android:background="@drawable/button_blue"
                 android:layout_marginTop="30dp"
                 android:textColor="#FFFFFF"
-                android:textAllCaps="false"/>
+                android:textAllCaps="false"
+                style="?android:attr/borderlessButtonStyle"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -104,7 +100,7 @@
                 android:id="@+id/textView9"
                 android:layout_gravity="center_horizontal"
                 android:textColor="#4A90E2" />
-        </LinearLayout>
+
     </LinearLayout>
 
 </ScrollView>

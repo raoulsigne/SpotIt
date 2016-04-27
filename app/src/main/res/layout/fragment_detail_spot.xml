@@ -17,9 +17,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Coordonnées"
-                android:textColor="@color/noir"
+                android:textColor="#494949"
                 android:textAlignment="center"
-                android:textSize="25sp"
+                android:textSize="22sp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="20dp"/>
             <LinearLayout
@@ -32,29 +32,31 @@
                 <EditText
                     android:layout_width="350dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:textColor="@color/noir"
                     android:id="@+id/edtLatitude"
                     android:layout_gravity="center_horizontal"
-                    android:hint="Latitude"/>
+                    android:hint="   Latitude"/>
 
                 <EditText
                     android:layout_width="350dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:textColor="@color/noir"
                     android:id="@+id/edtLongitude"
                     android:layout_gravity="center_horizontal"
-                    android:hint="Longitude"/>
+                    android:hint="   Longitude"/>
             </LinearLayout>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Qui peut voire ce spot ?"
-                android:textColor="@color/noir"
-                android:textSize="25sp"
+                android:textColor="#494949"
+                android:textSize="22sp"
                 android:textAlignment="center"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="20dp"
@@ -74,8 +76,9 @@
                     android:layout_weight="1"
                     android:background="@color/blanc">
                     <ImageButton
-                        android:layout_width="45dp"
-                        android:layout_height="50dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:layout_gravity="center_horizontal"
                         android:id="@+id/visibiliteMoi"
                         android:background="@drawable/moi"/>
@@ -86,7 +89,7 @@
                         android:id="@+id/txtMoi"
                         android:textAlignment="center"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="20dp"/>
+                        android:layout_marginTop="8dp"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -96,8 +99,9 @@
                     android:layout_weight="1"
                     android:background="@color/blanc">
                     <ImageButton
-                        android:layout_width="45dp"
-                        android:layout_height="50dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:layout_gravity="center_horizontal"
                         android:id="@+id/visibiliteFriend"
                         android:background="@drawable/friend"/>
@@ -108,7 +112,7 @@
                         android:id="@+id/txtAmis"
                         android:textAlignment="center"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="20dp"/>
+                        android:layout_marginTop="8dp"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -118,8 +122,9 @@
                     android:layout_weight="1"
                     android:background="@color/blanc">
                     <ImageButton
-                        android:layout_width="45dp"
-                        android:layout_height="50dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:layout_gravity="center_horizontal"
                         android:id="@+id/visibilitePublic"
                         android:background="@drawable/publics"/>
@@ -130,7 +135,7 @@
                         android:textAlignment="center"
                         android:id="@+id/txtPublic"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="20dp"/>
+                        android:layout_marginTop="8dp"/>
                 </LinearLayout>
 
         </LinearLayout>
@@ -145,7 +150,8 @@
             android:layout_marginTop="40dp"
             android:layout_marginBottom="20dp"
             android:textColor="#FFFFFF"
-            android:textAllCaps="false"/>
+            android:textAllCaps="false"
+            style="?android:attr/borderlessButtonStyle"/>
 
     </LinearLayout>
     </ScrollView>

@@ -1,6 +1,7 @@
 package techafrkix.work.com.spot.spotit;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,10 +25,16 @@ import com.facebook.login.widget.LoginButton;
 
 import java.io.Console;
 
+import techafrkix.work.com.spot.bd.Utilisateur;
+import techafrkix.work.com.spot.bd.UtilisateurDBAdapteur;
+
 public class Connexion extends AppCompatActivity {
 
     CallbackManager callbackManager;
     EditText email, password;
+
+    UtilisateurDBAdapteur dbAdapteur;
+    SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +45,7 @@ public class Connexion extends AppCompatActivity {
         callbackManager = CallbackManager.Factory.create();
 
         final Intent mapintent = new Intent(this,MainActivity.class);
+        dbAdapteur = new UtilisateurDBAdapteur(getApplicationContext());
 
         //recuperation des elements de l'activité
         email = (EditText)findViewById(R.id.editText2);
@@ -60,14 +68,12 @@ public class Connexion extends AppCompatActivity {
                     public void onCancel() {
                         Toast.makeText(Connexion.this, "connexion echoue",
                                 Toast.LENGTH_LONG).show();
-                        startActivity(mapintent);
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
                         Toast.makeText(Connexion.this, "erreur survenue",
                                 Toast.LENGTH_LONG).show();
-                        startActivity(mapintent);
                     }
                 });
 
@@ -76,7 +82,17 @@ public class Connexion extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //ecrire le code correspondant au traitement à affectuer sur le click du bouton login
-
+                Utilisateur utilisateur = new Utilisateur();
+                if (email.getText().toString() != " " & password.getText().toString() != ""){
+                    db = dbAdapteur.open();
+                    utilisateur = dbAdapteur.getUtilisateur(email.getText().toString(),password.getText().toString());
+                    if (utilisateur != null) {
+                        Log.i("BD", "utilisateur connecté");
+                        startActivity(mapintent);
+                    } else
+                        Log.i("BD", "utilisateur non connecté");
+                    db.close();
+                }
             }
         });
     }

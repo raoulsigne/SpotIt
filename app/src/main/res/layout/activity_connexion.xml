@@ -6,12 +6,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/backgroundgooglemap">
+        android:background="@drawable/background_new">
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#000000"
-            android:alpha="0.65">
+            android:layout_height="match_parent">
 
             <ImageView
                 android:layout_width="80dp"
@@ -59,7 +57,8 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="46dp"
                 android:layout_below="@+id/textView3"
-                android:layout_centerHorizontal="true" />
+                android:layout_centerHorizontal="true"
+                android:radius="5dp"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -83,7 +82,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="40dp"
                 android:background="#FFFFFF"
-                android:hint="Email"/>
+                android:hint="     Email"/>
 
             <EditText
                 android:layout_width="350dp"
@@ -95,7 +94,7 @@
                 android:layout_alignRight="@+id/editText2"
                 android:layout_alignEnd="@+id/editText2"
                 android:background="#FFFFFF"
-                android:hint="Password"
+                android:hint="  Password"
                 android:layout_alignLeft="@+id/editText2"
                 android:layout_alignStart="@+id/editText2" />
 
@@ -112,7 +111,8 @@
                 android:layout_alignStart="@+id/editText3"
                 android:layout_alignRight="@+id/editText3"
                 android:layout_alignEnd="@+id/editText3"
-                android:layout_marginTop="10dp"/>
+                android:layout_marginTop="10dp"
+                style="?android:attr/borderlessButtonStyle"/>
 
 
         </RelativeLayout>

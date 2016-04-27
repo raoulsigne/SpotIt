@@ -107,7 +107,7 @@ public class UtilisateurDBAdapteur {
             return null;
         Utilisateur utilisateur = new Utilisateur();
         // Extraction des valeurs depuis le curseur.
-
+        c.moveToFirst();
         utilisateur.setId(c.getInt(COLONNE_ID_ID));
         utilisateur.setEmail(c.getString(COLONNE_EMAIL_ID));
         utilisateur.setPassword(c.getString(COLONNE_PASSWORD_ID));

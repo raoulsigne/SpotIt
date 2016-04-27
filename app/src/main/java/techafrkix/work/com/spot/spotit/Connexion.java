@@ -89,8 +89,11 @@ public class Connexion extends AppCompatActivity {
                     if (utilisateur != null) {
                         Log.i("BD", "utilisateur connecté");
                         startActivity(mapintent);
-                    } else
+                    } else {
                         Log.i("BD", "utilisateur non connecté");
+                        password.setText("");
+                        Toast.makeText(getApplicationContext(),"Echec vérifier les informations entrées", Toast.LENGTH_SHORT).show();
+                    }
                     db.close();
                 }
             }

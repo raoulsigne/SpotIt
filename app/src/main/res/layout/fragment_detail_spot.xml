@@ -19,7 +19,7 @@
                 android:text="Coordonnées"
                 android:textColor="#494949"
                 android:textAlignment="center"
-                android:textSize="22sp"
+                android:textSize="18sp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="20dp"/>
             <LinearLayout
@@ -56,18 +56,20 @@
                 android:layout_height="wrap_content"
                 android:text="Qui peut voire ce spot ?"
                 android:textColor="#494949"
-                android:textSize="22sp"
+                android:textSize="18sp"
                 android:textAlignment="center"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"/>
+                android:layout_marginTop="25dp"
+                android:layout_marginBottom="10dp"/>
 
             <LinearLayout
                 android:layout_width="350dp"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_gravity="center_horizontal"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:divider="?android:dividerVertical"
+                android:showDividers="middle">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -147,7 +149,7 @@
             android:id="@+id/btnValider"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/button_blue"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="150dp"
             android:layout_marginBottom="20dp"
             android:textColor="#FFFFFF"
             android:textAllCaps="false"

@@ -102,7 +102,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
 
         BottomBar bottomBar = BottomBar.attach(this, savedInstanceState);
         // Show all titles even when there's more than three tabs.
-        bottomBar.useFixedMode();
+//        bottomBar.useFixedMode();
 
 //        bottomBar.setBackgroundColor(getResources().getColor(R.color.fbButton));
         bottomBar.setItemsFromMenu(R.menu.main_menu, new OnMenuTabSelectedListener() {
@@ -184,6 +184,11 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
         bottomBar.setActiveTabColor("#E91E63");
         // Use the dark theme.
         // bottomBar.useDarkTheme();
+
+        bottomBar.mapColorForTab(0, ContextCompat.getColor(this, R.color.myblue));
+        bottomBar.mapColorForTab(1, ContextCompat.getColor(this, R.color.myblue));
+        bottomBar.mapColorForTab(2, ContextCompat.getColor(this, R.color.myblue));
+        bottomBar.mapColorForTab(3, ContextCompat.getColor(this, R.color.myblue));
     }
 
     @Override
@@ -240,7 +245,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
             titre.getPaint().setShader(shader);
 
             if (mLastLocation != null) {
-                    longitude.setText(String.valueOf(mLastLocation.getLongitude()));
+                longitude.setText(String.valueOf(mLastLocation.getLongitude()));
                 latitude.setText(String.valueOf(mLastLocation.getLatitude()));
             }else
                 Toast.makeText(getApplicationContext(), "your location is null", Toast.LENGTH_SHORT).show();

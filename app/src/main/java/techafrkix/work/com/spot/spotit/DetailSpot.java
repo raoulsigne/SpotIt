@@ -133,7 +133,7 @@ public class DetailSpot extends Fragment implements GoogleApiClient.ConnectionCa
             @Override
             public void onClick(View v) {
                 visibilite = V_MOI;
-                txtMoi.setTextColor(getResources().getColor(R.color.indigo));
+                txtMoi.setTextColor(getResources().getColor(R.color.myblue));
                 txtAmis.setTextColor(getResources().getColor(R.color.noir));
                 txtPublic.setTextColor(getResources().getColor(R.color.noir));
 
@@ -147,7 +147,7 @@ public class DetailSpot extends Fragment implements GoogleApiClient.ConnectionCa
             public void onClick(View v) {
                 visibilite = V_FRIEND;
                 txtMoi.setTextColor(getResources().getColor(R.color.noir));
-                txtAmis.setTextColor(getResources().getColor(R.color.indigo));
+                txtAmis.setTextColor(getResources().getColor(R.color.myblue));
                 txtPublic.setTextColor(getResources().getColor(R.color.noir));
                 vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi));
                 vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend_clicked));
@@ -160,7 +160,7 @@ public class DetailSpot extends Fragment implements GoogleApiClient.ConnectionCa
                 visibilite = V_PUBLIC;
                 txtMoi.setTextColor(getResources().getColor(R.color.noir));
                 txtAmis.setTextColor(getResources().getColor(R.color.noir));
-                txtPublic.setTextColor(getResources().getColor(R.color.indigo));
+                txtPublic.setTextColor(getResources().getColor(R.color.myblue));
                 vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi));
                 vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend));
                 vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.public_clicked));

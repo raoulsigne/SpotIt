@@ -6,13 +6,13 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/background_new">
+        android:background="@drawable/background_newcopy">
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <ImageView
-                android:layout_width="70dp"
+                android:layout_width="60dp"
                 android:layout_height="90dp"
                 android:id="@+id/imageView3"
                 android:layout_alignParentTop="true"
@@ -25,13 +25,14 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="#FFFFFF"
-                android:textSize="50sp"
+                android:textSize="45sp"
                 android:textAlignment="center"
                 android:text="@string/app_name"
                 android:id="@+id/textView2"
                 android:layout_below="@+id/imageView3"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="0dp" />
+                android:layout_marginTop="0dp"
+                android:textStyle="bold"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -40,21 +41,21 @@
                 android:text="@string/slogan_2"
                 android:textColor="#FFFFFF"
                 android:textAlignment="center"
-                android:textSize="20sp"
+                android:textSize="15sp"
                 android:id="@+id/textView3"
                 android:layout_below="@+id/textView2"
                 android:layout_centerHorizontal="true" />
 
             <com.facebook.login.widget.LoginButton
                 android:id="@+id/login_button"
-                android:layout_width="350dp"
+                android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:paddingTop="12sp"
                 android:paddingBottom="12sp"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="46dp"
+                android:layout_marginTop="100dp"
                 android:layout_below="@+id/textView3"
                 android:layout_centerHorizontal="true"
                 android:radius="5dp"
@@ -74,7 +75,7 @@
                 android:layout_marginTop="40dp" />
 
             <EditText
-                android:layout_width="350dp"
+                android:layout_width="300dp"
                 android:layout_height="40dp"
                 android:inputType="textEmailAddress"
                 android:ems="10"
@@ -83,11 +84,11 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="40dp"
                 android:background="#FFFFFF"
-                android:textSize="17sp"
+                android:textSize="15sp"
                 android:hint="\tEmail"/>
 
             <EditText
-                android:layout_width="350dp"
+                android:layout_width="300dp"
                 android:layout_height="40dp"
                 android:inputType="textPassword"
                 android:ems="10"
@@ -96,19 +97,19 @@
                 android:layout_alignRight="@+id/editText2"
                 android:layout_alignEnd="@+id/editText2"
                 android:background="#FFFFFF"
-                android:textSize="17sp"
+                android:textSize="15sp"
                 android:hint="\tPassword"
                 android:layout_alignLeft="@+id/editText2"
                 android:layout_alignStart="@+id/editText2" />
 
             <Button
-                android:layout_width="350dp"
+                android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:text="Log in"
                 android:id="@+id/btnConnexion"
                 android:layout_below="@+id/editText3"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:textAllCaps="false"
                 android:background="@drawable/button_blue"
                 android:layout_alignLeft="@+id/editText3"

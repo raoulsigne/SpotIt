@@ -200,6 +200,15 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
 
             Bundle bundle = new Bundle();
             bundle.putString("image", selectedImagePath);
+            if (mLastLocation != null) {
+                Log.i("location", "location not null");
+                bundle.putDouble("longitude", mLastLocation.getLongitude());
+                bundle.putDouble("latitude", mLastLocation.getLatitude());
+            }else {
+                Log.i("location", "your location is null");
+                bundle.putDouble("longitude", 0);
+                bundle.putDouble("latitude", 0);
+            }
             //showInputDialog(CAMERA_REQUEST);
 
             super.onPostResume();

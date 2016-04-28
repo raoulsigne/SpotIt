@@ -1,9 +1,12 @@
 package techafrkix.work.com.spot.spotit;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +50,21 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
             spotDate.setText(spot.getDate());
             spotHash.setText(spot.getGeohash());
             Bitmap bitmap = BitmapFactory.decodeFile(spot.getPhoto());
-            spotPhoto.setImageBitmap(bitmap);
+
+            Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            int width = size.x;
+            int height = size.y;
+            Log.e("Screen width ", " "+width);
+            Log.e("Screen height ", " "+height);
+            Log.e("img width ", " "+bitmap.getWidth());
+            Log.e("img height ", " "+bitmap.getHeight());
+            float scaleHt =(float) width/bitmap.getWidth();
+            Log.e("Scaled percent ", " "+scaleHt);
+            Bitmap scaled = Bitmap.createScaledBitmap(bitmap, width, (int) (bitmap.getWidth()*scaleHt), true);
+
+            spotPhoto.setImageBitmap(scaled);
         }catch (Exception e){
             Log.e("spot", e.getMessage());}
 

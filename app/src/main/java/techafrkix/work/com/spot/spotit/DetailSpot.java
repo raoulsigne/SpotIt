@@ -64,6 +64,7 @@ public class DetailSpot extends Fragment implements GoogleApiClient.ConnectionCa
     private static final String V_PUBLIC = "public";
 
     private String visibilite, imagepath;
+    private double longitude, latitude;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -106,6 +107,8 @@ public class DetailSpot extends Fragment implements GoogleApiClient.ConnectionCa
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         imagepath = getArguments().getString("image");
+        longitude = getArguments().getDouble("longitude");
+        latitude = getArguments().getDouble("latitude");
         dbAdapteur = new SpotsDBAdapteur(getActivity());
         buildGoogleApiClient();
         if (mGoogleApiClient != null)
@@ -124,11 +127,11 @@ public class DetailSpot extends Fragment implements GoogleApiClient.ConnectionCa
         txtAmis = (TextView)view.findViewById(R.id.txtAmis);
         txtPublic = (TextView)view.findViewById(R.id.txtPublic);
 
-        if (mLastLocation != null) {
-            edtLong.setText(String.valueOf(mLastLocation.getLongitude()));
-            edtLat.setText(String.valueOf(mLastLocation.getLatitude()));
-        }else
-            Log.i("spot","Location is null");
+        if (longitude != 0)
+            edtLong.setText(String.valueOf(longitude));
+        if (latitude != 0)
+            edtLat.setText(String.valueOf(latitude));
+
         vMoi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

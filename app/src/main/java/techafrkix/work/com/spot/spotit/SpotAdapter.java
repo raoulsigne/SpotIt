@@ -56,12 +56,7 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
             display.getSize(size);
             int width = size.x;
             int height = size.y;
-            Log.e("Screen width ", " "+width);
-            Log.e("Screen height ", " "+height);
-            Log.e("img width ", " "+bitmap.getWidth());
-            Log.e("img height ", " "+bitmap.getHeight());
             float scaleHt =(float) width/bitmap.getWidth();
-            Log.e("Scaled percent ", " "+scaleHt);
             Bitmap scaled = Bitmap.createScaledBitmap(bitmap, width, (int) (bitmap.getWidth()*scaleHt), true);
 
             spotPhoto.setImageBitmap(scaled);

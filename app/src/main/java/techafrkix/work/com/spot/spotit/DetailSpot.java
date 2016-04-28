@@ -38,14 +38,13 @@ import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
  * Use the {@link DetailSpot#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DetailSpot extends Fragment implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener{
+public class DetailSpot extends Fragment {
 
-    public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
-    LocationManager locationManager;
-    Location mLastLocation;
-    LocationRequest locationRequest;
-    GoogleApiClient mGoogleApiClient;
+//    public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
+//    LocationManager locationManager;
+//    Location mLastLocation;
+//    LocationRequest locationRequest;
+//    GoogleApiClient mGoogleApiClient;
 
     EditText edtLat, edtLong;
     ImageButton imgMoi, imgFriend, imgPublic;
@@ -110,9 +109,9 @@ public class DetailSpot extends Fragment implements GoogleApiClient.ConnectionCa
         longitude = getArguments().getDouble("longitude");
         latitude = getArguments().getDouble("latitude");
         dbAdapteur = new SpotsDBAdapteur(getActivity());
-        buildGoogleApiClient();
-        if (mGoogleApiClient != null)
-            mGoogleApiClient.connect();
+//        buildGoogleApiClient();
+//        if (mGoogleApiClient != null)
+//            mGoogleApiClient.connect();
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_detail_spot, container, false);
@@ -229,9 +228,9 @@ public class DetailSpot extends Fragment implements GoogleApiClient.ConnectionCa
     public void onDetach() {
         super.onDetach();
         mListener = null;
-        if (mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
-        }
+//        if (mGoogleApiClient.isConnected()) {
+//            mGoogleApiClient.disconnect();
+//        }
     }
 
     /**
@@ -249,54 +248,54 @@ public class DetailSpot extends Fragment implements GoogleApiClient.ConnectionCa
         void onFragmentInteraction(Uri uri);
     }
 
-    @Override
-    public void onConnectionFailed(ConnectionResult arg0) {
-        Toast.makeText(getActivity(), "Failed to connect...", Toast.LENGTH_SHORT).show();
+//    @Override
+//    public void onConnectionFailed(ConnectionResult arg0) {
+//        Toast.makeText(getActivity(), "Failed to connect...", Toast.LENGTH_SHORT).show();
+//
+//    }
 
-    }
+//    @Override
+//    public void onConnected(Bundle arg0) {
 
-    @Override
-    public void onConnected(Bundle arg0) {
+//        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+//                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            // TODO: Consider calling
+//            //    ActivityCompat#requestPermissions
+//            // here to request the missing permissions, and then overriding
+//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//            //                                          int[] grantResults)
+//            // to handle the case where the user grants the permission. See the documentation
+//            // for ActivityCompat#requestPermissions for more details.
+//            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+//                    MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+//            return;
+//        }
+//        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, new LocationListener() {
+//            @Override
+//            public void onLocationChanged(Location location) {
+//
+//            }
+//        });
+//        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_FINE_LOCATION);
-            return;
-        }
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
+//    }
 
-            }
-        });
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int arg0) {
-        Toast.makeText(getActivity(), "Connection suspended...", Toast.LENGTH_SHORT).show();
-
-    }
-
-    protected synchronized void buildGoogleApiClient() {
-        locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(12000);
-        locationRequest.setFastestInterval(30000);
-        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-    }
+//    @Override
+//    public void onConnectionSuspended(int arg0) {
+//        Toast.makeText(getActivity(), "Connection suspended...", Toast.LENGTH_SHORT).show();
+//
+//    }
+//
+//    protected synchronized void buildGoogleApiClient() {
+//        locationRequest = LocationRequest.create();
+//        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//        locationRequest.setInterval(12000);
+//        locationRequest.setFastestInterval(30000);
+//        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+//                .addConnectionCallbacks(this)
+//                .addOnConnectionFailedListener(this)
+//                .addApi(LocationServices.API)
+//                .build();
+//    }
 
 }

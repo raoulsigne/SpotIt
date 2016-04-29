@@ -2,6 +2,7 @@ package techafrkix.work.com.spot.spotit;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.content.pm.PackageManager;
@@ -21,6 +22,13 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
+
+import techafrkix.work.com.spot.bd.Spot;
+import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
 
 public class MapsActivity extends Fragment implements OnMapReadyCallback {
 
@@ -29,12 +37,17 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
     LocationRequest locationRequest;
+    ArrayList<Spot> spots;
+    private SpotsDBAdapteur dbAdapteur;
+    SQLiteDatabase db;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.activity_maps, container, false);
+        spots = new ArrayList<Spot>();
+        dbAdapteur = new SpotsDBAdapteur(getActivity());
 
         buildGoogleApiClient();
         if (mGoogleApiClient != null) {
@@ -98,6 +111,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         {
             mMap.setMyLocationEnabled(true);
         }
+
+        displaySpotOnMap();
     }
 
     @Override
@@ -123,5 +138,23 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated (View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+    }
+
+    /**
+     * afficher les spots sur la carte en utilisant leur coordonnées
+     */
+    private void displaySpotOnMap(){
+        db = dbAdapteur.open();
+        spots = dbAdapteur.getAllSpots();
+        LatLng coordonnees;
+        if (spots != null)
+            for (Spot s:
+                 spots) {
+                // Add a marker to spot position
+                coordonnees = new LatLng(Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude()));
+                mMap.addMarker(new MarkerOptions().position(coordonnees).title("Spot "+ s.getId() + " : " +s.getGeohash()));
+                Log.i("map","marker du spot "+s.getGeohash());
+            }
+        db.close();
     }
 }

@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Shader;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.ContentValues;
@@ -100,6 +101,8 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
                 .add(R.id.fragment_container, fgAccueil, "ACCUEIL")
                 .commit();
 
+        CheckEnableGPS();
+
         BottomBar bottomBar = BottomBar.attach(this, savedInstanceState);
         // Show all titles even when there's more than three tabs.
 //        bottomBar.useFixedMode();
@@ -117,7 +120,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
                             getSupportFragmentManager().beginTransaction().remove(fgSpot).commit();
                             // add the new fragment containing the main map
                             getSupportFragmentManager().beginTransaction()
-                                    .add(R.id.fragment_container, fgAccueil, "ACCUEIL")
+                                    .replace(R.id.fragment_container, fgAccueil, "ACCUEIL")
                                     .commit();
                         } catch (Exception e) {
                             Log.e("fragment", e.getMessage());
@@ -132,7 +135,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
                             getSupportFragmentManager().beginTransaction().remove(fgSpot).commit();
                             // add the new fragment containing the list of spots
                             getSupportFragmentManager().beginTransaction()
-                                    .add(R.id.fragment_container, fgSpots, "SPOTS")
+                                    .replace(R.id.fragment_container, fgSpots, "SPOTS")
                                     .commit();
                         } catch (Exception e) {
                             Log.e("fragment", e.getMessage());
@@ -169,8 +172,8 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
                             }
 
                         }
-
                         break;
+
                     case R.id.deconnection_item:
                         Intent itdeconnect = new Intent(getApplicationContext(), Connexion.class);
                         finish();
@@ -180,11 +183,8 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
             }
         });
 
-        // Set the color for the active tab.
         bottomBar.setActiveTabColor("#E91E63");
-        // Use the dark theme.
-        // bottomBar.useDarkTheme();
-
+        //set the same color for each tab
         bottomBar.mapColorForTab(0, ContextCompat.getColor(this, R.color.myblue));
         bottomBar.mapColorForTab(1, ContextCompat.getColor(this, R.color.myblue));
         bottomBar.mapColorForTab(2, ContextCompat.getColor(this, R.color.myblue));
@@ -221,7 +221,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
                 // add the new fragment containing the list of spots
                 fgSpot.setArguments(bundle);
                 getSupportFragmentManager().beginTransaction()
-                        .add(R.id.fragment_container, fgSpot, "SPOT")
+                        .replace(R.id.fragment_container, fgSpot, "SPOT")
                         .commit();
             } catch (Exception e) {
                 Log.e("fragment", e.getMessage());
@@ -395,5 +395,27 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
 
     public void onFragmentInteraction(Uri uri){
         //you can leave it empty
+    }
+
+    /**
+     * methode qui vérifie si le gps and network est activé dans le cas contraire demande à l'utilisateur de l'activer
+     */
+    private void CheckEnableGPS(){
+        String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+        if(!provider.equals("")){
+            //GPS Enabled
+            Log.i("GPS", "GPS Enabled: ");
+        }else{
+            new AlertDialog.Builder(this).setTitle("Notification").setMessage("Vous devez activé le GPS!")
+                    .setPositiveButton("D'accord", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                            startActivity(intent);
+                        }
+                    })
+                    .show();
+        }
+
     }
 }

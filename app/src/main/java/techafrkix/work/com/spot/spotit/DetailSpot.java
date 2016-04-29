@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -108,6 +109,7 @@ public class DetailSpot extends Fragment {
         imagepath = getArguments().getString("image");
         longitude = getArguments().getDouble("longitude");
         latitude = getArguments().getDouble("latitude");
+        Log.i("parametre : image=",imagepath+" longitude="+longitude+"; latitude="+latitude);
         dbAdapteur = new SpotsDBAdapteur(getActivity());
 //        buildGoogleApiClient();
 //        if (mGoogleApiClient != null)
@@ -127,9 +129,9 @@ public class DetailSpot extends Fragment {
         txtPublic = (TextView)view.findViewById(R.id.txtPublic);
 
         if (longitude != 0)
-            edtLong.setText(String.valueOf(longitude));
+            edtLong.setText(longitude+"");
         if (latitude != 0)
-            edtLat.setText(String.valueOf(latitude));
+            edtLat.setText(latitude+"");
 
         vMoi.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -172,7 +174,7 @@ public class DetailSpot extends Fragment {
         valider.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (visibilite != "" & edtLong.getText().toString()!="" & edtLat.getText().toString()!="") {
+                if (visibilite != null & visibilite != "" & edtLong.getText().toString()!="" & edtLat.getText().toString()!="") {
                     GeoHash geoHash = new GeoHash();
                     geoHash.setLatitude(Double.valueOf(edtLat.getText().toString()));
                     geoHash.setLongitude(Double.valueOf(edtLong.getText().toString()));
@@ -187,10 +189,15 @@ public class DetailSpot extends Fragment {
 
                     db = dbAdapteur.open();
                     long cle = dbAdapteur.insertSpot(spot);
-                    if (cle != -1)
+
+                    if (cle != -1) {
                         Log.i("BD", "nouveau spot enregistré");
-                    else
+                        new AlertDialog.Builder(getActivity()).setTitle("Notification").setMessage("Nouveau spot enregistré!").setNeutralButton("Close", null).show();
+                    }
+                    else {
                         Log.i("BD", "nouveau spot non enregistré");
+                        new AlertDialog.Builder(getActivity()).setTitle("Notification").setMessage("Nouveau non spot enregistré!").setNeutralButton("Close", null).show();
+                    }
                     db.close();
 
                     edtLat.setText("");
@@ -198,6 +205,15 @@ public class DetailSpot extends Fragment {
                     vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi));
                     vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend));
                     vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.publics));
+//
+//                    MapsActivity nextFrag= new MapsActivity();
+//                    getActivity().getSupportFragmentManager().beginTransaction().
+//                            remove(getActivity().getSupportFragmentManager().findFragmentByTag("SPOT")).
+//                            commit();
+//                    getActivity().getSupportFragmentManager().beginTransaction()
+//                            .replace(R.id.fragment_container, nextFrag, null)
+//                            .addToBackStack(null)
+//                            .commit();
                 }
                 else
                     Toast.makeText(getActivity(),"Formulaire non conforme",Toast.LENGTH_SHORT).show();

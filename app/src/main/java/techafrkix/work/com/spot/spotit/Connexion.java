@@ -2,14 +2,11 @@ package techafrkix.work.com.spot.spotit;
 
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -22,8 +19,6 @@ import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-
-import java.io.Console;
 
 import techafrkix.work.com.spot.bd.Utilisateur;
 import techafrkix.work.com.spot.bd.UtilisateurDBAdapteur;
@@ -44,7 +39,7 @@ public class Connexion extends AppCompatActivity {
         setContentView(R.layout.activity_connexion);
         callbackManager = CallbackManager.Factory.create();
 
-        final Intent mapintent = new Intent(this,MainActivity.class);
+        final Intent maainintent;
         dbAdapteur = new UtilisateurDBAdapteur(getApplicationContext());
 
         //recuperation des elements de l'activité
@@ -52,6 +47,14 @@ public class Connexion extends AppCompatActivity {
         password = (EditText)findViewById(R.id.editText3);
         LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         Button btnLogin = (Button)findViewById(R.id.btnConnexion);
+
+        String release = Build.VERSION.RELEASE;
+        int sdkVersion = Build.VERSION.SDK_INT;
+        Log.i("test","Android SDK: " + sdkVersion + " (" + release +")");
+        if (release.compareTo(String.valueOf(6)) < 0)
+            maainintent = new Intent(this,Main2Activity.class);
+        else
+            maainintent = new Intent(this,MainActivity.class);
 
         //bout de code pour gérer le bouton de connexion via facebook à l'application
         loginButton.setReadPermissions("user_friends");
@@ -61,7 +64,7 @@ public class Connexion extends AppCompatActivity {
                     public void onSuccess(LoginResult loginResult) {
                         Toast.makeText(Connexion.this, "connexion reussi",
                                 Toast.LENGTH_LONG).show();
-                        startActivity(mapintent);
+                        startActivity(maainintent);
                     }
 
                     @Override
@@ -88,7 +91,7 @@ public class Connexion extends AppCompatActivity {
                     utilisateur = dbAdapteur.getUtilisateur(email.getText().toString(),password.getText().toString());
                     if (utilisateur != null) {
                         Log.i("BD", "utilisateur connecté");
-                        startActivity(mapintent);
+                        startActivity(maainintent);
                     } else {
                         Log.i("BD", "utilisateur non connecté");
                         password.setText("");

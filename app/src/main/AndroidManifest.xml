@@ -34,8 +34,8 @@
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -52,18 +52,19 @@
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ListeSpots"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ListeSpots"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".SpotOnMap"
             android:label="@string/title_activity_spot_on_map"
-            android:screenOrientation="portrait"/>
-        <activity android:name="techafrkix.work.com.spot.techafrkix.work.com.spot.test.ThreeButtonsActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".MainActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Accueil"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Accueil"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -71,8 +72,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Inscription"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".Inscription"
+            android:screenOrientation="portrait" />
+        <activity android:name=".DetailSpot_New" />
+        <activity
+            android:name=".Main2Activity"
+            android:label="@string/title_activity_main2"
+            android:theme="@style/AppFullScreenTheme"></activity>
     </application>
 
 </manifest>

@@ -2,13 +2,7 @@ package techafrkix.work.com.spot.spotit;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.FragmentManager;
-import android.graphics.Color;
-import android.graphics.LinearGradient;
-import android.graphics.Shader;
-import android.os.Build;
 import android.provider.Settings;
-import android.support.v4.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -22,19 +16,11 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import com.facebook.appevents.AppEventsLogger;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -42,16 +28,10 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.BottomBarBadge;
 import com.roughike.bottombar.OnMenuTabSelectedListener;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
-import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
 
-public class MainActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks,
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, DetailSpot.OnFragmentInteractionListener, FragmentAccueil.OnFragmentInteractionListener{
 
     MapsActivity fgAccueil;
@@ -62,9 +42,6 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
     private static final int CAMERA_REQUEST = 1;
     private static final int WRITE_REQUEST = 2;
-    private int NB_SPOTS;
-    Bitmap photo;
-    LocationManager locationManager;
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
     LocationRequest locationRequest;
@@ -73,8 +50,6 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
     private GeoHash geoHash;
     private SpotsDBAdapteur dbAdapteur;
     SQLiteDatabase db;
-
-    BottomBarBadge nbspots;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +77,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
                 .commit();
 
         CheckEnableGPS();
+
 
         BottomBar bottomBar = BottomBar.attach(this, savedInstanceState);
         // Show all titles even when there's more than three tabs.
@@ -183,8 +159,8 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
             }
         });
 
-        bottomBar.setActiveTabColor("#E91E63");
-        //set the same color for each tab
+//        bottomBar.setActiveTabColor("#E91E63");
+//        //set the same color for each tab
         bottomBar.mapColorForTab(0, ContextCompat.getColor(this, R.color.myblue));
         bottomBar.mapColorForTab(1, ContextCompat.getColor(this, R.color.myblue));
         bottomBar.mapColorForTab(2, ContextCompat.getColor(this, R.color.myblue));
@@ -209,98 +185,13 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
                 bundle.putDouble("longitude", 0);
                 bundle.putDouble("latitude", 0);
             }
-            //showInputDialog(CAMERA_REQUEST);
 
-            super.onPostResume();
-            try {
-                //remove all others fragments if there exists
-                getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-                getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-                getSupportFragmentManager().beginTransaction().remove(fgSpot).commit();
-                getSupportFragmentManager().executePendingTransactions();
-                // add the new fragment containing the list of spots
-                fgSpot.setArguments(bundle);
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, fgSpot, "SPOT")
-                        .commit();
-            } catch (Exception e) {
-                Log.e("fragment", e.getMessage());
-            }
+            Intent itDetailSpot = new Intent(getApplicationContext(),DetailSpot_New.class);
+            itDetailSpot.putExtras(bundle);
+            startActivity(itDetailSpot);
         }
         else
             Log.i("camera","retour d'un code d'erreur");
-    }
-
-    protected void showInputDialog(int code)
-    {
-
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-
-        if (code == CAMERA_REQUEST)
-        {
-            LayoutInflater layoutInflater = LayoutInflater.from(this);
-            View promptView = layoutInflater.inflate(R.layout.input_spot, null);
-            alertDialogBuilder.setView(promptView);
-
-            final TextView titre = (TextView) promptView.findViewById(R.id.titre);
-            final EditText latitude = (EditText) promptView.findViewById(R.id.latitude);
-            final EditText longitude = (EditText) promptView.findViewById(R.id.longitude);
-            final Spinner visibilite = (Spinner) promptView.findViewById(R.id.visibilite);
-
-            Shader shader = new LinearGradient(
-                    0, 0, 0, titre.getTextSize(),
-                    Color.RED, Color.BLUE,
-                    Shader.TileMode.CLAMP);
-            titre.getPaint().setShader(shader);
-
-            if (mLastLocation != null) {
-                longitude.setText(String.valueOf(mLastLocation.getLongitude()));
-                latitude.setText(String.valueOf(mLastLocation.getLatitude()));
-            }else
-                Toast.makeText(getApplicationContext(), "your location is null", Toast.LENGTH_SHORT).show();
-            ArrayAdapter<CharSequence> dataAdapter = ArrayAdapter.createFromResource(this,
-                    R.array.visibility, android.R.layout.simple_spinner_item);
-            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            visibilite.setAdapter(dataAdapter);
-
-            //rechercher les coordonnées et mettre dans les editview
-
-            // setup a dialog window
-            alertDialogBuilder
-                    .setCancelable(true)
-                    .setPositiveButton("Sauvegarder", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            geoHash.setLatitude(Double.valueOf(latitude.getText().toString()));
-                            geoHash.setLongitude(Double.valueOf(longitude.getText().toString()));
-                            geoHash.encoder();
-
-                            Spot spot = new Spot();
-                            spot.setLongitude(longitude.getText().toString());
-                            spot.setLatitude(latitude.getText().toString());
-                            spot.setVisibilite(String.valueOf(visibilite.getSelectedItem()));
-                            spot.setGeohash(geoHash.getHash());
-                            spot.setPhoto(selectedImagePath);
-
-                            db = dbAdapteur.open();
-                            long cle = dbAdapteur.insertSpot(spot);
-                            if (cle != -1) {
-                                // Change the displayed count for this badge.
-                                NB_SPOTS ++;
-                                nbspots.setCount(NB_SPOTS);
-                            }
-                            db.close();
-                        }
-                    })
-                    .setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            //annulation de la création du spot
-                        }
-                    });
-        }
-        // create an alert dialog
-        AlertDialog alert = alertDialogBuilder.create();
-        alert.show();
-
     }
 
     public String getRealPathFromURI(Uri contentUri)

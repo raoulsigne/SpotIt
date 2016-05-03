@@ -19,33 +19,33 @@
                 android:text="Coordonnées"
                 android:textColor="#494949"
                 android:textAlignment="center"
-                android:textSize="18sp"
+                android:textSize="13sp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="20dp"/>
+                android:layout_marginTop="40dp"/>
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_gravity="center_horizontal"
                 android:background="@color/blanc"
-                android:layout_marginTop="20dp">
+                android:layout_marginTop="5dp">
                 <EditText
-                    android:layout_width="350dp"
+                    android:layout_width="320dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:inputType="numberDecimal"
-                    android:ems="10"
+                    android:textSize="11sp"
                     android:textColor="@color/noir"
                     android:id="@+id/edtLatitude"
                     android:layout_gravity="center_horizontal"
                     android:hint="   Latitude"/>
 
                 <EditText
-                    android:layout_width="350dp"
+                    android:layout_width="320dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:inputType="numberDecimal"
-                    android:ems="10"
+                    android:textSize="11sp"
                     android:textColor="@color/noir"
                     android:id="@+id/edtLongitude"
                     android:layout_gravity="center_horizontal"
@@ -56,14 +56,14 @@
                 android:layout_height="wrap_content"
                 android:text="Qui peut voire ce spot ?"
                 android:textColor="#494949"
-                android:textSize="18sp"
+                android:textSize="13sp"
                 android:textAlignment="center"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="10dp"/>
+                android:layout_marginTop="35dp"
+                android:layout_marginBottom="5dp"/>
 
             <LinearLayout
-                android:layout_width="350dp"
+                android:layout_width="320dp"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_gravity="center_horizontal"
@@ -79,8 +79,8 @@
                     android:background="@color/blanc">
                     <ImageButton
                         android:layout_marginTop="8dp"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_gravity="center_horizontal"
                         android:id="@+id/visibiliteMoi"
                         android:background="@drawable/moi"/>
@@ -89,6 +89,7 @@
                         android:layout_height="wrap_content"
                         android:text="Moi"
                         android:id="@+id/txtMoi"
+                        android:textSize="10sp"
                         android:textAlignment="center"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="8dp"/>
@@ -102,8 +103,8 @@
                     android:background="@color/blanc">
                     <ImageButton
                         android:layout_marginTop="8dp"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_gravity="center_horizontal"
                         android:id="@+id/visibiliteFriend"
                         android:background="@drawable/friend"/>
@@ -111,6 +112,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Mes amis"
+                        android:textSize="10sp"
                         android:id="@+id/txtAmis"
                         android:textAlignment="center"
                         android:layout_gravity="center_horizontal"
@@ -125,8 +127,8 @@
                     android:background="@color/blanc">
                     <ImageButton
                         android:layout_marginTop="8dp"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_gravity="center_horizontal"
                         android:id="@+id/visibilitePublic"
                         android:background="@drawable/publics"/>
@@ -134,6 +136,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Tout le monde"
+                        android:textSize="10sp"
                         android:textAlignment="center"
                         android:id="@+id/txtPublic"
                         android:layout_gravity="center_horizontal"
@@ -143,13 +146,13 @@
         </LinearLayout>
 
         <Button
-            android:layout_width="350dp"
-            android:layout_height="wrap_content"
+            android:layout_width="320dp"
+            android:layout_height="45dp"
             android:text="Valider"
             android:id="@+id/btnValider"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/button_blue"
-            android:layout_marginTop="150dp"
+            android:layout_marginTop="250dp"
             android:layout_marginBottom="20dp"
             android:textColor="#FFFFFF"
             android:textAllCaps="false"

@@ -39,7 +39,7 @@ public class Connexion extends AppCompatActivity {
         setContentView(R.layout.activity_connexion);
         callbackManager = CallbackManager.Factory.create();
 
-        final Intent maainintent;
+        final Intent mainintent;
         dbAdapteur = new UtilisateurDBAdapteur(getApplicationContext());
 
         //recuperation des elements de l'activité
@@ -52,9 +52,9 @@ public class Connexion extends AppCompatActivity {
         int sdkVersion = Build.VERSION.SDK_INT;
         Log.i("test","Android SDK: " + sdkVersion + " (" + release +")");
         if (release.compareTo(String.valueOf(6)) < 0)
-            maainintent = new Intent(this,Main2Activity.class);
+            mainintent = new Intent(this,Main2Activity.class);
         else
-            maainintent = new Intent(this,MainActivity.class);
+            mainintent = new Intent(this,MainActivity.class);
 
         //bout de code pour gérer le bouton de connexion via facebook à l'application
         loginButton.setReadPermissions("user_friends");
@@ -64,19 +64,19 @@ public class Connexion extends AppCompatActivity {
                     public void onSuccess(LoginResult loginResult) {
                         Toast.makeText(Connexion.this, "connexion reussi",
                                 Toast.LENGTH_LONG).show();
-                        startActivity(maainintent);
+                        startActivity(mainintent);
                     }
 
                     @Override
                     public void onCancel() {
                         Toast.makeText(Connexion.this, "connexion echoue",
-                                Toast.LENGTH_LONG).show();
+                                Toast.LENGTH_LONG).show();startActivity(mainintent);
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
                         Toast.makeText(Connexion.this, "erreur survenue",
-                                Toast.LENGTH_LONG).show();
+                                Toast.LENGTH_LONG).show();startActivity(mainintent);
                     }
                 });
 
@@ -91,7 +91,7 @@ public class Connexion extends AppCompatActivity {
                     utilisateur = dbAdapteur.getUtilisateur(email.getText().toString(),password.getText().toString());
                     if (utilisateur != null) {
                         Log.i("BD", "utilisateur connecté");
-                        startActivity(maainintent);
+                        startActivity(mainintent);
                     } else {
                         Log.i("BD", "utilisateur non connecté");
                         password.setText("");

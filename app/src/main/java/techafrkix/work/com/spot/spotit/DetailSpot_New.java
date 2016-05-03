@@ -2,10 +2,12 @@ package techafrkix.work.com.spot.spotit;
 
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,7 +35,7 @@ public class DetailSpot_New extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail_spot);
+        setContentView(R.layout.fragment_detail_spot);
         double longitude, latitude;
 
         Bundle extras = getIntent().getExtras();
@@ -67,7 +69,7 @@ public class DetailSpot_New extends AppCompatActivity {
                 txtAmis.setTextColor(getResources().getColor(R.color.noir));
                 txtPublic.setTextColor(getResources().getColor(R.color.noir));
 
-                vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi_clicked));
+                vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi_active));
                 vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend));
                 vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.publics));
             }
@@ -80,7 +82,7 @@ public class DetailSpot_New extends AppCompatActivity {
                 txtAmis.setTextColor(getResources().getColor(R.color.myblue));
                 txtPublic.setTextColor(getResources().getColor(R.color.noir));
                 vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi));
-                vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend_clicked));
+                vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend_active));
                 vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.publics));
             }
         });
@@ -93,7 +95,7 @@ public class DetailSpot_New extends AppCompatActivity {
                 txtPublic.setTextColor(getResources().getColor(R.color.myblue));
                 vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi));
                 vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend));
-                vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.public_clicked));
+                vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.publics_active));
             }
         });
 
@@ -132,7 +134,14 @@ public class DetailSpot_New extends AppCompatActivity {
                     vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend));
                     vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.publics));
 
-                    Intent mainintent = new Intent(getApplicationContext(), MainActivity.class);
+                    String release = Build.VERSION.RELEASE;
+                    int sdkVersion = Build.VERSION.SDK_INT;
+                    Log.i("test", "Android SDK: " + sdkVersion + " (" + release + ")");
+                    Intent mainintent;
+                    if (release.compareTo(String.valueOf(6)) < 0)
+                        mainintent = new Intent(getApplicationContext(),Main2Activity.class);
+                    else
+                        mainintent = new Intent(getApplicationContext(),MainActivity.class);
                     finish();
                     startActivity(mainintent);
                 }

@@ -51,19 +51,45 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
             spotHash.setText(spot.getGeohash());
             Bitmap bitmap = BitmapFactory.decodeFile(spot.getPhoto());
 
+            // Get height or width of screen at runtime
             Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
             Point size = new Point();
             display.getSize(size);
             int width = size.x;
             int height = size.y;
-            float scaleHt =(float) width/bitmap.getWidth();
-            Bitmap scaled = Bitmap.createScaledBitmap(bitmap, width, (int) (bitmap.getWidth()*scaleHt), true);
 
+            //reduce the photo dimension keeping the ratio so that it'll fit in the imageview
+            int nh = (int) ( bitmap.getHeight() * (Double.valueOf(width) / bitmap.getWidth()) );
+            Bitmap scaled = Bitmap.createScaledBitmap(bitmap, width, nh, true);
+
+            //define the image source of the imageview
             spotPhoto.setImageBitmap(scaled);
         }catch (Exception e){
             Log.e("spot", e.getMessage());}
 
         // Return the completed view to render on screen
         return convertView;
+    }
+
+    // Scale and maintain aspect ratio given a desired width
+    // BitmapScaler.scaleToFitWidth(bitmap, 100);
+    public static Bitmap scaleToFitWidth(Bitmap b, int width)
+
+    {
+
+        float factor = width / (float) b.getWidth();
+        return Bitmap.createScaledBitmap(b, width, (int) (b.getHeight() * factor), true);
+
+    }
+
+    // Scale and maintain aspect ratio given a desired height
+    // BitmapScaler.scaleToFitHeight(bitmap, 100);
+    public static Bitmap scaleToFitHeight(Bitmap b, int height)
+
+    {
+
+        float factor = height / (float) b.getHeight();
+        return Bitmap.createScaledBitmap(b, (int) (b.getWidth() * factor), height, true);
+
     }
 }

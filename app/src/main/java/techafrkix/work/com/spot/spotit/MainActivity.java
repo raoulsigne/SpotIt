@@ -2,6 +2,7 @@ package techafrkix.work.com.spot.spotit;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.os.Build;
 import android.provider.Settings;
 import android.app.FragmentTransaction;
 import android.content.ContentValues;
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     DetailSpot fgSpot;
     FragmentTransaction ft;
 
-    public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
+    public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 3;
     private static final int CAMERA_REQUEST = 1;
     private static final int WRITE_REQUEST = 2;
     GoogleApiClient mGoogleApiClient;
@@ -119,14 +120,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         break;
                     case R.id.spot_item:
                         if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                            // Should we show an explanation?
-                            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.CAMERA)) {
-
-                            } else {
-
-                                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA},
+                            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA},
                                         CAMERA_REQUEST);
-                            }
                         } else {
                             Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
                             ContentValues values = new ContentValues();
@@ -190,8 +185,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             itDetailSpot.putExtras(bundle);
             startActivity(itDetailSpot);
         }
-        else
-            Log.i("camera","retour d'un code d'erreur");
+        else {
+            Log.i("camera", "retour d'un code d'erreur");
+            //on relance l'activité principale
+            Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+            finish();
+            startActivity(intent);
+        }
     }
 
     public String getRealPathFromURI(Uri contentUri)
@@ -216,6 +216,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         // Logs 'install' and 'app activate' App Events.
         AppEventsLogger.activateApp(this);
+        restart();
     }
 
     @Override
@@ -224,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         // Logs 'app deactivate' App Event.
         AppEventsLogger.deactivateApp(this);
+        restart();
     }
 
     @Override
@@ -308,5 +310,95 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     .show();
         }
 
+    }
+
+    /**
+     * gestion des retours de l'activité demandant les permissions à l'utilisateur
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case CAMERA_REQUEST: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    Log.i("camera", "permission granted");
+                    Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                    ContentValues values = new ContentValues();
+                    values.put(MediaStore.Images.Media.TITLE, "img-" + System.currentTimeMillis() + ".jpg");
+                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                WRITE_REQUEST);
+                    } else {
+                        mCapturedImageURI = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedImageURI);
+                        Log.i("camera", "debut de l'activité");
+                        startActivityForResult(cameraIntent, CAMERA_REQUEST);
+                    }
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    new AlertDialog.Builder(this).setTitle("Notification").setMessage("Vous ne pouvez faire des spots que lorsque la camera est accessible!")
+                            .setPositiveButton("D'accord", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA},
+                                            CAMERA_REQUEST);
+                                }
+                            })
+                            .show();
+                }
+                return;
+            }
+
+            case WRITE_REQUEST: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    new AlertDialog.Builder(this).setTitle("Notification").setMessage("Nous avons besoin de stocker les photos!")
+                            .setPositiveButton("D'accord", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA},
+                                            WRITE_REQUEST);
+                                }
+                            })
+                            .show();
+                }
+                return;
+            }
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+
+    private void restart(){
+        if (Build.VERSION.SDK_INT >= 11) {
+            recreate();
+        } else {
+            Intent intent = getIntent();
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            finish();
+            overridePendingTransition(0, 0);
+
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+        }
     }
 }

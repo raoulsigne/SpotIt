@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.test.Main3Activity;
 
 public class DetailSpot_New extends AppCompatActivity {
 
@@ -137,11 +138,7 @@ public class DetailSpot_New extends AppCompatActivity {
                     String release = Build.VERSION.RELEASE;
                     int sdkVersion = Build.VERSION.SDK_INT;
                     Log.i("test", "Android SDK: " + sdkVersion + " (" + release + ")");
-                    Intent mainintent;
-                    if (release.compareTo(String.valueOf(6)) < 0)
-                        mainintent = new Intent(getApplicationContext(),Main2Activity.class);
-                    else
-                        mainintent = new Intent(getApplicationContext(),MainActivity.class);
+                    Intent mainintent = new Intent(getApplicationContext(),Main3Activity.class);
                     finish();
                     startActivity(mainintent);
                 }

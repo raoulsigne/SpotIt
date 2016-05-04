@@ -22,6 +22,7 @@ import com.facebook.login.widget.LoginButton;
 
 import techafrkix.work.com.spot.bd.Utilisateur;
 import techafrkix.work.com.spot.bd.UtilisateurDBAdapteur;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.test.Main3Activity;
 
 public class Connexion extends AppCompatActivity {
 
@@ -39,7 +40,7 @@ public class Connexion extends AppCompatActivity {
         setContentView(R.layout.activity_connexion);
         callbackManager = CallbackManager.Factory.create();
 
-        final Intent mainintent;
+        final Intent mainintent = new Intent(this,Main3Activity.class);
         dbAdapteur = new UtilisateurDBAdapteur(getApplicationContext());
 
         //recuperation des elements de l'activité
@@ -48,14 +49,10 @@ public class Connexion extends AppCompatActivity {
         LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         Button btnLogin = (Button)findViewById(R.id.btnConnexion);
 
-        String release = Build.VERSION.RELEASE;
-        int sdkVersion = Build.VERSION.SDK_INT;
-        Log.i("test","Android SDK: " + sdkVersion + " (" + release +")");
-        if (release.compareTo(String.valueOf(6)) < 0)
-            mainintent = new Intent(this,Main2Activity.class);
-        else
-            mainintent = new Intent(this,MainActivity.class);
-
+//        String release = Build.VERSION.RELEASE;
+//        int sdkVersion = Build.VERSION.SDK_INT;
+//        Log.i("test","Android SDK: " + sdkVersion + " (" + release +")");
+//
         //bout de code pour gérer le bouton de connexion via facebook à l'application
         loginButton.setReadPermissions("user_friends");
         LoginManager.getInstance().registerCallback(callbackManager,

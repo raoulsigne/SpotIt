@@ -1,9 +1,7 @@
-package techafrkix.work.com.spot.spotit;
+package techafrkix.work.com.spot.techafrkix.work.com.spot.test;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.os.Build;
-import android.provider.Settings;
 import android.app.FragmentTransaction;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -11,28 +9,43 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
 import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
+
 import com.facebook.appevents.AppEventsLogger;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.OnMenuTabSelectedListener;
-import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
+import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
+import techafrkix.work.com.spot.spotit.Connexion;
+import techafrkix.work.com.spot.spotit.DetailSpot;
+import techafrkix.work.com.spot.spotit.DetailSpot_New;
+import techafrkix.work.com.spot.spotit.FragmentAccueil;
+import techafrkix.work.com.spot.spotit.GeoHash;
+import techafrkix.work.com.spot.spotit.ListeSpots;
+import techafrkix.work.com.spot.spotit.MapsActivity;
+import techafrkix.work.com.spot.spotit.R;
+
+public class Main3Activity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, DetailSpot.OnFragmentInteractionListener, FragmentAccueil.OnFragmentInteractionListener{
 
     MapsActivity fgAccueil;
@@ -41,6 +54,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     FragmentTransaction ft;
 
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 3;
+    public static final int MENU_ACTIF_ACCUEIL = 1;
+    public static final int MENU_ACTIF_LIST = 2;
+    public static final int MENU_ACTIF_ADD = 3;
+    public static final int MENU_ACTIF_DECONNECT = 4;
+
     private static final int CAMERA_REQUEST = 1;
     private static final int WRITE_REQUEST = 2;
     GoogleApiClient mGoogleApiClient;
@@ -52,10 +70,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private SpotsDBAdapteur dbAdapteur;
     SQLiteDatabase db;
 
+    ImageButton imgHome, imgList, imgAdd, imgDisconnect;
+    TextView txtHome, txtList, txtAdd, txtDisconnect;
+
+    int menuactif;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main3);
+
+        imgHome = (ImageButton)findViewById(R.id.imgHome);
+        imgList = (ImageButton)findViewById(R.id.imgList);
+        imgAdd = (ImageButton)findViewById(R.id.imgAdd);
+        imgDisconnect = (ImageButton)findViewById(R.id.imgDisconnect);
+        txtHome = (TextView)findViewById(R.id.txtHome);
+        txtList = (TextView)findViewById(R.id.txtSpots);
+        txtAdd = (TextView)findViewById(R.id.txtAdd);
+        txtDisconnect = (TextView)findViewById(R.id.txtLogout);
+
 
         fgAccueil = new MapsActivity();
         fgSpots = new ListeSpots();
@@ -74,92 +107,138 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         //add the main map fragment
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment_container, fgAccueil, "ACCUEIL")
+                .add(R.id.container, fgAccueil, "ACCUEIL")
                 .commit();
+        menuactif = MENU_ACTIF_ACCUEIL;
 
         CheckEnableGPS();
 
-
-        BottomBar bottomBar = BottomBar.attach(this, savedInstanceState);
-        // Show all titles even when there's more than three tabs.
-//        bottomBar.useFixedMode();
-
-//        bottomBar.setBackgroundColor(getResources().getColor(R.color.fbButton));
-        bottomBar.setItemsFromMenu(R.menu.main_menu, new OnMenuTabSelectedListener() {
+        imgHome.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onMenuItemSelected(int itemId) {
-                switch (itemId) {
-                    case R.id.accueil_item:
-                        try {
-                            //remove all others fragments if there exists
-                            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-                            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-                            getSupportFragmentManager().beginTransaction().remove(fgSpot).commit();
-                            // add the new fragment containing the main map
-                            getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.fragment_container, fgAccueil, "ACCUEIL")
-                                    .commit();
-                        } catch (Exception e) {
-                            Log.e("fragment", e.getMessage());
-                        }
+            public void onClick(View v) {
+                //changement des couleurs des widgets
+                imgHome.setBackground(getResources().getDrawable(R.drawable.icon_home_blanc));
+                imgAdd.setBackground(getResources().getDrawable(R.drawable.icon_add_gris));
+                imgList.setBackground(getResources().getDrawable(R.drawable.icon_list_gris));
+                imgDisconnect.setBackground(getResources().getDrawable(R.drawable.icon_deconnexion_gris));
+                txtHome.setTextColor(getResources().getColor(R.color.blanc));
+                txtList.setTextColor(getResources().getColor(R.color.fond_detail));
+                txtAdd.setTextColor(getResources().getColor(R.color.fond_detail));
+                txtDisconnect.setTextColor(getResources().getColor(R.color.fond_detail));
 
-                        break;
-                    case R.id.spots_item:
-                        try {
-                            //remove all others fragments if there exists
-                            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-                            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-                            getSupportFragmentManager().beginTransaction().remove(fgSpot).commit();
-                            // add the new fragment containing the list of spots
-                            getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.fragment_container, fgSpots, "SPOTS")
-                                    .commit();
-                        } catch (Exception e) {
-                            Log.e("fragment", e.getMessage());
-                        }
-                        break;
-                    case R.id.spot_item:
-                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA},
-                                        CAMERA_REQUEST);
-                        } else {
-                            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                            ContentValues values = new ContentValues();
-                            values.put(MediaStore.Images.Media.TITLE, "img-" + System.currentTimeMillis() + ".jpg");
-                            if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                                // Should we show an explanation?
-                                if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-
-                                } else {
-
-                                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                            WRITE_REQUEST);
-                                }
-                            } else {
-                                mCapturedImageURI = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedImageURI);
-                                Log.i("camera", "debut de l'activité");
-                                startActivityForResult(cameraIntent, CAMERA_REQUEST);
-                            }
-
-                        }
-                        break;
-
-                    case R.id.deconnection_item:
-                        Intent itdeconnect = new Intent(getApplicationContext(), Connexion.class);
-                        finish();
-                        startActivity(itdeconnect);
-                        break;
+                //traitement de l'action lors du click
+                if (menuactif != MENU_ACTIF_ACCUEIL) {
+                    try {
+                        //remove all others fragments if there exists
+                        getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+                        getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+                        getSupportFragmentManager().beginTransaction().remove(fgSpot).commit();
+                        // add the new fragment containing the main map
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.container, fgAccueil, "ACCUEIL")
+                                .commit();
+                        menuactif = MENU_ACTIF_ACCUEIL;
+                    } catch (Exception e) {
+                        Log.e("fragment", e.getMessage());
+                    }
                 }
             }
         });
+        imgList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //changement des couleurs des widgets
+                imgHome.setBackground(getResources().getDrawable(R.drawable.icon_home_gris));
+                imgAdd.setBackground(getResources().getDrawable(R.drawable.icon_add_gris));
+                imgList.setBackground(getResources().getDrawable(R.drawable.icon_list_blanc));
+                imgDisconnect.setBackground(getResources().getDrawable(R.drawable.icon_deconnexion_gris));
+                txtHome.setTextColor(getResources().getColor(R.color.fond_detail));
+                txtList.setTextColor(getResources().getColor(R.color.blanc));
+                txtAdd.setTextColor(getResources().getColor(R.color.fond_detail));
+                txtDisconnect.setTextColor(getResources().getColor(R.color.fond_detail));
 
-//        bottomBar.setActiveTabColor("#E91E63");
-//        //set the same color for each tab
-        bottomBar.mapColorForTab(0, ContextCompat.getColor(this, R.color.myblue));
-        bottomBar.mapColorForTab(1, ContextCompat.getColor(this, R.color.myblue));
-        bottomBar.mapColorForTab(2, ContextCompat.getColor(this, R.color.myblue));
-        bottomBar.mapColorForTab(3, ContextCompat.getColor(this, R.color.myblue));
+                //traitement de l'action lors du click
+                if (menuactif != MENU_ACTIF_LIST) {
+                    try {
+                        //remove all others fragments if there exists
+                        getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+                        getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+                        getSupportFragmentManager().beginTransaction().remove(fgSpot).commit();
+                        // add the new fragment containing the list of spots
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.container, fgSpots, "SPOTS")
+                                .commit();
+                        menuactif = MENU_ACTIF_LIST;
+                    } catch (Exception e) {
+                        Log.e("fragment", e.getMessage());
+                    }
+                }
+            }
+        });
+        imgAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //changement des couleurs des widgets
+                imgHome.setBackground(getResources().getDrawable(R.drawable.icon_home_gris));
+                imgAdd.setBackground(getResources().getDrawable(R.drawable.icon_add_blanc));
+                imgList.setBackground(getResources().getDrawable(R.drawable.icon_list_gris));
+                imgDisconnect.setBackground(getResources().getDrawable(R.drawable.icon_deconnexion_gris));
+                txtHome.setTextColor(getResources().getColor(R.color.fond_detail));
+                txtList.setTextColor(getResources().getColor(R.color.fond_detail));
+                txtAdd.setTextColor(getResources().getColor(R.color.blanc));
+                txtDisconnect.setTextColor(getResources().getColor(R.color.fond_detail));
+
+                //traitement de l'action lors du click
+                if (menuactif != MENU_ACTIF_ADD) {
+                    menuactif = MENU_ACTIF_ADD;
+                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(Main3Activity.this, new String[]{Manifest.permission.CAMERA},
+                                CAMERA_REQUEST);
+                    } else {
+                        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                        ContentValues values = new ContentValues();
+                        values.put(MediaStore.Images.Media.TITLE, "img-" + System.currentTimeMillis() + ".jpg");
+                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                            // Should we show an explanation?
+                            if (ActivityCompat.shouldShowRequestPermissionRationale(Main3Activity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+                            } else {
+
+                                ActivityCompat.requestPermissions(Main3Activity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                        WRITE_REQUEST);
+                            }
+                        } else {
+                            mCapturedImageURI = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedImageURI);
+                            Log.i("camera", "debut de l'activité");
+                            startActivityForResult(cameraIntent, CAMERA_REQUEST);
+                        }
+
+                    }
+                }
+            }
+        });
+        imgDisconnect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //changement des couleurs des widgets
+                imgHome.setBackground(getResources().getDrawable(R.drawable.icon_home_gris));
+                imgAdd.setBackground(getResources().getDrawable(R.drawable.icon_add_gris));
+                imgList.setBackground(getResources().getDrawable(R.drawable.icon_list_gris));
+                imgDisconnect.setBackground(getResources().getDrawable(R.drawable.icon_deconnexion_blanc));
+                txtHome.setTextColor(getResources().getColor(R.color.fond_detail));
+                txtList.setTextColor(getResources().getColor(R.color.fond_detail));
+                txtAdd.setTextColor(getResources().getColor(R.color.fond_detail));
+                txtDisconnect.setTextColor(getResources().getColor(R.color.blanc));
+
+                //traitement de l'action lors du click
+                if (menuactif != MENU_ACTIF_DECONNECT) {
+                    Intent itdeconnect = new Intent(getApplicationContext(), Connexion.class);
+                    finish();
+                    startActivity(itdeconnect);
+                }
+            }
+        });
     }
 
     @Override
@@ -188,7 +267,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         else {
             Log.i("camera", "retour d'un code d'erreur");
             //on relance l'activité principale
-            Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+            Intent intent = new Intent(getApplicationContext(),Main3Activity.class);
             finish();
             startActivity(intent);
         }
@@ -333,7 +412,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     ContentValues values = new ContentValues();
                     values.put(MediaStore.Images.Media.TITLE, "img-" + System.currentTimeMillis() + ".jpg");
                     if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        ActivityCompat.requestPermissions(Main3Activity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                                 WRITE_REQUEST);
                     } else {
                         mCapturedImageURI = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
@@ -350,7 +429,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                             .setPositiveButton("D'accord", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA},
+                                    ActivityCompat.requestPermissions(Main3Activity.this, new String[]{Manifest.permission.CAMERA},
                                             CAMERA_REQUEST);
                                 }
                             })
@@ -375,7 +454,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                             .setPositiveButton("D'accord", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA},
+                                    ActivityCompat.requestPermissions(Main3Activity.this, new String[]{Manifest.permission.CAMERA},
                                             WRITE_REQUEST);
                                 }
                             })
@@ -383,8 +462,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 }
                 return;
             }
-            // other 'case' lines to check for other
-            // permissions this app might request
         }
     }
 

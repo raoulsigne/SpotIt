@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/background_newcopy">
@@ -55,7 +55,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="100dp"
+                android:layout_marginTop="80dp"
                 android:layout_below="@+id/textView3"
                 android:layout_centerHorizontal="true"
                 android:radius="5dp"
@@ -85,7 +85,8 @@
                 android:layout_marginTop="40dp"
                 android:background="#FFFFFF"
                 android:textSize="15sp"
-                android:hint="\tEmail"/>
+                android:padding="10dp"
+                android:hint="Email"/>
 
             <EditText
                 android:layout_width="300dp"
@@ -98,7 +99,8 @@
                 android:layout_alignEnd="@+id/editText2"
                 android:background="#FFFFFF"
                 android:textSize="15sp"
-                android:hint="\tPassword"
+                android:padding="10dp"
+                android:hint="Password"
                 android:layout_alignLeft="@+id/editText2"
                 android:layout_alignStart="@+id/editText2" />
 
@@ -121,5 +123,5 @@
 
 
         </RelativeLayout>
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</LinearLayout>

@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="@drawable/background_newcopy">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
             <com.facebook.login.widget.LoginButton xmlns:facebook="http://schemas.android.com/apk/res-auto"
                 facebook:com_facebook_login_text="Sign in with Facebook"
                 facebook:com_facebook_logout_text="Sign out"
@@ -45,7 +49,8 @@
                 android:id="@+id/emailadress"
                 android:layout_gravity="center_horizontal"
                 android:background="#FFFFFF"
-                android:hint="\tEmail"
+                android:hint="Email"
+                android:padding="10dp"
                 android:textSize="15sp"
                 android:radius="5dp"/>
 
@@ -57,7 +62,8 @@
                 android:id="@+id/password"
                 android:layout_gravity="center_horizontal"
                 android:background="#FFFFFF"
-                android:hint="\tPassword"
+                android:hint="Password"
+                android:padding="10dp"
                 android:textSize="15sp"
                 android:radius="5dp"/>
 
@@ -70,7 +76,8 @@
                 android:layout_gravity="center_horizontal"
                 android:background="#FFFFFF"
                 android:textSize="15sp"
-                android:hint="\tDate de naissance"/>
+                android:hint="Date de naissance"
+                android:padding="10dp"/>
 
             <Button
                 android:layout_width="320dp"
@@ -105,6 +112,8 @@
                 android:layout_gravity="center_horizontal"
                 android:textColor="#4A90E2" />
 
-    </LinearLayout>
+        </LinearLayout>
 
-</ScrollView>
+    </ScrollView>
+
+</LinearLayout>

@@ -27,4 +27,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="title_activity_add_from_camera">AddFromCameraActivity</string>
+
+    <string name="camera_alert">Device has only one camera!</string>
+    <string name="switch_cam">Switch Camera</string>
 </resources>

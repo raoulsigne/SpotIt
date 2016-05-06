@@ -191,30 +191,32 @@ public class Main3Activity extends AppCompatActivity implements GoogleApiClient.
                 //traitement de l'action lors du click
                 if (menuactif != MENU_ACTIF_ADD) {
                     menuactif = MENU_ACTIF_ADD;
-                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(Main3Activity.this, new String[]{Manifest.permission.CAMERA},
-                                CAMERA_REQUEST);
-                    } else {
-                        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                        ContentValues values = new ContentValues();
-                        values.put(MediaStore.Images.Media.TITLE, "img-" + System.currentTimeMillis() + ".jpg");
-                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                            // Should we show an explanation?
-                            if (ActivityCompat.shouldShowRequestPermissionRationale(Main3Activity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-
-                            } else {
-
-                                ActivityCompat.requestPermissions(Main3Activity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                        WRITE_REQUEST);
-                            }
-                        } else {
-                            mCapturedImageURI = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedImageURI);
-                            Log.i("camera", "debut de l'activité");
-                            startActivityForResult(cameraIntent, CAMERA_REQUEST);
-                        }
-
-                    }
+//                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+//                        ActivityCompat.requestPermissions(Main3Activity.this, new String[]{Manifest.permission.CAMERA},
+//                                CAMERA_REQUEST);
+//                    } else {
+//                        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+//                        ContentValues values = new ContentValues();
+//                        values.put(MediaStore.Images.Media.TITLE, "img-" + System.currentTimeMillis() + ".jpg");
+//                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+//                            // Should we show an explanation?
+//                            if (ActivityCompat.shouldShowRequestPermissionRationale(Main3Activity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+//
+//                            } else {
+//
+//                                ActivityCompat.requestPermissions(Main3Activity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+//                                        WRITE_REQUEST);
+//                            }
+//                        } else {
+//                            mCapturedImageURI = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+//                            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedImageURI);
+//                            Log.i("camera", "debut de l'activité");
+//                            startActivityForResult(cameraIntent, CAMERA_REQUEST);
+//                        }
+//
+//                    }
+                    Intent imagepreview = new Intent(Main3Activity.this,AddFromCameraActivity.class);
+                    startActivity(imagepreview);
                 }
             }
         });

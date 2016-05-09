@@ -1,9 +1,8 @@
 package techafrkix.work.com.spot.spotit;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
+import android.graphics.BitmapFactory;
 import android.support.v4.app.Fragment;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
@@ -13,7 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
@@ -22,13 +22,17 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.MyMarker;
 
 public class MapsActivity extends Fragment implements OnMapReadyCallback {
 
@@ -41,6 +45,9 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
     private SpotsDBAdapteur dbAdapteur;
     SQLiteDatabase db;
 
+    private HashMap<Marker, MyMarker> mMarkersHashMap;
+    private ArrayList<MyMarker> mMyMarkersArray = new ArrayList<MyMarker>();
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -48,18 +55,13 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         View view = inflater.inflate(R.layout.activity_maps, container, false);
         spots = new ArrayList<Spot>();
         dbAdapteur = new SpotsDBAdapteur(getActivity());
+        mMarkersHashMap = new HashMap<Marker, MyMarker>();
 
         buildGoogleApiClient();
         if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
         } else
             Log.i("Map", "Not connected...");
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-
-//        SupportMapFragment supportMapFragment;
-//        supportMapFragment = (SupportMapFragment) getActivity()
-//                    .getSupportFragmentManager().findFragmentById(R.id.map);
 
         SupportMapFragment m = ((SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map));
@@ -112,6 +114,16 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
             mMap.setMyLocationEnabled(true);
         }
 
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
+        {
+            @Override
+            public boolean onMarkerClick(com.google.android.gms.maps.model.Marker marker)
+            {
+                marker.showInfoWindow();
+                return true;
+            }
+        });
+
         displaySpotOnMap();
     }
 
@@ -152,9 +164,63 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
                  spots) {
                 // Add a marker to spot position
                 coordonnees = new LatLng(Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude()));
-                mMap.addMarker(new MarkerOptions().position(coordonnees).title("Spot "+ s.getId() + " : " +s.getGeohash()));
-                Log.i("map","marker du spot "+s.getGeohash());
+                //mMap.addMarker(new MarkerOptions().position(coordonnees).title("Spot "+ s.getId() + " : " +s.getGeohash()));
+                Log.i("map", "marker du spot " + s.getGeohash());
+                mMyMarkersArray.add(new MyMarker("Spot "+ s.getId(), s.getPhoto(), Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude())));
             }
         db.close();
+
+        plotMarkers(mMyMarkersArray);
+    }
+
+    private void plotMarkers(ArrayList<MyMarker> markers)
+    {
+        if(markers.size() > 0)
+        {
+            for (MyMarker myMarker : markers)
+            {
+
+                // Create user marker with custom icon and other options
+                MarkerOptions markerOption = new MarkerOptions().position(new LatLng(myMarker.getmLatitude(), myMarker.getmLongitude()));
+                markerOption.icon(BitmapDescriptorFactory.fromResource(R.drawable.currentlocation_icon));
+
+                Marker currentMarker = mMap.addMarker(markerOption);
+                mMarkersHashMap.put(currentMarker, myMarker);
+
+                mMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
+            }
+        }
+    }
+
+    public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter
+    {
+        public MarkerInfoWindowAdapter()
+        {
+        }
+
+        @Override
+        public View getInfoWindow(Marker marker)
+        {
+            return null;
+        }
+
+        @Override
+        public View getInfoContents(Marker marker)
+        {
+            View v  = getActivity().getLayoutInflater().inflate(R.layout.infowindow_layout, null);
+
+            MyMarker myMarker = mMarkersHashMap.get(marker);
+
+            ImageView markerIcon = (ImageView) v.findViewById(R.id.marker_icon);
+
+            TextView markerLabel = (TextView)v.findViewById(R.id.marker_label);
+
+            markerIcon.setImageBitmap(BitmapFactory.decodeFile(myMarker.getmIcon()));
+
+            markerLabel.setText(myMarker.getmLabel());
+
+            return v;
+        }
     }
 }
+

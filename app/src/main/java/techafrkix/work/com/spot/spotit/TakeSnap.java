@@ -1,7 +1,6 @@
-package techafrkix.work.com.spot.techafrkix.work.com.spot.test;
+package techafrkix.work.com.spot.spotit;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,7 +8,8 @@ import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
+import android.view.Display;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -23,6 +23,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -33,11 +34,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-
-import java.io.IOException;
-
-import techafrkix.work.com.spot.spotit.DetailSpot_New;
-import techafrkix.work.com.spot.spotit.R;
 
 public class TakeSnap extends Activity implements View.OnClickListener{
 
@@ -122,55 +118,6 @@ public class TakeSnap extends Activity implements View.OnClickListener{
             mCamera = null;
         }
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        // Inflate our menu which can gather user input for switching camera
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.camera_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.switch_cam:
-                // check for availability of multiple cameras
-                if (numberOfCameras == 1) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setMessage(this.getString(R.string.camera_alert))
-                            .setNeutralButton("Close", null);
-                    AlertDialog alert = builder.create();
-                    alert.show();
-                    return true;
-                }
-
-                // OK, we have multiple cameras.
-                // Release this camera -> cameraCurrentlyLocked
-                if (mCamera != null) {
-                    mCamera.stopPreview();
-                    mPreview.setCamera(null);
-                    mCamera.release();
-                    mCamera = null;
-                }
-
-                // Acquire the next camera and request Preview to reconfigure
-                // parameters.
-                mCamera = Camera
-                        .open((cameraCurrentlyLocked + 1) % numberOfCameras);
-                cameraCurrentlyLocked = (cameraCurrentlyLocked + 1)
-                        % numberOfCameras;
-                mPreview.switchCamera(mCamera);
-
-                // Start the preview
-                mCamera.startPreview();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
 }
 
 // ----------------------------------------------------------------------
@@ -185,22 +132,25 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
 
     SurfaceView mSurfaceView;
     Button shutter;
-    ImageView done,clear;
+    ImageView done,clear,cameramode;
     SurfaceHolder mHolder;
     Size mPreviewSize;
     List<Size> mSupportedPreviewSizes;
     Camera mCamera;
 
     public double longitude, latitude;
+    private int currentCameraId;
 
     Preview(final Context context) {
         super(context);
-
+        currentCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
         this.setBackgroundColor(getResources().getColor(R.color.fondsnap));
         mSurfaceView = new SurfaceView(context);
         addView(mSurfaceView);
         shutter = new Button(context);
 
+        cameramode = new ImageView(context);
+        cameramode.setBackground(getResources().getDrawable(R.drawable.ic_refresh_white_24dp));
         done = new ImageView(context);
         done.setBackground(getResources().getDrawable(R.drawable.ic_done_white_24dp));
         clear = new ImageView(context);
@@ -211,6 +161,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
         addView(shutter);
         addView(done);
         addView(clear);
+        addView(cameramode);
 
         // Install a SurfaceHolder.Callback so we get notified when the
         // underlying surface is created and destroyed.
@@ -246,13 +197,12 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
                         bundle.putDouble("latitude", latitude);
                         bundle.putString("image", photo);
                         Log.i("parametre", " longitude=" + longitude + "; latitude=" + latitude);
-                        Intent itDetailSpot = new Intent(context,DetailSpot_New.class);
+                        Intent itDetailSpot = new Intent(context, DetailSpot_New.class);
                         itDetailSpot.putExtras(bundle);
                         context.startActivity(itDetailSpot);
                         ((Activity) context).finish();
                     }
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     Log.d(TAG, e.getMessage());
                     e.printStackTrace();
                 }
@@ -267,22 +217,75 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
                     if (mCamera != null) {
                         mCamera.startPreview();
                     }
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     Log.d(TAG, e.getMessage());
                     e.printStackTrace();
                 }
             }
         });
+
+        //handle camera mode front and rear
+        if (Camera.getNumberOfCameras() == 1) {
+            cameramode.setVisibility(View.INVISIBLE);
+        } else {
+            cameramode.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mCamera != null) {
+                        mCamera.stopPreview();
+                    }
+                    //NB: if you don't release the current camera before switching, you app will crash
+                    mCamera.release();
+
+                    //swap the id of the camera to be used
+                    if (currentCameraId == Camera.CameraInfo.CAMERA_FACING_BACK) {
+                        currentCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
+                    } else {
+                        currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
+                    }
+                    mCamera = Camera.open(currentCameraId);
+                    //Code snippet for this method from somewhere on android developers, i forget where
+                    //setCameraDisplayOrientation(CameraActivity.this, currentCameraId, mCamera);
+//                    Camera.Parameters parameters = mCamera.getParameters();
+//                    if (parameters.getSupportedFocusModes().contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+//                        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+//                    }
+//                    List<String> flashModes = parameters.getSupportedFlashModes();
+//                    if (flashModes.contains(android.hardware.Camera.Parameters.FLASH_MODE_AUTO))
+//                    {
+//                        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+//                    }
+//                    mCamera.setParameters(parameters);
+                    mCamera.setDisplayOrientation(90);
+                    try {
+                        //this step is critical or preview on new camera will no know where to render to
+                        mCamera.setPreviewDisplay(mHolder);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    mCamera.startPreview();
+                }
+            });
+        }
     }
 
     public void setCamera(Camera camera) {
         mCamera = camera;
         if (mCamera != null) {
             mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
+            Camera.Parameters parameters = camera.getParameters();
+            if (parameters.getSupportedFocusModes().contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+            }
+            List<String> flashModes = parameters.getSupportedFlashModes();
+            if (flashModes.contains(android.hardware.Camera.Parameters.FLASH_MODE_AUTO))
+            {
+                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+            }
             requestLayout();
             try {
                 mCamera.setPreviewDisplay(mHolder);
+                mCamera.setParameters(parameters);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -297,14 +300,14 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
             Log.e(TAG, "IOException caused by setPreviewDisplay()", exception);
         }
         Camera.Parameters parameters = camera.getParameters();
-//        if (parameters.getSupportedFocusModes().contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
-//            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-//        }
-//        List<String> flashModes = parameters.getSupportedFlashModes();
-//        if (flashModes.contains(android.hardware.Camera.Parameters.FLASH_MODE_AUTO))
-//        {
-//            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-//        }
+        if (parameters.getSupportedFocusModes().contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        }
+        List<String> flashModes = parameters.getSupportedFlashModes();
+        if (flashModes.contains(android.hardware.Camera.Parameters.FLASH_MODE_AUTO))
+        {
+            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+        }
         parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
         requestLayout();
 
@@ -333,6 +336,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
             final View child1 = getChildAt(1);
             final View child2 = getChildAt(2);
             final View child3 = getChildAt(3);
+            final View child4 = getChildAt(4);
 
             final int width = r - l;
             final int height = b - t;
@@ -352,11 +356,17 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
                 child1.layout(0, 0, 200, 200);
             } else {
                 final int scaledChildHeight = previewHeight * width / previewWidth;
+                int hauteur = height - width;
+                //positionnement de la surface du preview
                 child.layout(0, 0, width, width);
-                child1.layout(width/2-100, width + 50, width/2+100, width + 250);
-
-                child2.layout(50, width+70, 150, width+220);
-                child3.layout(width/2+200, width+70, width/2+300, width+220);
+                //positionnement du bouton shutter
+                child1.layout(width/2-100, width + hauteur/2 - 100, width/2+100, width + hauteur/2 + 100);
+                //positionnement du bouton valider
+                child2.layout(50, width + hauteur/2 - 75, 125, width + hauteur/2 + 50);
+                //positionnement du bouton annuler
+                child3.layout(width/2+200, width + hauteur/2 - 75, width/2+275, width + hauteur/2 + 50);
+                //positionnement du bouton de changement du mode de la camera
+                child4.layout(width/2-40, 0, width/2+40, 50);
             }
         }
     }
@@ -425,7 +435,6 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
         mCamera.setDisplayOrientation(90);
         mCamera.startPreview();
     }
-
 }
 
 class PhotoHandler implements Camera.PictureCallback {

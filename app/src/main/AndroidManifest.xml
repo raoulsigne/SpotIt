@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FLASHLIGHT"/>
     <uses-feature android:name="android.hardware.camera.flash" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <application
         android:allowBackup="true"
@@ -54,9 +55,6 @@
             android:name=".SpotOnMap"
             android:label="@string/title_activity_spot_on_map" />
         <activity
-            android:name=".MainActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".Accueil"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -68,11 +66,7 @@
         <activity android:name=".Inscription" />
         <activity android:name=".DetailSpot_New" />
         <activity
-            android:name=".Main2Activity"
-            android:label="@string/title_activity_main2"
-            android:theme="@style/AppFullScreenTheme" />
-        <activity
-            android:name="techafrkix.work.com.spot.techafrkix.work.com.spot.test.Main3Activity"
+            android:name=".MainActivity"
             android:label="@string/title_activity_main2"
             android:uiOptions="splitActionBarWhenNarrow">
             <meta-data
@@ -80,7 +74,7 @@
                 android:value=".Connexion" />
         </activity>
         <activity
-            android:name="techafrkix.work.com.spot.techafrkix.work.com.spot.test.TakeSnap"
+            android:name=".TakeSnap"
             android:label="@string/title_activity_add_from_camera"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:screenOrientation="portrait">

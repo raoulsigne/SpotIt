@@ -2,12 +2,9 @@ package techafrkix.work.com.spot.spotit;
 
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,7 +14,6 @@ import android.widget.Toast;
 
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
-import techafrkix.work.com.spot.techafrkix.work.com.spot.test.Main3Activity;
 
 public class DetailSpot_New extends AppCompatActivity {
 
@@ -134,7 +130,7 @@ public class DetailSpot_New extends AppCompatActivity {
                     vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend));
                     vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.publics));
 
-                    Intent mainintent = new Intent(getApplicationContext(),Main3Activity.class);
+                    Intent mainintent = new Intent(getApplicationContext(),MainActivity.class);
                     finish();
                     startActivity(mainintent);
                 }

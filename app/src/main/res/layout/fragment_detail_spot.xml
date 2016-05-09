@@ -38,7 +38,8 @@
                     android:textColor="@color/noir"
                     android:id="@+id/edtLatitude"
                     android:layout_gravity="center_horizontal"
-                    android:hint="\tLatitude"/>
+                    android:hint="Latitude"
+                    android:padding="10dp"/>
 
                 <EditText
                     android:layout_width="320dp"
@@ -49,7 +50,8 @@
                     android:textColor="@color/noir"
                     android:id="@+id/edtLongitude"
                     android:layout_gravity="center_horizontal"
-                    android:hint="\tLongitude"/>
+                    android:hint="Longitude"
+                    android:padding="10dp"/>
             </LinearLayout>
             <TextView
                 android:layout_width="match_parent"

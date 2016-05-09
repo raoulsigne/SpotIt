@@ -215,7 +215,20 @@ public class Main3Activity extends AppCompatActivity implements GoogleApiClient.
 //                        }
 //
 //                    }
-                    Intent imagepreview = new Intent(Main3Activity.this,AddFromCameraActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("image", selectedImagePath);
+                    if (mLastLocation != null) {
+                        Log.i("location", "location not null");
+                        bundle.putDouble("longitude", mLastLocation.getLongitude());
+                        bundle.putDouble("latitude", mLastLocation.getLatitude());
+                    }else {
+                        Log.i("location", "your location is null");
+                        bundle.putDouble("longitude", 0);
+                        bundle.putDouble("latitude", 0);
+                    }
+
+                    Intent imagepreview = new Intent(Main3Activity.this,TakeSnap.class);
+                    imagepreview.putExtras(bundle);
                     startActivity(imagepreview);
                 }
             }

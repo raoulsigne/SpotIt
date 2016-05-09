@@ -12,4 +12,5 @@
     <color name="blanc">#FFFFFF</color>
     <color name="noir">#000000</color>
     <color name="fond_detail">#E9E5E5</color>
+    <color name="fondsnap">#403F3F</color>
 </resources>

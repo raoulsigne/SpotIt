@@ -1,6 +1,7 @@
 package techafrkix.work.com.spot.techafrkix.work.com.spot.test;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +9,7 @@ import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -37,13 +39,13 @@ import java.io.IOException;
 import techafrkix.work.com.spot.spotit.DetailSpot_New;
 import techafrkix.work.com.spot.spotit.R;
 
-public class AddFromCameraActivity extends Activity implements View.OnClickListener{
+public class TakeSnap extends Activity implements View.OnClickListener{
 
     private Preview mPreview;
     Camera mCamera;
     int numberOfCameras;
     int cameraCurrentlyLocked;
-
+    public double longitude, latitude;
     SurfaceView surfaceView;
     Button button;
 
@@ -54,6 +56,12 @@ public class AddFromCameraActivity extends Activity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Bundle extras = getIntent().getExtras();
+
+        longitude = extras.getDouble("longitude");
+        latitude = extras.getDouble("latitude");
+        Log.i("parametre", " longitude=" + longitude + "; latitude=" + latitude);
+
         // Hide the window title.
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         // getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -61,6 +69,8 @@ public class AddFromCameraActivity extends Activity implements View.OnClickListe
         // Create a RelativeLayout container that will hold a SurfaceView,
         // and set it as the content of our activity.
         mPreview = new Preview(this);
+        mPreview.longitude = longitude;
+        mPreview.latitude = latitude;
         setContentView(mPreview);
 
         // Find the total number of cameras available
@@ -181,17 +191,20 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
     List<Size> mSupportedPreviewSizes;
     Camera mCamera;
 
+    public double longitude, latitude;
+
     Preview(final Context context) {
         super(context);
 
+        this.setBackgroundColor(getResources().getColor(R.color.fondsnap));
         mSurfaceView = new SurfaceView(context);
         addView(mSurfaceView);
         shutter = new Button(context);
 
         done = new ImageView(context);
-        done.setBackground(getResources().getDrawable(R.drawable.ic_done_black_24dp));
+        done.setBackground(getResources().getDrawable(R.drawable.ic_done_white_24dp));
         clear = new ImageView(context);
-        clear.setBackground(getResources().getDrawable(R.drawable.ic_clear_black_24dp));
+        clear.setBackground(getResources().getDrawable(R.drawable.ic_clear_white_24dp));
         shutter.setBackground(getResources().getDrawable(R.drawable.round_button));
         shutter.setWidth(200);
         shutter.setHeight(200);
@@ -205,13 +218,13 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
         mHolder.addCallback(this);
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
+        final PhotoHandler ph = new PhotoHandler(context, mCamera);
         //on prend une photo
         shutter.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
                     if (mCamera != null) {
-                        PhotoHandler ph = new PhotoHandler(context, mCamera);
                         mCamera.takePicture(null, null, ph);
                     }
                 } catch (Exception e) {
@@ -227,10 +240,16 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
             public void onClick(View v) {
                 try {
                     if (mCamera != null) {
+                        String photo = ph.saveImage();
                         Bundle bundle = new Bundle();
+                        bundle.putDouble("longitude", longitude);
+                        bundle.putDouble("latitude", latitude);
+                        bundle.putString("image", photo);
+                        Log.i("parametre", " longitude=" + longitude + "; latitude=" + latitude);
                         Intent itDetailSpot = new Intent(context,DetailSpot_New.class);
                         itDetailSpot.putExtras(bundle);
                         context.startActivity(itDetailSpot);
+                        ((Activity) context).finish();
                     }
                 }
                 catch (Exception e) {
@@ -278,6 +297,14 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
             Log.e(TAG, "IOException caused by setPreviewDisplay()", exception);
         }
         Camera.Parameters parameters = camera.getParameters();
+//        if (parameters.getSupportedFocusModes().contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+//            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+//        }
+//        List<String> flashModes = parameters.getSupportedFlashModes();
+//        if (flashModes.contains(android.hardware.Camera.Parameters.FLASH_MODE_AUTO))
+//        {
+//            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+//        }
         parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
         requestLayout();
 
@@ -325,12 +352,11 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
                 child1.layout(0, 0, 200, 200);
             } else {
                 final int scaledChildHeight = previewHeight * width / previewWidth;
-                Log.i("test", width +"  "+height);
                 child.layout(0, 0, width, width);
-                child1.layout(300, 800, 500, 1000);
+                child1.layout(width/2-100, width + 50, width/2+100, width + 250);
 
-                child2.layout(100, 850, 200, 1000);
-                child3.layout(600, 850, 700, 1000);
+                child2.layout(50, width+70, 150, width+220);
+                child3.layout(width/2+200, width+70, width/2+300, width+220);
             }
         }
     }
@@ -406,10 +432,12 @@ class PhotoHandler implements Camera.PictureCallback {
     private final Context context;
     private final Camera camera;
     public String photoFile;
+    public Bitmap rotatedBitmap;
     public PhotoHandler(Context context, Camera c) {
         this.context = context;
         this.camera = c;
         photoFile = "";
+        rotatedBitmap = null;
     }
 
     @Override
@@ -426,34 +454,46 @@ class PhotoHandler implements Camera.PictureCallback {
 
         }
 
+        //roter la photo pour permettre qu'elle apparaisse comme elle a été prise rotation de 90 dégré
         Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         int width = bmp.getWidth();
         int height = bmp.getHeight();
         Matrix matrix = new Matrix();
-        matrix.postRotate(270);
-        Bitmap rotatedBitmap = Bitmap.createBitmap(bmp, 0, 0,
+        matrix.postRotate(90);
+        rotatedBitmap = Bitmap.createBitmap(bmp, 0, 0,
                 width, height, matrix, true);
+    }
 
+    public String saveImage(){
+        File pictureFileDir = getDir();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
         String date = dateFormat.format(new Date());
         photoFile = "Picture_" + date + ".jpg";
 
+        if (!pictureFileDir.exists() && !pictureFileDir.mkdirs()) {
+
+            Log.d("PhotoHandler", "Can't create directory to save image.");
+            Toast.makeText(context, "Can't create directory to save image.",
+                    Toast.LENGTH_LONG).show();
+            return "";
+
+        }
         String filename = pictureFileDir.getPath() + File.separator + photoFile;
-
         File pictureFile = new File(filename);
-
         try {
             FileOutputStream fos = new FileOutputStream(pictureFile);
-            boolean result = rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);
+            boolean result = rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 50, fos);
             //fos.write(bytes);
             fos.close();
             if (result) {
                 Toast.makeText(context, "New Image saved:" + photoFile,
                         Toast.LENGTH_LONG).show();
+                return filename;
             }
             else {
                 Toast.makeText(context, "Couldn't save image:" + photoFile,
                         Toast.LENGTH_LONG).show();
+                return "";
             }
             // camera.startPreview();
         } catch (Exception error) {
@@ -461,12 +501,13 @@ class PhotoHandler implements Camera.PictureCallback {
                     + error.getMessage());
             Toast.makeText(context, "Image could not be saved.",
                     Toast.LENGTH_LONG).show();
+            return "";
         }
     }
 
     private File getDir() {
         File sdDir = Environment
                 .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        return new File(sdDir, "CameraAPIDemo");
+        return new File(sdDir, "SpotItPictures");
     }
 }

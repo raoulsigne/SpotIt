@@ -20,6 +20,8 @@ public class Accueil extends AppCompatActivity {
         signin = (Button)findViewById(R.id.btnSignin);
 
         //actions des boutons qui consistent à ouvrir les activités respectivent
+
+        //fenetre de connexion
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -28,6 +30,7 @@ public class Accueil extends AppCompatActivity {
             }
         });
 
+        //fenetre d'enregistrement
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

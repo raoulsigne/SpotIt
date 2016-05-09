@@ -44,7 +44,6 @@ public class DetailSpot_New extends AppCompatActivity {
         imagepath = extras.getString("image");
         longitude = extras.getDouble("longitude");
         latitude = extras.getDouble("latitude");
-        Log.i("parametre : image=", imagepath + " longitude=" + longitude + "; latitude=" + latitude);
         dbAdapteur = new SpotsDBAdapteur(getApplicationContext());
 
         edtLat = (EditText)findViewById(R.id.edtLatitude);
@@ -135,9 +134,6 @@ public class DetailSpot_New extends AppCompatActivity {
                     vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend));
                     vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.publics));
 
-                    String release = Build.VERSION.RELEASE;
-                    int sdkVersion = Build.VERSION.SDK_INT;
-                    Log.i("test", "Android SDK: " + sdkVersion + " (" + release + ")");
                     Intent mainintent = new Intent(getApplicationContext(),Main3Activity.class);
                     finish();
                     startActivity(mainintent);

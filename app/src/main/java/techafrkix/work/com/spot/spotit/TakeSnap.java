@@ -143,7 +143,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
 
     Preview(final Context context) {
         super(context);
-        currentCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
+        currentCameraId = CameraInfo.CAMERA_FACING_BACK;
         this.setBackgroundColor(getResources().getColor(R.color.fondsnap));
         mSurfaceView = new SurfaceView(context);
         addView(mSurfaceView);
@@ -179,7 +179,10 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
             public void onClick(View v) {
                 try {
                     if (mCamera != null) {
-                        mCamera.takePicture(null, null, ph);
+                        mCamera.takePicture(
+                                new Camera.ShutterCallback() { @Override public void onShutter() { } },
+                                new Camera.PictureCallback() { @Override public void onPictureTaken(byte[] data, Camera camera) { } },
+                                ph);
                     }
                 } catch (Exception e) {
                     Log.d(TAG, e.getMessage());
@@ -250,16 +253,17 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
                     mCamera = Camera.open(currentCameraId);
                     //Code snippet for this method from somewhere on android developers, i forget where
                     //setCameraDisplayOrientation(CameraActivity.this, currentCameraId, mCamera);
-//                    Camera.Parameters parameters = mCamera.getParameters();
-//                    if (parameters.getSupportedFocusModes().contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
-//                        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-//                    }
-//                    List<String> flashModes = parameters.getSupportedFlashModes();
-//                    if (flashModes.contains(android.hardware.Camera.Parameters.FLASH_MODE_AUTO))
-//                    {
-//                        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-//                    }
-//                    mCamera.setParameters(parameters);
+                    Camera.Parameters parameters = mCamera.getParameters();
+                    if (parameters.getSupportedFocusModes().contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+                        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+                    }
+                    if (currentCameraId == Camera.CameraInfo.CAMERA_FACING_BACK) {
+                        List<String> flashModes = parameters.getSupportedFlashModes();
+                        if (flashModes.contains(android.hardware.Camera.Parameters.FLASH_MODE_AUTO)) {
+                            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+                        }
+                    }
+                    mCamera.setParameters(parameters);
                     mCamera.setDisplayOrientation(90);
                     try {
                         //this step is critical or preview on new camera will no know where to render to

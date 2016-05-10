@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.IntentCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -207,6 +208,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 //traitement de l'action lors du click
                 if (menuactif != MENU_ACTIF_DECONNECT) {
                     Intent itdeconnect = new Intent(getApplicationContext(), Connexion.class);
+                    itdeconnect.putExtra("caller","Main");
+                    itdeconnect.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK); //add flags to spot all others activities
                     finish();
                     startActivity(itdeconnect);
                 }

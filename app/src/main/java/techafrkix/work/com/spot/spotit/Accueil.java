@@ -26,6 +26,7 @@ public class Accueil extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent itLogin = new Intent(getApplicationContext(),Connexion.class);
+                itLogin.putExtra("caller","Accueil");
                 startActivity(itLogin);
             }
         });

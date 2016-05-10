@@ -166,7 +166,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
                 coordonnees = new LatLng(Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude()));
                 //mMap.addMarker(new MarkerOptions().position(coordonnees).title("Spot "+ s.getId() + " : " +s.getGeohash()));
                 Log.i("map", "marker du spot " + s.getGeohash());
-                mMyMarkersArray.add(new MyMarker("Spot "+ s.getId(), s.getPhoto(), Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude())));
+                mMyMarkersArray.add(new MyMarker(s.getDate(),s.getGeohash(), s.getPhoto(), Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude())));
             }
         db.close();
 
@@ -207,17 +207,17 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         @Override
         public View getInfoContents(Marker marker)
         {
-            View v  = getActivity().getLayoutInflater().inflate(R.layout.infowindow_layout, null);
+            View v  = getActivity().getLayoutInflater().inflate(R.layout.infomarker, null);
 
             MyMarker myMarker = mMarkersHashMap.get(marker);
 
             ImageView markerIcon = (ImageView) v.findViewById(R.id.marker_icon);
-
-            TextView markerLabel = (TextView)v.findViewById(R.id.marker_label);
+            TextView markerDate = (TextView)v.findViewById(R.id.marker_date);
+            TextView markerGeohash = (TextView)v.findViewById(R.id.marker_geohash);
 
             markerIcon.setImageBitmap(BitmapFactory.decodeFile(myMarker.getmIcon()));
-
-            markerLabel.setText(myMarker.getmLabel());
+            markerDate.setText(myMarker.getmDate());
+            markerGeohash.setText(myMarker.getmGeohash());
 
             return v;
         }

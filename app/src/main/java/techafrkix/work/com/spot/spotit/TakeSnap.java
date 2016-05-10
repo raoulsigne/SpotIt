@@ -170,6 +170,9 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
         final PhotoHandler ph = new PhotoHandler(context, mCamera);
+
+        if (mCamera != null)
+            mCamera.setDisplayOrientation(90);
         //on prend une photo
         shutter.setOnClickListener(new OnClickListener() {
             @Override
@@ -191,7 +194,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
             public void onClick(View v) {
                 try {
                     if (mCamera != null) {
-                        String photo = ph.saveImage();
+                        String photo = ph.saveImage(currentCameraId);
                         Bundle bundle = new Bundle();
                         bundle.putDouble("longitude", longitude);
                         bundle.putDouble("latitude", latitude);
@@ -215,6 +218,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
             public void onClick(View v) {
                 try {
                     if (mCamera != null) {
+                        mCamera.setDisplayOrientation(90);
                         mCamera.startPreview();
                     }
                 } catch (Exception e) {
@@ -441,12 +445,13 @@ class PhotoHandler implements Camera.PictureCallback {
     private final Context context;
     private final Camera camera;
     public String photoFile;
-    public Bitmap rotatedBitmap;
+    public Bitmap rotatedBitmap, bmp;
     public PhotoHandler(Context context, Camera c) {
         this.context = context;
         this.camera = c;
         photoFile = "";
         rotatedBitmap = null;
+        bmp = null;
     }
 
     @Override
@@ -464,7 +469,7 @@ class PhotoHandler implements Camera.PictureCallback {
         }
 
         //roter la photo pour permettre qu'elle apparaisse comme elle a été prise rotation de 90 dégré
-        Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         int width = bmp.getWidth();
         int height = bmp.getHeight();
         Matrix matrix = new Matrix();
@@ -473,7 +478,7 @@ class PhotoHandler implements Camera.PictureCallback {
                 width, height, matrix, true);
     }
 
-    public String saveImage(){
+    public String saveImage(int id){
         File pictureFileDir = getDir();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
         String date = dateFormat.format(new Date());
@@ -489,6 +494,15 @@ class PhotoHandler implements Camera.PictureCallback {
         }
         String filename = pictureFileDir.getPath() + File.separator + photoFile;
         File pictureFile = new File(filename);
+
+        if (id == CameraInfo.CAMERA_FACING_FRONT) {
+            int width = bmp.getWidth();
+            int height = bmp.getHeight();
+            Matrix matrix = new Matrix();
+            matrix.postRotate(270);
+            rotatedBitmap = Bitmap.createBitmap(bmp, 0, 0,
+                    width, height, matrix, true);
+        }
         try {
             FileOutputStream fos = new FileOutputStream(pictureFile);
             boolean result = rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 50, fos);

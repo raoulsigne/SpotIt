@@ -2,6 +2,7 @@ package techafrkix.work.com.spot.spotit;
 
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v4.content.IntentCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -24,6 +27,7 @@ import techafrkix.work.com.spot.bd.UtilisateurDBAdapteur;
 
 public class Connexion extends AppCompatActivity {
 
+    private AccessTokenTracker fbTracker;
     CallbackManager callbackManager;
     EditText email, password;
 
@@ -47,6 +51,28 @@ public class Connexion extends AppCompatActivity {
         LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         Button btnLogin = (Button)findViewById(R.id.btnConnexion);
 
+        fbTracker = new AccessTokenTracker() {
+            @Override
+            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+                if (currentAccessToken != null) {
+                    Log.i("LOGINACTIVITY", "token tracker, current token valid");
+                    AccessToken token = AccessToken.getCurrentAccessToken();
+                } else {
+                    Log.i("LOGINACTIVITY", "token tracker, current token is null");
+                    Intent itaccueil = new Intent(getApplicationContext(), Accueil.class);
+                    itaccueil.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK); //add flags to spot all others activities
+                    finish();
+                    startActivity(itaccueil);
+                }
+            }
+        };
+
+        fbTracker.startTracking();
+
+        String parent = getIntent().getExtras().getString("caller");
+        if (isLoggedIn() & parent.compareTo("Accueil") == 0) {
+            startActivity(mainintent);
+        }
         //bout de code pour gérer le bouton de connexion via facebook à l'application
         loginButton.setReadPermissions("user_friends");
         LoginManager.getInstance().registerCallback(callbackManager,
@@ -114,5 +140,10 @@ public class Connexion extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public boolean isLoggedIn() {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        return accessToken != null;
     }
 }

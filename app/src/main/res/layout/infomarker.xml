@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="200dp"
+    android:layout_height="75dp">
+
+    <ImageView
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:id="@+id/marker_icon"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:adjustViewBounds="true"
+        android:cropToPadding="false"
+        android:scaleType="fitXY"/>
+
+    <TextView
+        android:layout_width="130dp"
+        android:layout_height="25dp"
+        android:text="Medium Text"
+        android:textStyle="bold"
+        android:id="@+id/marker_date"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/marker_icon"
+        android:layout_toEndOf="@+id/marker_icon"
+        android:textAlignment="textStart"/>
+
+    <TextView
+        android:layout_width="125dp"
+        android:layout_height="25dp"
+        android:text="Medium Text"
+        android:id="@+id/marker_geohash"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/marker_icon"
+        android:layout_toEndOf="@+id/marker_icon"
+        android:textAlignment="textStart" />
+</RelativeLayout>

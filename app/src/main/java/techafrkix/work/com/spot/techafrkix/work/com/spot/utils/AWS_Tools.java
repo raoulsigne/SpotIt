@@ -113,9 +113,11 @@ public class AWS_Tools {
             @Override
             public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
                 int percentage = (int) (bytesCurrent / bytesTotal * 100);
+                int rapport = (int)(bytesCurrent * 100);
+                rapport /= bytesTotal;
                 //Display percentage transfered to user
-                Log.i("percentage",percentage+"");
-                barProgressDialog.setProgress(percentage);
+                Log.i("percentage",percentage+"  ,bytesCurrent="+bytesCurrent+ "  bytesTotal="+bytesTotal + "  rapport="+rapport);
+                barProgressDialog.setProgress(rapport);
                 if (barProgressDialog.getProgress() == barProgressDialog.getMax()) {
                     barProgressDialog.dismiss();
                     Toast.makeText(context, "Opération terminée", Toast.LENGTH_SHORT).show();

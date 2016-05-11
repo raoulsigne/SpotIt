@@ -2,6 +2,8 @@ package techafrkix.work.com.spot.spotit;
 
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,8 +14,14 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
 
 public class DetailSpot_New extends AppCompatActivity {
 
@@ -22,6 +30,7 @@ public class DetailSpot_New extends AppCompatActivity {
 
     private SpotsDBAdapteur dbAdapteur;
     SQLiteDatabase db;
+    AWS_Tools aws_tools;
 
     private String visibilite, imagepath;
 
@@ -41,6 +50,7 @@ public class DetailSpot_New extends AppCompatActivity {
         longitude = extras.getDouble("longitude");
         latitude = extras.getDouble("latitude");
         dbAdapteur = new SpotsDBAdapteur(getApplicationContext());
+        aws_tools = new AWS_Tools(getApplicationContext());
 
         edtLat = (EditText)findViewById(R.id.edtLatitude);
         edtLong = (EditText)findViewById(R.id.edtLongitude);
@@ -103,6 +113,7 @@ public class DetailSpot_New extends AppCompatActivity {
                     geoHash.setLatitude(Double.valueOf(edtLat.getText().toString()));
                     geoHash.setLongitude(Double.valueOf(edtLong.getText().toString()));
                     geoHash.encoder();
+                    String temps = String.valueOf(System.currentTimeMillis());
 
                     Spot spot = new Spot();
                     spot.setLongitude(edtLong.getText().toString());
@@ -111,6 +122,7 @@ public class DetailSpot_New extends AppCompatActivity {
                     spot.setGeohash(geoHash.getHash());
                     spot.setPhoto(imagepath);
 
+                    //stockage du spot dans la BD embarqué
                     db = dbAdapteur.open();
                     long cle = dbAdapteur.insertSpot(spot);
 
@@ -124,15 +136,26 @@ public class DetailSpot_New extends AppCompatActivity {
                     }
                     db.close();
 
+                    //stockage de la photo sur le serveur amazon
+                    try {
+                        File file = new File(getApplicationContext().getFilesDir().getPath()+temps+".png");
+                        OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
+                        Bitmap bitmap = BitmapFactory.decodeFile(imagepath);
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 50, os);
+                        os.close();
+                        aws_tools = new AWS_Tools(DetailSpot_New.this);
+                        aws_tools.uploadPhoto(file,temps);
+                    }catch (Exception e)
+                    {
+                        Log.e("file",e.getMessage());
+                    }
+
+
                     edtLat.setText("");
                     edtLong.setText("");
                     vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi));
                     vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend));
                     vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.publics));
-
-                    Intent mainintent = new Intent(getApplicationContext(),MainActivity.class);
-                    finish();
-                    startActivity(mainintent);
                 }
                 else
                     Toast.makeText(getApplicationContext(), "Formulaire non conforme", Toast.LENGTH_SHORT).show();

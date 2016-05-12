@@ -1,5 +1,8 @@
 package techafrkix.work.com.spot.spotit;
 
+import android.app.ProgressDialog;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v4.app.Fragment;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -9,16 +12,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
 
 public class ListeSpots extends Fragment {
 
     private SpotsDBAdapteur dbAdapteur;
     private SQLiteDatabase db;
     private ArrayList<Spot> spots;
+    private HashMap<String, Bitmap> spotsimages;
+    private SpotAdapter adapter;
+    private ListView listView;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -30,12 +45,10 @@ public class ListeSpots extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_liste_spots, container, false);
 
+        spotsimages = new HashMap<String, Bitmap>();
         loadSpots();
-        ListView listView = (ListView) view.findViewById(R.id.listView);
-        // Create the adapter to convert the array to views
-        SpotAdapter adapter = new SpotAdapter(getActivity(), spots);
-        // Attach the adapter to a ListView
-        listView.setAdapter(adapter);
+
+        listView = (ListView) view.findViewById(R.id.listView);
 
         return view;
     }
@@ -48,6 +61,60 @@ public class ListeSpots extends Fragment {
             spots = dbAdapteur.getAllSpots();
             Log.i("spots",spots.toString());
             db.close();
+        }
+        final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
+        barProgressDialog.setTitle("Telechargement des spots ...");
+        barProgressDialog.setMessage("Opération en progression ...");
+        barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
+        barProgressDialog.setProgress(0);
+        barProgressDialog.setMax(spots.size());
+        barProgressDialog.show();
+
+        for (final Spot s :
+                spots) {
+            final File file = new File(getActivity().getFilesDir().getPath()+s.getPhotokey()+".jpg");
+            if(file.exists()){
+                Log.i("file","file exists");
+            }else {
+                Log.i("file", "file exists");
+            }
+            AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
+            int transfertId = aws_tools.download(file, s.getPhotokey());
+            TransferUtility transferUtility = aws_tools.getTransferUtility();
+            TransferObserver observer = transferUtility.getTransferById(transfertId);
+            observer.setTransferListener(new TransferListener() {
+
+                @Override
+                public void onStateChanged(int id, TransferState state) {
+                    // do something
+                }
+
+                @Override
+                public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                    int rapport = (int) (bytesCurrent * 100);
+                    rapport /= bytesTotal;
+                    if (rapport == 100) {
+                        barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
+                        spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
+                    }
+                    if (barProgressDialog.getProgress() == spots.size()) {
+                        barProgressDialog.dismiss();
+                        // Create the adapter to convert the array to views
+                        adapter = new SpotAdapter(getActivity(), spots, spotsimages);
+                        // Attach the adapter to a ListView
+                        listView.setAdapter(adapter);
+                    }
+                }
+
+                @Override
+                public void onError(int id, Exception ex) {
+                    // do something
+                    barProgressDialog.dismiss();
+                }
+
+            });
+
+
         }
     }
 

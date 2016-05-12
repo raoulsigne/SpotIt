@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import techafrkix.work.com.spot.bd.Spot;
 
@@ -23,8 +24,16 @@ import techafrkix.work.com.spot.bd.Spot;
  */
 public class SpotAdapter extends ArrayAdapter<Spot> {
 
+    HashMap<String, Bitmap> mapimages;
+
     public SpotAdapter(Context context, ArrayList<Spot> spots) {
         super(context, 0, spots);
+    }
+
+    public SpotAdapter(Context context, ArrayList<Spot> spots, HashMap<String, Bitmap> spotsimages) {
+        super(context, 0, spots);
+        mapimages = new HashMap<String, Bitmap>();
+        mapimages = spotsimages;
     }
 
     @Override
@@ -49,7 +58,7 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
         try {
             spotDate.setText(spot.getDate());
             spotHash.setText(spot.getGeohash());
-            Bitmap bitmap = BitmapFactory.decodeFile(spot.getPhotokey());
+            Bitmap bitmap = mapimages.get(spot.getPhotokey()); //BitmapFactory.decodeFile(spot.getPhotokey());
 
             // Get height or width of screen at runtime
             Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();

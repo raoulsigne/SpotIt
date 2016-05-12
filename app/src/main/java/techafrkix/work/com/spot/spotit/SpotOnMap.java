@@ -152,7 +152,7 @@ public class SpotOnMap extends FragmentActivity implements OnMapReadyCallback {
         visibilite.setAdapter(dataAdapter);
         List<String> items = Arrays.asList(getResources().getStringArray(R.array.visibility));
 
-        image.setImageBitmap(BitmapFactory.decodeFile(s.getPhoto()));
+        image.setImageBitmap(BitmapFactory.decodeFile(s.getPhotokey()));
         latitude.setText(s.getLatitude());
         latitude.setEnabled(false);
         longitude.setText(s.getLongitude());

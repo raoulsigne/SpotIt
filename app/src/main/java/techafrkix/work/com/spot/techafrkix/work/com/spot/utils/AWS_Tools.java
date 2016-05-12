@@ -42,9 +42,13 @@ public class AWS_Tools {
     private CognitoCachingCredentialsProvider credentialsProvider;
     private CognitoSyncManager syncClient;
     private Dataset dataset;
-    AmazonS3 s3;
-    TransferUtility transferUtility;
+    private AmazonS3 s3;
+    private TransferUtility transferUtility;
     private Context context;
+
+    public TransferUtility getTransferUtility() {
+        return transferUtility;
+    }
 
     public AWS_Tools(Context mcontext){
         context = mcontext;
@@ -54,7 +58,6 @@ public class AWS_Tools {
                 "eu-west-1:4d19cccb-cf8a-4fb7-bb44-0e8a80430c5a", // Identity Pool ID
                 Regions.EU_WEST_1 // Region
         );
-
         // Create an S3 client
         s3 = new AmazonS3Client(credentialsProvider);
 
@@ -112,11 +115,9 @@ public class AWS_Tools {
 
             @Override
             public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                int percentage = (int) (bytesCurrent / bytesTotal * 100);
                 int rapport = (int)(bytesCurrent * 100);
                 rapport /= bytesTotal;
                 //Display percentage transfered to user
-                Log.i("percentage",percentage+"  ,bytesCurrent="+bytesCurrent+ "  bytesTotal="+bytesTotal + "  rapport="+rapport);
                 barProgressDialog.setProgress(rapport);
                 if (barProgressDialog.getProgress() == barProgressDialog.getMax()) {
                     barProgressDialog.dismiss();
@@ -137,51 +138,14 @@ public class AWS_Tools {
         });
     }
 
-    public void download(File photo, String OBJECT_KEY){
-        ObjectMetadata myObjectMetadata = new ObjectMetadata();
-        final ProgressDialog barProgressDialog = new ProgressDialog(context);
-        barProgressDialog.setTitle("Téléchargement du spot ...");
-        barProgressDialog.setMessage("Opération en progression ...");
-        barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
-        barProgressDialog.setProgress(0);
-        barProgressDialog.setMax(100);
-        barProgressDialog.show();
-
+    public int download(File photo, String OBJECT_KEY){
         TransferObserver observer = transferUtility.download(
                 MY_BUCKET,     /* The bucket to download from */
                 OBJECT_KEY,    /* The key for the object to download */
                 photo        /* The file to download the object to */
         );
 
-        ObjectMetadata objectMetadata = s3.getObjectMetadata(MY_BUCKET, OBJECT_KEY);
-        Map userMetadataMap = objectMetadata.getUserMetadata();
-
-        observer.setTransferListener(new TransferListener(){
-
-            @Override
-            public void onStateChanged(int id, TransferState state) {
-                // do something
-            }
-
-            @Override
-            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                int percentage = (int) (bytesCurrent/bytesTotal * 100);
-                //Display percentage transfered to user
-                barProgressDialog.setProgress(percentage);
-                if (barProgressDialog.getProgress() == barProgressDialog.getMax()) {
-                    barProgressDialog.dismiss();
-                    Toast.makeText(context,"Opération terminée",Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onError(int id, Exception ex) {
-                // do something
-                barProgressDialog.dismiss();
-                Toast.makeText(context,"Une erreur est survenue",Toast.LENGTH_SHORT).show();
-            }
-
-        });
+        return observer.getId();
     }
 
 }

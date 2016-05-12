@@ -1,6 +1,5 @@
 package techafrkix.work.com.spot.spotit;
 
-import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -120,7 +119,7 @@ public class DetailSpot_New extends AppCompatActivity {
                     spot.setLatitude(edtLat.getText().toString());
                     spot.setVisibilite(visibilite);
                     spot.setGeohash(geoHash.getHash());
-                    spot.setPhoto(imagepath);
+                    spot.setPhotokey(temps);
 
                     //stockage du spot dans la BD embarqué
                     db = dbAdapteur.open();
@@ -141,7 +140,8 @@ public class DetailSpot_New extends AppCompatActivity {
                         File file = new File(getApplicationContext().getFilesDir().getPath()+temps+".jpg");
                         OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
                         Bitmap bitmap = BitmapFactory.decodeFile(imagepath);
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, os);
+                        Bitmap resized = Bitmap.createScaledBitmap(bitmap, 800, 800, true);
+                        resized.compress(Bitmap.CompressFormat.JPEG, 50, os);
                         os.close();
                         aws_tools = new AWS_Tools(DetailSpot_New.this);
                         aws_tools.uploadPhoto(file,temps);

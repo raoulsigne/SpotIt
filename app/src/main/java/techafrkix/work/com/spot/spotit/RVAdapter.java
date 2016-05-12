@@ -58,7 +58,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.SpotViewHolder>{
         try {
             spotViewHolder.spotDate.setText(spots.get(i).getDate());
             spotViewHolder.spotHash.setText(spots.get(i).getGeohash());
-            Bitmap bitmap = BitmapFactory.decodeFile(spots.get(i).getPhoto());
+            Bitmap bitmap = BitmapFactory.decodeFile(spots.get(i).getPhotokey());
             spotViewHolder.spotPhoto.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 350, 250, false));
         }catch (Exception e){
             Log.e("spot", e.getMessage());}

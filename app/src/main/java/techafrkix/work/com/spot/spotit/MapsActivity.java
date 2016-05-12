@@ -1,6 +1,7 @@
 package techafrkix.work.com.spot.spotit;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -27,11 +32,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.MyMarker;
 
 public class MapsActivity extends Fragment implements OnMapReadyCallback {
@@ -117,9 +124,48 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
         {
             @Override
-            public boolean onMarkerClick(com.google.android.gms.maps.model.Marker marker)
+            public boolean onMarkerClick(final com.google.android.gms.maps.model.Marker marker)
             {
-                marker.showInfoWindow();
+                MyMarker myMarker = mMarkersHashMap.get(marker);
+                final File file = new File(getActivity().getFilesDir().getPath()+myMarker.getmIcon()+".jpg");
+                AWS_Tools aws_tools  = new AWS_Tools(MainActivity.getAppContext());
+
+                final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
+                barProgressDialog.setTitle("Telechargement du spot ...");
+                barProgressDialog.setMessage("Opération en progression ...");
+                barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
+                barProgressDialog.setProgress(0);
+                barProgressDialog.setMax(100);
+                barProgressDialog.show();
+                int transfertId = aws_tools.download(file, myMarker.getmIcon());
+                TransferUtility transferUtility = aws_tools.getTransferUtility();
+                TransferObserver observer = transferUtility.getTransferById(transfertId);
+                observer.setTransferListener(new TransferListener() {
+
+                    @Override
+                    public void onStateChanged(int id, TransferState state) {
+                        // do something
+                    }
+
+                    @Override
+                    public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                        int rapport = (int) (bytesCurrent * 100);
+                        rapport /= bytesTotal;
+                        barProgressDialog.setProgress(rapport);
+                        if (rapport == 100) {
+                            barProgressDialog.dismiss();
+                            marker.showInfoWindow();
+                        }
+                    }
+
+                    @Override
+                    public void onError(int id, Exception ex) {
+                        // do something
+                        barProgressDialog.dismiss();
+                    }
+
+                });
+
                 return true;
             }
         });
@@ -166,7 +212,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
                 coordonnees = new LatLng(Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude()));
                 //mMap.addMarker(new MarkerOptions().position(coordonnees).title("Spot "+ s.getId() + " : " +s.getGeohash()));
                 Log.i("map", "marker du spot " + s.getGeohash());
-                mMyMarkersArray.add(new MyMarker(s.getDate(),s.getGeohash(), s.getPhoto(), Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude())));
+                mMyMarkersArray.add(new MyMarker(s.getDate(),s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude())));
             }
         db.close();
 
@@ -194,9 +240,9 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
 
     public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter
     {
+
         public MarkerInfoWindowAdapter()
-        {
-        }
+        {}
 
         @Override
         public View getInfoWindow(Marker marker)
@@ -209,13 +255,14 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         {
             View v  = getActivity().getLayoutInflater().inflate(R.layout.infomarker, null);
 
-            MyMarker myMarker = mMarkersHashMap.get(marker);
+            final MyMarker myMarker = mMarkersHashMap.get(marker);
 
-            ImageView markerIcon = (ImageView) v.findViewById(R.id.marker_icon);
-            TextView markerDate = (TextView)v.findViewById(R.id.marker_date);
-            TextView markerGeohash = (TextView)v.findViewById(R.id.marker_geohash);
+            final ImageView markerIcon = (ImageView) v.findViewById(R.id.marker_icon);
+            final TextView markerDate = (TextView)v.findViewById(R.id.marker_date);
+            final TextView markerGeohash = (TextView)v.findViewById(R.id.marker_geohash);
 
-            markerIcon.setImageBitmap(BitmapFactory.decodeFile(myMarker.getmIcon()));
+
+            markerIcon.setImageBitmap(BitmapFactory.decodeFile(getActivity().getFilesDir().getPath()+myMarker.getmIcon()+".jpg"));
             markerDate.setText(myMarker.getmDate());
             markerGeohash.setText(myMarker.getmGeohash());
 

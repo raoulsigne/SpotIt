@@ -102,7 +102,7 @@ public class SpotsDBAdapteur {
 		retSpot.setLongitude(c.getString(COLONNE_LONGITUDE_ID));
 		retSpot.setLatitude(c.getString(COLONNE_LATITUDE_ID));
         retSpot.setVisibilite(c.getString(COLONNE_VISIBILITE_ID));
-		retSpot.setPhoto(c.getString(COLONNE_PHOTO_ID));
+		retSpot.setPhotokey(c.getString(COLONNE_PHOTO_ID));
 		retSpot.setGeohash(c.getString(COLONNE_GEOHASH_ID));
 		retSpot.setDate(c.getString(COLONNE_DATE_ID));
 
@@ -124,7 +124,7 @@ public class SpotsDBAdapteur {
 			retSpot.setLongitude(c.getString(COLONNE_LONGITUDE_ID));
 			retSpot.setLatitude(c.getString(COLONNE_LATITUDE_ID));
             retSpot.setVisibilite(c.getString(COLONNE_VISIBILITE_ID));
-			retSpot.setPhoto(c.getString(COLONNE_PHOTO_ID));
+			retSpot.setPhotokey(c.getString(COLONNE_PHOTO_ID));
 			retSpot.setGeohash(c.getString(COLONNE_GEOHASH_ID));
 			retSpot.setDate(c.getString(COLONNE_DATE_ID));
 			retSpots.add(retSpot);
@@ -143,7 +143,7 @@ public class SpotsDBAdapteur {
 		valeurs.put(COLONNE_LONGITUDE, spot.getLongitude());
 		valeurs.put(COLONNE_LATITUDE, spot.getLatitude());
         valeurs.put(COLONNE_VISIBILITE, spot.getVisibilite());
-		valeurs.put(COLONNE_PHOTO, spot.getPhoto());
+		valeurs.put(COLONNE_PHOTO, spot.getPhotokey());
 		valeurs.put(COLONNE_GEOHASH, spot.getGeohash());
 		valeurs.put(COLONNE_DATE, spot.getDate());
         if (maBaseDonnees == null)
@@ -163,7 +163,7 @@ public class SpotsDBAdapteur {
 		valeurs.put(COLONNE_LONGITUDE, spotToUpdate.getLongitude());
 		valeurs.put(COLONNE_LATITUDE, spotToUpdate.getLatitude());
         valeurs.put(COLONNE_VISIBILITE, spotToUpdate.getVisibilite());
-		valeurs.put(COLONNE_PHOTO, spotToUpdate.getPhoto());
+		valeurs.put(COLONNE_PHOTO, spotToUpdate.getPhotokey());
 		valeurs.put(COLONNE_GEOHASH, spotToUpdate.getGeohash());
 		valeurs.put(COLONNE_DATE, spotToUpdate.getDate());
 		return maBaseDonnees.update(TABLE_SPOTS, valeurs, COLONNE_ID + " = "

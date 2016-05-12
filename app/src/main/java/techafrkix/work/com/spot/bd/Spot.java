@@ -10,7 +10,7 @@ public class Spot implements Serializable{
 	private String longitude;
 	private String latitude;
     private String visibilite;
-	private String photo;
+	private String photokey;
 	private String geohash;
 	private String date;
 
@@ -20,19 +20,19 @@ public class Spot implements Serializable{
                 "longitude='" + longitude + '\'' +
                 ", latitude='" + latitude + '\'' +
                 ", visibilite='" + visibilite + '\'' +
-                ", photo='" + photo + '\'' +
+                ", photo='" + photokey + '\'' +
                 ", geohash='" + geohash + '\'' +
                 ", date='" + date + '\'' +
                 '}';
     }
 
-    public Spot(String longitude, String latitude, String visibilite, String photo,
+    public Spot(String longitude, String latitude, String visibilite, String photokey,
 			String geohash, String date) {
 		super();
 		this.longitude = longitude;
 		this.latitude = latitude;
         this.visibilite = visibilite;
-		this.photo = photo;
+		this.photokey = photokey;
 		this.geohash = geohash;
 		this.date = date;
 	}
@@ -55,11 +55,11 @@ public class Spot implements Serializable{
 	public void setLatitude(String latitude) {
 		this.latitude = latitude;
 	}
-	public String getPhoto() {
-		return photo;
+	public String getPhotokey() {
+		return photokey;
 	}
-	public void setPhoto(String photo) {
-		this.photo = photo;
+	public void setPhotokey(String photokey) {
+		this.photokey = photokey;
 	}
 	public String getGeohash() {
 		return geohash;
@@ -87,7 +87,7 @@ public class Spot implements Serializable{
 		this.longitude = "";
 		this.latitude = "";
         this.visibilite = "";
-		this.photo = "";
+		this.photokey = "";
 		this.geohash = "";
 		Calendar c = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy à HH:mm");

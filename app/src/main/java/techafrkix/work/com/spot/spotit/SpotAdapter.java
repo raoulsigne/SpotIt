@@ -49,7 +49,7 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
         try {
             spotDate.setText(spot.getDate());
             spotHash.setText(spot.getGeohash());
-            Bitmap bitmap = BitmapFactory.decodeFile(spot.getPhoto());
+            Bitmap bitmap = BitmapFactory.decodeFile(spot.getPhotokey());
 
             // Get height or width of screen at runtime
             Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();

@@ -138,10 +138,10 @@ public class DetailSpot_New extends AppCompatActivity {
 
                     //stockage de la photo sur le serveur amazon
                     try {
-                        File file = new File(getApplicationContext().getFilesDir().getPath()+temps+".png");
+                        File file = new File(getApplicationContext().getFilesDir().getPath()+temps+".jpg");
                         OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
                         Bitmap bitmap = BitmapFactory.decodeFile(imagepath);
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 50, os);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, os);
                         os.close();
                         aws_tools = new AWS_Tools(DetailSpot_New.this);
                         aws_tools.uploadPhoto(file,temps);

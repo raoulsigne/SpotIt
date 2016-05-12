@@ -33,7 +33,7 @@ import techafrkix.work.com.spot.spotit.MainActivity;
  */
 public class AWS_Tools {
 
-    private final String MY_BUCKET = "spotitbucket";
+    private final String MY_BUCKET = "bucketspotit";
     private final String DATE_KEY = "date";
     private final String LONGITUDE_KEY = "longitude";
     private final String LATITUDE_KEY = "latitude";
@@ -51,15 +51,15 @@ public class AWS_Tools {
         // Initialize the Amazon Cognito credentials provider
         credentialsProvider = new CognitoCachingCredentialsProvider(
                 context,
-                "us-east-1:987a01be-6e6c-434f-8960-8077e01ad34a", // Identity Pool ID
-                Regions.US_EAST_1 // Region
+                "eu-west-1:4d19cccb-cf8a-4fb7-bb44-0e8a80430c5a", // Identity Pool ID
+                Regions.EU_WEST_1 // Region
         );
 
         // Create an S3 client
         s3 = new AmazonS3Client(credentialsProvider);
 
         // Set the region of your S3 bucket
-        s3.setRegion(Region.getRegion(Regions.US_EAST_1));
+        s3.setRegion(Region.getRegion(Regions.EU_WEST_1));
 
         //Instantiate TransferUtility
         transferUtility = new TransferUtility(s3, context);
@@ -69,7 +69,7 @@ public class AWS_Tools {
         // Initialize the Cognito Sync client
         CognitoSyncManager syncClient = new CognitoSyncManager(
                 context,
-                Regions.US_EAST_1, // Region
+                Regions.EU_WEST_1, // Region
                 credentialsProvider);
 
         // Create a record in a dataset and synchronize with the server

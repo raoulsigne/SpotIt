@@ -202,6 +202,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                     Intent imagepreview = new Intent(MainActivity.this,TakeSnap.class);
                     imagepreview.putExtras(bundle);
+                    finish();
                     startActivity(imagepreview);
                 }
             }
@@ -224,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     Intent itdeconnect = new Intent(getApplicationContext(), Connexion.class);
                     itdeconnect.putExtra("caller","Main");
                     itdeconnect.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK); //add flags to spot all others activities
+                    vidercache();
                     finish();
                     startActivity(itdeconnect);
                 }
@@ -453,6 +455,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                             .show();
                 }
                 return;
+            }
+        }
+    }
+
+    private void vidercache(){
+        // Your directory with files to be deleted
+        String sdcard = getApplicationContext().getFilesDir().getPath() + "/Images/";
+
+        // go to your directory
+        File fileList = new File( sdcard );
+
+        //check if dir is not null
+        if (fileList != null){
+
+            // so we can list all files
+            File[] filenames = fileList.listFiles();
+
+            // loop through each file and delete
+            for (File tmpf : filenames){
+                tmpf.delete();
+                Log.i("suppression", "file " + tmpf + " deleted");
             }
         }
     }

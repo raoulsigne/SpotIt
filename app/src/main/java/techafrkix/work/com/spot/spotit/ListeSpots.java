@@ -70,51 +70,61 @@ public class ListeSpots extends Fragment {
         barProgressDialog.setMax(spots.size());
         barProgressDialog.show();
 
-        for (final Spot s :
-                spots) {
-            final File file = new File(getActivity().getFilesDir().getPath()+s.getPhotokey()+".jpg");
+        File folder = new File(getActivity().getFilesDir().getPath()+"/Images/");
+        if (!folder.exists())
+            folder.mkdirs();
+
+        for (final Spot s : spots) {
+            final File file = new File(getActivity().getFilesDir().getPath()+"/Images/"+s.getPhotokey()+".jpg");
             if(file.exists()){
                 Log.i("file","file exists");
+//                spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
+//                barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
+//                if (barProgressDialog.getProgress() == spots.size()) {
+//                    barProgressDialog.dismiss();
+//                    // Create the adapter to convert the array to views
+//                    adapter = new SpotAdapter(getActivity(), spots, spotsimages);
+//                    // Attach the adapter to a ListView
+//                    listView.setAdapter(adapter);
+//                }
             }else {
-                Log.i("file", "file exists");
+                Log.i("file", "file doesn't exists");
             }
-            AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
-            int transfertId = aws_tools.download(file, s.getPhotokey());
-            TransferUtility transferUtility = aws_tools.getTransferUtility();
-            TransferObserver observer = transferUtility.getTransferById(transfertId);
-            observer.setTransferListener(new TransferListener() {
+                AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
+                int transfertId = aws_tools.download(file, s.getPhotokey());
+                TransferUtility transferUtility = aws_tools.getTransferUtility();
+                TransferObserver observer = transferUtility.getTransferById(transfertId);
+                observer.setTransferListener(new TransferListener() {
 
-                @Override
-                public void onStateChanged(int id, TransferState state) {
-                    // do something
-                }
-
-                @Override
-                public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                    int rapport = (int) (bytesCurrent * 100);
-                    rapport /= bytesTotal;
-                    if (rapport == 100) {
-                        barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
-                        spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
+                    @Override
+                    public void onStateChanged(int id, TransferState state) {
+                        // do something
                     }
-                    if (barProgressDialog.getProgress() == spots.size()) {
+
+                    @Override
+                    public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                        int rapport = (int) (bytesCurrent * 100);
+                        rapport /= bytesTotal;
+                        if (rapport == 100) {
+                            barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
+                            spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
+                        }
+                        if (barProgressDialog.getProgress() == spots.size()) {
+                            barProgressDialog.dismiss();
+                            // Create the adapter to convert the array to views
+                            adapter = new SpotAdapter(getActivity(), spots, spotsimages);
+                            // Attach the adapter to a ListView
+                            listView.setAdapter(adapter);
+                        }
+                    }
+
+                    @Override
+                    public void onError(int id, Exception ex) {
+                        // do something
                         barProgressDialog.dismiss();
-                        // Create the adapter to convert the array to views
-                        adapter = new SpotAdapter(getActivity(), spots, spotsimages);
-                        // Attach the adapter to a ListView
-                        listView.setAdapter(adapter);
                     }
-                }
 
-                @Override
-                public void onError(int id, Exception ex) {
-                    // do something
-                    barProgressDialog.dismiss();
-                }
-
-            });
-
-
+                });
         }
     }
 

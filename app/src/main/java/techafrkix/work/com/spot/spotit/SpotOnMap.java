@@ -137,7 +137,7 @@ public class SpotOnMap extends FragmentActivity implements OnMapReadyCallback {
         final TextView titre = (TextView) promptView.findViewById(R.id.titre);
         final EditText latitude = (EditText) promptView.findViewById(R.id.latitude);
         final EditText longitude = (EditText) promptView.findViewById(R.id.longitude);
-        final ImageView image = (ImageView) promptView.findViewById(R.id.spot);
+        final ImageView image = (ImageView) promptView.findViewById(R.id.imgspot);
         final Spinner visibilite = (Spinner) promptView.findViewById(R.id.visibilite);
 
         Shader shader = new LinearGradient(

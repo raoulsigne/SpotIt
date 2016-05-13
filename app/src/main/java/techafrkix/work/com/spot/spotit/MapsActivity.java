@@ -2,6 +2,7 @@ package techafrkix.work.com.spot.spotit;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.Fragment;
@@ -9,12 +10,17 @@ import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
@@ -44,7 +50,7 @@ import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.MyMarker;
 public class MapsActivity extends Fragment implements OnMapReadyCallback {
 
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
-
+    private static final int MARKER_DIALOG = 2;
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
     LocationRequest locationRequest;
@@ -126,11 +132,12 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public boolean onMarkerClick(final com.google.android.gms.maps.model.Marker marker)
             {
-                MyMarker myMarker = mMarkersHashMap.get(marker);
-                final File file = new File(getActivity().getFilesDir().getPath()+myMarker.getmIcon()+".jpg");
+                final MyMarker myMarker = mMarkersHashMap.get(marker);
+                final File file = new File(getActivity().getFilesDir().getPath()+"/Images/"+myMarker.getmIcon()+".jpg");
 
                 if(file.exists()){
-                    marker.showInfoWindow();
+                    // marker.showInfoWindow();
+                    showdialogMarker(myMarker, file);
                     Log.i("file","file exists");
                 }else {
                     Log.i("file","file not exists");
@@ -159,7 +166,9 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
                             barProgressDialog.setProgress(rapport);
                             if (rapport == 100) {
                                 barProgressDialog.dismiss();
-                                marker.showInfoWindow();
+                                // marker.showInfoWindow();
+                                //display a dialog bout spot detail
+                                showdialogMarker(myMarker, file);
                             }
                         }
 
@@ -268,12 +277,52 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
             final TextView markerGeohash = (TextView)v.findViewById(R.id.marker_geohash);
 
 
-            markerIcon.setImageBitmap(BitmapFactory.decodeFile(getActivity().getFilesDir().getPath()+myMarker.getmIcon()+".jpg"));
+            markerIcon.setImageBitmap(BitmapFactory.decodeFile(getActivity().getFilesDir().getPath()+"/Images/"+myMarker.getmIcon()+".jpg"));
             markerDate.setText(myMarker.getmDate());
             markerGeohash.setText(myMarker.getmGeohash());
 
             return v;
         }
+    }
+
+    private void showdialogMarker(MyMarker marker, File file){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+
+        LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+        View promptView = layoutInflater.inflate(R.layout.detail_spot, null);
+        alertDialogBuilder.setView(promptView);
+
+        final TextView latitude = (TextView) promptView.findViewById(R.id.latitude);
+        final TextView longitude = (TextView) promptView.findViewById(R.id.longitude);
+        final TextView date = (TextView) promptView.findViewById(R.id.dateSpot);
+        final ImageView imgspot = (ImageView)promptView.findViewById(R.id.imgspot);
+        final Button fermer = (Button)promptView.findViewById(R.id.btnFermer);
+        final Button respoter = (Button)promptView.findViewById(R.id.btnRespoter);
+
+        latitude.setText(String.valueOf(marker.getmLatitude()));
+        longitude.setText(String.valueOf(marker.getmLongitude()));
+        date.setText(marker.getmDate());
+        imgspot.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+
+        // create an alert dialog
+        final AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
+
+        fermer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alert.dismiss();
+            }
+        });
+
+        // setup a dialog window
+//        alertDialogBuilder
+//                .setPositiveButton("Fermer", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int id) {
+//
+//                    }
+//                });
+
     }
 }
 

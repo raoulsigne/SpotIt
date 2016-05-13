@@ -4,28 +4,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     android:id="@+id/detail_spot_view">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textAlignment="center"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/title_spot"
         android:id="@+id/titre"
         android:textStyle="bold"
-        android:shadowColor="#7000"
-        android:shadowDx="12"
-        android:shadowDy="12"
-        android:shadowRadius="8"/>
+        android:background="@color/myblue"
+        android:textColor="@color/blanc"/>
 
     <ImageView
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:id="@+id/spot"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:id="@+id/imgspot"
+        android:scaleType="centerCrop"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="30dp"/>
@@ -33,59 +29,109 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp">
+        android:layout_margin="10dp">
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:id="@+id/address"
             android:text="Latitude"
+            android:textSize="15sp"
+            android:textColor="@color/noir"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"/>
 
-        <EditText
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAlignment="textStart"
+            android:layout_toRightOf="@id/address"
             android:id="@+id/latitude"
-            android:layout_alignParentRight="true"
+            android:textSize="15sp"
             android:layout_centerVertical="true"/>
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp">
+        android:layout_margin="10dp">
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:text="Longitude"
+            android:textSize="15sp"
+            android:id="@+id/txtlng"
+            android:textColor="@color/noir"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"/>
 
-        <EditText
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAlignment="textStart"
             android:id="@+id/longitude"
-            android:layout_alignParentRight="true"
+            android:textSize="15sp"
+            android:layout_toRightOf="@id/txtlng"
             android:layout_centerVertical="true"/>
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp">
+        android:layout_margin="10dp">
+        <TextView
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/label"
+            android:text="Date"
+            android:textSize="15sp"
+            android:textColor="@color/noir"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/label"
-            android:text="Visibilité"
+            android:textAlignment="textStart"
+            android:textSize="15sp"
+            android:layout_toRightOf="@id/label"
+            android:id="@+id/dateSpot"/>
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp">
+
+        <Button
+            android:layout_width="150dp"
+            android:layout_height="40dp"
+            android:text="Re-spoter"
+            android:id="@+id/btnRespoter"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/button_blue"
+            android:alpha="1"
+            android:textColor="#FFFFFF"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_marginRight="10dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"/>
-        <Spinner
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/visibilite"
+
+        <Button
+            android:layout_width="150dp"
+            android:layout_height="40dp"
+            android:text="Fermer"
+            android:id="@+id/btnFermer"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/button_blue"
+            android:alpha="1"
+            android:textColor="#FFFFFF"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_alignParentRight="true"/>
+
     </RelativeLayout>
 
 </LinearLayout>

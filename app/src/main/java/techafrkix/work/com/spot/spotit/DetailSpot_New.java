@@ -137,7 +137,10 @@ public class DetailSpot_New extends AppCompatActivity {
 
                     //stockage de la photo sur le serveur amazon
                     try {
-                        File file = new File(getApplicationContext().getFilesDir().getPath()+temps+".jpg");
+                        File folder = new File(getApplicationContext().getFilesDir().getPath()+"/Images/");
+                        if (!folder.exists())
+                            folder.mkdirs();
+                        File file = new File(getApplicationContext().getFilesDir().getPath()+"/Images/"+temps+".jpg");
                         OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
                         Bitmap bitmap = BitmapFactory.decodeFile(imagepath);
                         Bitmap resized = Bitmap.createScaledBitmap(bitmap, 800, 800, true);

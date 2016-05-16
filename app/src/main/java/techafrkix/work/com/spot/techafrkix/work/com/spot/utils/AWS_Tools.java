@@ -33,6 +33,7 @@ import techafrkix.work.com.spot.spotit.MainActivity;
  */
 public class AWS_Tools {
 
+    private final int MAX_VALUE = 100;
     private final String MY_BUCKET = "bucketspotit";
     private final String DATE_KEY = "date";
     private final String LONGITUDE_KEY = "longitude";
@@ -68,24 +69,6 @@ public class AWS_Tools {
         transferUtility = new TransferUtility(s3, context);
     }
 
-    public void saveData(Context context){
-        // Initialize the Cognito Sync client
-        CognitoSyncManager syncClient = new CognitoSyncManager(
-                context,
-                Regions.EU_WEST_1, // Region
-                credentialsProvider);
-
-        // Create a record in a dataset and synchronize with the server
-        dataset = syncClient.openOrCreateDataset("myDataset");
-        dataset.put("myKey", "myValue");
-        dataset.synchronize(new DefaultSyncCallback() {
-            @Override
-            public void onSuccess(Dataset dataset, List newRecords) {
-                //Your handler code here
-            }
-        });
-    }
-
     public void uploadPhoto(File photo, String OBJECT_KEY){
         ObjectMetadata myObjectMetadata = new ObjectMetadata();
         final ProgressDialog barProgressDialog = new ProgressDialog(context);
@@ -93,7 +76,7 @@ public class AWS_Tools {
         barProgressDialog.setMessage("Opération en progression ...");
         barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
         barProgressDialog.setProgress(0);
-        barProgressDialog.setMax(100);
+        barProgressDialog.setMax(MAX_VALUE);
         barProgressDialog.show();
         //create a map to store user metadata
         Map<String, String> userMetadata = new HashMap<String,String>();
@@ -110,16 +93,17 @@ public class AWS_Tools {
 
             @Override
             public void onStateChanged(int id, TransferState state) {
-                // do something
+
             }
 
             @Override
             public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
                 int rapport = (int)(bytesCurrent * 100);
                 rapport /= bytesTotal;
+                Log.i("upload","pourcentage "+rapport);
                 //Display percentage transfered to user
                 barProgressDialog.setProgress(rapport);
-                if (barProgressDialog.getProgress() == barProgressDialog.getMax()) {
+                if (rapport == MAX_VALUE) {
                     barProgressDialog.dismiss();
                     Toast.makeText(context, "Opération terminée", Toast.LENGTH_SHORT).show();
                     Intent mainintent = new Intent(context,MainActivity.class);

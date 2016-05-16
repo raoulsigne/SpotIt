@@ -21,6 +21,7 @@ import java.io.OutputStream;
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.GeoHash;
 
 public class DetailSpot_New extends AppCompatActivity {
 
@@ -127,11 +128,9 @@ public class DetailSpot_New extends AppCompatActivity {
 
                     if (cle != -1) {
                         Log.i("BD", "nouveau spot enregistré");
-                        Toast.makeText(getApplicationContext(),"Nouveau spot enregistré!",Toast.LENGTH_SHORT).show();
                     }
                     else {
                         Log.i("BD", "nouveau spot non enregistré");
-                        Toast.makeText(getApplicationContext(),"Nouveau non spot enregistré!",Toast.LENGTH_SHORT).show();
                     }
                     db.close();
 

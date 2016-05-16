@@ -2,9 +2,11 @@ package techafrkix.work.com.spot.spotit;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
 import android.support.v4.app.Fragment;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
@@ -140,46 +142,60 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
                     showdialogMarker(myMarker, file);
                     Log.i("file","file exists");
                 }else {
-                    Log.i("file","file not exists");
-                    AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
-                    final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
-                    barProgressDialog.setTitle("Telechargement du spot ...");
-                    barProgressDialog.setMessage("Opération en progression ...");
-                    barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
-                    barProgressDialog.setProgress(0);
-                    barProgressDialog.setMax(100);
-                    barProgressDialog.show();
-                    int transfertId = aws_tools.download(file, myMarker.getmIcon());
-                    TransferUtility transferUtility = aws_tools.getTransferUtility();
-                    TransferObserver observer = transferUtility.getTransferById(transfertId);
-                    observer.setTransferListener(new TransferListener() {
+                    if (isNetworkAvailable(MainActivity.getAppContext())) {
+                        Log.i("file", "file not exists");
+                        AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
+                        final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
+                        barProgressDialog.setTitle("Telechargement du spot ...");
+                        barProgressDialog.setMessage("Opération en progression ...");
+                        barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
+                        barProgressDialog.setProgress(0);
+                        barProgressDialog.setMax(100);
+                        barProgressDialog.show();
+                        int transfertId = aws_tools.download(file, myMarker.getmIcon());
+                        TransferUtility transferUtility = aws_tools.getTransferUtility();
+                        TransferObserver observer = transferUtility.getTransferById(transfertId);
+                        observer.setTransferListener(new TransferListener() {
 
-                        @Override
-                        public void onStateChanged(int id, TransferState state) {
-                            // do something
-                        }
-
-                        @Override
-                        public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                            int rapport = (int) (bytesCurrent * 100);
-                            rapport /= bytesTotal;
-                            barProgressDialog.setProgress(rapport);
-                            if (rapport == 100) {
-                                barProgressDialog.dismiss();
-                                // marker.showInfoWindow();
-                                //display a dialog bout spot detail
-                                showdialogMarker(myMarker, file);
+                            @Override
+                            public void onStateChanged(int id, TransferState state) {
+                                // do something
                             }
-                        }
 
-                        @Override
-                        public void onError(int id, Exception ex) {
-                            // do something
-                            barProgressDialog.dismiss();
-                        }
+                            @Override
+                            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                                int rapport = (int) (bytesCurrent * 100);
+                                rapport /= bytesTotal;
+                                barProgressDialog.setProgress(rapport);
+                                if (rapport == 100) {
+                                    barProgressDialog.dismiss();
+                                    // marker.showInfoWindow();
+                                    //display a dialog bout spot detail
+                                    showdialogMarker(myMarker, file);
+                                }
+                            }
 
-                    });
+                            @Override
+                            public void onError(int id, Exception ex) {
+                                // do something
+                                barProgressDialog.dismiss();
+                            }
 
+                        });
+                    }
+                    else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("Spot It:Information")
+                                .setMessage("Vérifiez votre connexion Internet")
+                                .setCancelable(false)
+                                .setNegativeButton("Close",new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        AlertDialog alert = builder.create();
+                        alert.show();
+                    }
                 }
                 return true;
             }
@@ -315,14 +331,11 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
             }
         });
 
-        // setup a dialog window
-//        alertDialogBuilder
-//                .setPositiveButton("Fermer", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int id) {
-//
-//                    }
-//                });
+    }
 
+    public static boolean isNetworkAvailable(final Context context) {
+        final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 }
 

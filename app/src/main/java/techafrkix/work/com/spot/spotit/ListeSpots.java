@@ -44,11 +44,10 @@ public class ListeSpots extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_liste_spots, container, false);
+        listView = (ListView) view.findViewById(R.id.listView);
 
         spotsimages = new HashMap<String, Bitmap>();
         loadSpots();
-
-        listView = (ListView) view.findViewById(R.id.listView);
 
         return view;
     }
@@ -62,69 +61,73 @@ public class ListeSpots extends Fragment {
             Log.i("spots",spots.toString());
             db.close();
         }
-        final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
-        barProgressDialog.setTitle("Telechargement des spots ...");
-        barProgressDialog.setMessage("Opération en progression ...");
-        barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
-        barProgressDialog.setProgress(0);
-        barProgressDialog.setMax(spots.size());
-        barProgressDialog.show();
 
         File folder = new File(getActivity().getFilesDir().getPath()+"/Images/");
         if (!folder.exists())
             folder.mkdirs();
 
-        for (final Spot s : spots) {
-            final File file = new File(getActivity().getFilesDir().getPath()+"/Images/"+s.getPhotokey()+".jpg");
-            if(file.exists()){
-                Log.i("file","file exists");
-//                spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
-//                barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
-//                if (barProgressDialog.getProgress() == spots.size()) {
-//                    barProgressDialog.dismiss();
-//                    // Create the adapter to convert the array to views
-//                    adapter = new SpotAdapter(getActivity(), spots, spotsimages);
-//                    // Attach the adapter to a ListView
-//                    listView.setAdapter(adapter);
-//                }
-            }else {
-                Log.i("file", "file doesn't exists");
-            }
-                AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
-                int transfertId = aws_tools.download(file, s.getPhotokey());
-                TransferUtility transferUtility = aws_tools.getTransferUtility();
-                TransferObserver observer = transferUtility.getTransferById(transfertId);
-                observer.setTransferListener(new TransferListener() {
+        if (spots != null & spots.size() > 0) {
+            final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
+            barProgressDialog.setTitle("Telechargement des spots ...");
+            barProgressDialog.setMessage("Opération en progression ...");
+            barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
+            barProgressDialog.setProgress(0);
+            barProgressDialog.setMax(spots.size());
+            barProgressDialog.show();
 
-                    @Override
-                    public void onStateChanged(int id, TransferState state) {
-                        // do something
-                    }
-
-                    @Override
-                    public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                        int rapport = (int) (bytesCurrent * 100);
-                        rapport /= bytesTotal;
-                        if (rapport == 100) {
-                            barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
-                            spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
-                        }
-                        if (barProgressDialog.getProgress() == spots.size()) {
-                            barProgressDialog.dismiss();
-                            // Create the adapter to convert the array to views
-                            adapter = new SpotAdapter(getActivity(), spots, spotsimages);
-                            // Attach the adapter to a ListView
-                            listView.setAdapter(adapter);
-                        }
-                    }
-
-                    @Override
-                    public void onError(int id, Exception ex) {
-                        // do something
+            for (final Spot s : spots) {
+                final File file = new File(getActivity().getFilesDir().getPath() + "/Images/" + s.getPhotokey() + ".jpg");
+                if (file.exists()) {
+                    Log.i("file", "file exists");
+                    spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
+                    barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
+                    if (barProgressDialog.getProgress() == spots.size()) {
                         barProgressDialog.dismiss();
+                        // Create the adapter to convert the array to views
+                        adapter = new SpotAdapter(getActivity(), spots, spotsimages);
+                        // Attach the adapter to a ListView
+                        listView.setAdapter(adapter);
                     }
+                } else {
+                    Log.i("file", "file doesn't exists");
 
-                });
+                    AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
+                    int transfertId = aws_tools.download(file, s.getPhotokey());
+                    TransferUtility transferUtility = aws_tools.getTransferUtility();
+                    TransferObserver observer = transferUtility.getTransferById(transfertId);
+                    observer.setTransferListener(new TransferListener() {
+
+                        @Override
+                        public void onStateChanged(int id, TransferState state) {
+                            // do something
+                        }
+
+                        @Override
+                        public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                            int rapport = (int) (bytesCurrent * 100);
+                            rapport /= bytesTotal;
+                            if (rapport == 100) {
+                                barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
+                                spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
+                            }
+                            if (barProgressDialog.getProgress() == spots.size()) {
+                                barProgressDialog.dismiss();
+                                // Create the adapter to convert the array to views
+                                adapter = new SpotAdapter(getActivity(), spots, spotsimages);
+                                // Attach the adapter to a ListView
+                                listView.setAdapter(adapter);
+                            }
+                        }
+
+                        @Override
+                        public void onError(int id, Exception ex) {
+                            // do something
+                            barProgressDialog.dismiss();
+                        }
+
+                    });
+                }
+            }
         }
     }
 

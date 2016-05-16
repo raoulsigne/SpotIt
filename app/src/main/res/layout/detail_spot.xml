@@ -6,24 +6,12 @@
     android:gravity="center_horizontal"
     android:id="@+id/detail_spot_view">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/title_spot"
-        android:id="@+id/titre"
-        android:textStyle="bold"
-        android:background="@color/myblue"
-        android:textColor="@color/blanc"/>
-
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:id="@+id/imgspot"
         android:scaleType="centerCrop"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp"
         android:layout_marginBottom="30dp"/>
 
     <RelativeLayout

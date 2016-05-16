@@ -42,7 +42,7 @@ public class Connexion extends AppCompatActivity {
         setContentView(R.layout.activity_connexion);
         callbackManager = CallbackManager.Factory.create();
 
-        final Intent mainintent = new Intent(this,MainActivity.class);
+        final Intent mainintent = new Intent(this,Welcome.class);
         dbAdapteur = new UtilisateurDBAdapteur(getApplicationContext());
 
         //recuperation des elements de l'activité

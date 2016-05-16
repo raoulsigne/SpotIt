@@ -1,4 +1,4 @@
-package techafrkix.work.com.spot.spotit;
+package techafrkix.work.com.spot.techafrkix.work.com.spot.utils;
 
 import android.util.Log;
 

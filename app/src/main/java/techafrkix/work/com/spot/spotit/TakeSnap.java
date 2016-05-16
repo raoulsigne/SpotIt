@@ -513,8 +513,6 @@ class PhotoHandler implements Camera.PictureCallback {
             //fos.write(bytes);
             fos.close();
             if (result) {
-                Toast.makeText(context, "New Image saved:" + photoFile,
-                        Toast.LENGTH_LONG).show();
                 return filename;
             }
             else {

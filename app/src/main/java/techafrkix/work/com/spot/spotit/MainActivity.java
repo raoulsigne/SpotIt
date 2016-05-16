@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -22,7 +21,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,15 +30,11 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.Marker;
 
 import java.io.File;
-import java.util.HashMap;
 
 import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
-import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
-import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.MyMarker;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.GeoHash;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, FragmentAccueil.OnFragmentInteractionListener{

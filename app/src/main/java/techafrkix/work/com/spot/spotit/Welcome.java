@@ -25,6 +25,7 @@ import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
 
 public class Welcome extends AppCompatActivity {
 
+    private static int RAPPORT_PROGRESSION = 0;
     private ProgressBar bar = null;
     private int mProgressStatus = 0;
     private SpotsDBAdapteur dbAdapteur;
@@ -36,6 +37,7 @@ public class Welcome extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
+        RAPPORT_PROGRESSION = 0;
         bar = (ProgressBar)findViewById(R.id.progressBar);
         bar.getProgressDrawable().setColorFilter(
                 Color.WHITE, android.graphics.PorterDuff.Mode.SRC_IN);
@@ -83,9 +85,12 @@ public class Welcome extends AppCompatActivity {
                                 bar.setProgress(mProgressStatus);
                             }
                             if (bar.getProgress() == spots.size()) {
-                                Intent itmain = new Intent(getApplicationContext(), MainActivity.class);
-                                finish();
-                                startActivity(itmain);
+                                if (RAPPORT_PROGRESSION == 0) {
+                                    RAPPORT_PROGRESSION = 1;
+                                    Intent itmain = new Intent(getApplicationContext(), MainActivity.class);
+                                    finish();
+                                    startActivity(itmain);
+                                }
                             }
                         }
 

@@ -33,6 +33,7 @@ import techafrkix.work.com.spot.spotit.MainActivity;
  */
 public class AWS_Tools {
 
+    private static int RAPPORT_PROGRESSION = 0;
     private final int MAX_VALUE = 100;
     private final String MY_BUCKET = "bucketspotit";
     private final String DATE_KEY = "date";
@@ -52,6 +53,7 @@ public class AWS_Tools {
     }
 
     public AWS_Tools(Context mcontext){
+        RAPPORT_PROGRESSION = 0;
         context = mcontext;
         // Initialize the Amazon Cognito credentials provider
         credentialsProvider = new CognitoCachingCredentialsProvider(
@@ -100,15 +102,18 @@ public class AWS_Tools {
             public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
                 int rapport = (int)(bytesCurrent * 100);
                 rapport /= bytesTotal;
-                Log.i("upload","pourcentage "+rapport);
+                Log.i("upload","pourcentage "+rapport+ " variable statique "+RAPPORT_PROGRESSION);
                 //Display percentage transfered to user
                 barProgressDialog.setProgress(rapport);
                 if (rapport == MAX_VALUE) {
-                    barProgressDialog.dismiss();
-                    Toast.makeText(context, "Opération terminée", Toast.LENGTH_SHORT).show();
-                    Intent mainintent = new Intent(context,MainActivity.class);
-                    ((Activity) context).finish();
-                    context.startActivity(mainintent);
+                    if (RAPPORT_PROGRESSION == 0) {
+                        RAPPORT_PROGRESSION = 1;
+                        barProgressDialog.dismiss();
+                        Toast.makeText(context, "Opération terminée", Toast.LENGTH_SHORT).show();
+                        Intent mainintent = new Intent(context, MainActivity.class);
+                        ((Activity) context).finish();
+                        context.startActivity(mainintent);
+                    }
                 }
             }
 

@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                     Intent imagepreview = new Intent(MainActivity.this,TakeSnap.class);
                     imagepreview.putExtras(bundle);
-                    finish();
+                    // finish();
                     startActivity(imagepreview);
                 }
             }

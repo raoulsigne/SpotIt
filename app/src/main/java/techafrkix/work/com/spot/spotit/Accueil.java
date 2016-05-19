@@ -3,8 +3,11 @@ package techafrkix.work.com.spot.spotit;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+
+import org.mindrot.jbcrypt.BCrypt;
 
 public class Accueil extends AppCompatActivity {
 
@@ -35,9 +38,16 @@ public class Accueil extends AppCompatActivity {
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent itSignin = new Intent(getApplicationContext(),Inscription.class);
+                Intent itSignin = new Intent(getApplicationContext(), Inscription.class);
                 startActivity(itSignin);
             }
         });
+//
+//        String pass = BCrypt.hashpw("wearedev16", BCrypt.gensalt()).toString();
+//
+//        if (BCrypt.checkpw("wearedev16", pass))
+//            Log.i("bcrypt", "It matches");
+//        else
+//            Log.i("bcrypt", "It does not match");
     }
 }

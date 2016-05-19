@@ -29,6 +29,7 @@ import com.facebook.Profile;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Arrays;
 
@@ -37,6 +38,7 @@ import techafrkix.work.com.spot.bd.UtilisateurDBAdapteur;
 
 public class Inscription extends AppCompatActivity {
 
+    public static  final  String _TO_CONCAT = "cs457syu89iuer8poier787";
     EditText email, password, date;
     LoginButton fbSignin;
     Button signin;
@@ -155,7 +157,8 @@ public class Inscription extends AppCompatActivity {
                                                 String email = me.optString("email");
                                                 Utilisateur user = new Utilisateur();
                                                 user.setDate_naissance("");
-                                                user.setEmail(email);
+                                                String pass = BCrypt.hashpw(email + Inscription._TO_CONCAT, BCrypt.gensalt()).toString();
+                                                user.setEmail(pass);
                                                 user.setPassword(fbProfileName.replaceAll("\\s","").toLowerCase());
                                                 db = dbAdapteur.open();
                                                 long cle = dbAdapteur.insertUtilisateur(user);

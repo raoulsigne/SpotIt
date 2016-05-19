@@ -40,4 +40,8 @@ dependencies {
     compile 'com.amazonaws:aws-android-sdk-core:2.+'
     compile 'com.amazonaws:aws-android-sdk-cognito:2.+'
     compile 'com.amazonaws:aws-android-sdk-s3:2.+'
+
+    //libraries concerning cryptography
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile files('libs/jbcrypt-0.3m.jar')
 }

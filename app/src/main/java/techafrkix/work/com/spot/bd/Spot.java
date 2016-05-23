@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import techafrkix.work.com.spot.spotit.DetailSpot_New;
+
 public class Spot implements Serializable{
 
 	private int id;
@@ -13,6 +15,7 @@ public class Spot implements Serializable{
 	private String photokey;
 	private String geohash;
 	private String date;
+	private int respot;
 
     @Override
     public String toString() {
@@ -23,6 +26,7 @@ public class Spot implements Serializable{
                 ", photo='" + photokey + '\'' +
                 ", geohash='" + geohash + '\'' +
                 ", date='" + date + '\'' +
+				", respot='" + respot + '\'' +
                 '}';
     }
 
@@ -35,6 +39,7 @@ public class Spot implements Serializable{
 		this.photokey = photokey;
 		this.geohash = geohash;
 		this.date = date;
+		this.respot = 0;
 	}
 
 	public int getId() {
@@ -74,7 +79,15 @@ public class Spot implements Serializable{
 		this.date = date;
 	}
 
-    public String getVisibilite() {
+	public int getRespot() {
+		return respot;
+	}
+
+	public void setRespot(int respot) {
+		this.respot = respot;
+	}
+
+	public String getVisibilite() {
         return visibilite;
     }
 
@@ -92,5 +105,15 @@ public class Spot implements Serializable{
 		Calendar c = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy à HH:mm");
 		this.date = sdf.format(c.getTime());
+		this.respot = 0;
+	}
+
+	public int getvisibiliteId(){
+		if (visibilite == DetailSpot_New.V_MOI)
+			return 21;
+		else if (visibilite == DetailSpot_New.V_FRIEND)
+			return 11;
+		else
+			return 1;
 	}
 }

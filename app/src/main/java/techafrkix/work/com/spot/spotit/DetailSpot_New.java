@@ -34,9 +34,9 @@ public class DetailSpot_New extends AppCompatActivity {
 
     private String visibilite, imagepath;
 
-    private static final String V_MOI = "moi";
-    private static final String V_FRIEND = "amis";
-    private static final String V_PUBLIC = "public";
+    public static final String V_MOI = "moi";
+    public static final String V_FRIEND = "amis";
+    public static final String V_PUBLIC = "public";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

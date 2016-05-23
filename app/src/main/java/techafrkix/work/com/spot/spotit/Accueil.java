@@ -9,6 +9,9 @@ import android.widget.Button;
 
 import org.mindrot.jbcrypt.BCrypt;
 
+import techafrkix.work.com.spot.bd.Spot;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
+
 public class Accueil extends AppCompatActivity {
 
     Button login, signin;
@@ -43,11 +46,33 @@ public class Accueil extends AppCompatActivity {
             }
         });
 //
-//        String pass = BCrypt.hashpw("wearedev16", BCrypt.gensalt()).toString();
-//
-//        if (BCrypt.checkpw("wearedev16", pass))
-//            Log.i("bcrypt", "It matches");
-//        else
-//            Log.i("bcrypt", "It does not match");
+        final String pass = BCrypt.hashpw("raoul", BCrypt.gensalt()).toString();
+
+        if (BCrypt.checkpw("wearedev16", pass))
+            Log.i("bcrypt", "It matches");
+        else
+            Log.i("bcrypt", "It does not match");
+
+        final DBServer server = new DBServer(getApplicationContext());
+
+        Thread thread = new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    // server.inscription("raoul.signe@yahoo.fr", "raoul", pass, 1);
+                    // server.getUser_by_pseudo("raoul");
+                    server.enregistre_spot(new Spot("3.15", "18.2563", DetailSpot_New.V_MOI, "1542655844", "fqufgkertqkgfqk", "2016-05-23"));
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        thread.start();
     }
 }

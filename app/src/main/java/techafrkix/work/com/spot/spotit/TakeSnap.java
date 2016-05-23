@@ -156,8 +156,6 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
         clear = new ImageView(context);
         clear.setBackground(getResources().getDrawable(R.drawable.ic_clear_white_24dp));
         shutter.setBackground(getResources().getDrawable(R.drawable.round_button));
-        shutter.setWidth(200);
-        shutter.setHeight(200);
         addView(shutter);
         addView(done);
         addView(clear);

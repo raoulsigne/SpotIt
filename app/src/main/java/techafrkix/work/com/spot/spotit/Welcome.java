@@ -47,7 +47,7 @@ public class Welcome extends AppCompatActivity {
 
     private void loadSpots() {
         dbAdapteur = new SpotsDBAdapteur(getApplicationContext());
-        spots = new ArrayList<>();
+        spots = new ArrayList<Spot>();
         db = dbAdapteur.open();
         if (db != null) {
             spots = dbAdapteur.getAllSpots();

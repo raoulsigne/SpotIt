@@ -16,19 +16,8 @@ public class Spot implements Serializable{
 	private String geohash;
 	private String date;
 	private int respot;
-
-    @Override
-    public String toString() {
-        return "Spot{" +
-                "longitude='" + longitude + '\'' +
-                ", latitude='" + latitude + '\'' +
-                ", visibilite='" + visibilite + '\'' +
-                ", photo='" + photokey + '\'' +
-                ", geohash='" + geohash + '\'' +
-                ", date='" + date + '\'' +
-				", respot='" + respot + '\'' +
-                '}';
-    }
+	private int user_id;
+    private int visibilite_id;
 
     public Spot(String longitude, String latitude, String visibilite, String photokey,
 			String geohash, String date) {
@@ -42,7 +31,19 @@ public class Spot implements Serializable{
 		this.respot = 0;
 	}
 
-	public int getId() {
+    public Spot(String longitude, String latitude, String visibilite, String photokey, String geohash,
+                String date, int respot, int user_id) {
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.visibilite = visibilite;
+        this.photokey = photokey;
+        this.geohash = geohash;
+        this.date = date;
+        this.respot = respot;
+        this.user_id = user_id;
+    }
+
+    public int getId() {
 		return id;
 	}
 	public void setId(int id) {
@@ -95,6 +96,22 @@ public class Spot implements Serializable{
         this.visibilite = visibilite;
     }
 
+    public int getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
+    }
+
+    public int getVisibilite_id() {
+        return visibilite_id;
+    }
+
+    public void setVisibilite_id(int visibilite_id) {
+        this.visibilite_id = visibilite_id;
+    }
+
     public Spot() {
 		super();
 		this.longitude = "";
@@ -106,6 +123,7 @@ public class Spot implements Serializable{
 		SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy à HH:mm");
 		this.date = sdf.format(c.getTime());
 		this.respot = 0;
+        this.user_id = 0;
 	}
 
 	public int getvisibiliteId(){
@@ -116,4 +134,19 @@ public class Spot implements Serializable{
 		else
 			return 1;
 	}
+
+    @Override
+    public String toString() {
+        return "Spot{" +
+                "id=" + id +
+                ", longitude='" + longitude + '\'' +
+                ", latitude='" + latitude + '\'' +
+                ", visibilite='" + visibilite + '\'' +
+                ", photokey='" + photokey + '\'' +
+                ", geohash='" + geohash + '\'' +
+                ", date='" + date + '\'' +
+                ", respot=" + respot +
+                ", user_id=" + user_id +
+                '}';
+    }
 }

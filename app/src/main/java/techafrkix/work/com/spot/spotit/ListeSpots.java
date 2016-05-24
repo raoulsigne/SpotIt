@@ -54,7 +54,7 @@ public class ListeSpots extends Fragment {
 
     private void loadSpots() {
         dbAdapteur = new SpotsDBAdapteur(getActivity());
-        spots = new ArrayList<>();
+        spots = new ArrayList<Spot>();
         db = dbAdapteur.open();
         if (db != null) {
             spots = dbAdapteur.getAllSpots();

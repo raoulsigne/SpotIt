@@ -97,7 +97,7 @@ public class SpotOnMap extends FragmentActivity implements OnMapReadyCallback {
             mMap.setMyLocationEnabled(true);
         }
 
-        spots = new ArrayList<>();
+        spots = new ArrayList<Spot>();
         LatLng coordonnees;
         Intent intent = getIntent();
         if (intent.getExtras()!=null){

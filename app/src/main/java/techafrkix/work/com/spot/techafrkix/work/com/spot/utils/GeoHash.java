@@ -26,7 +26,7 @@ public class GeoHash {
     private static final char[] base32 = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9','b', 'c', 'd', 'e', 'f',
             'g', 'h', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
-    private final static Map<Character, Integer> decodeMap = new HashMap<>();
+    private final static Map<Character, Integer> decodeMap = new HashMap<Character, Integer>();
 
     static {
         int sz = base32.length;
@@ -200,7 +200,7 @@ public class GeoHash {
         if ("nsew".indexOf(direction) == -1)
             return " ";
 
-        Map<Character, String[]> neighbour = new HashMap<>();
+        Map<Character, String[]> neighbour = new HashMap<Character, String[]>();
         String[] nord = {"p0r21436x8zb9dcf5h7kjnmqesgutwvy", "bc01fg45238967deuvhjyznpkmstqrwx"},
                  sud  = {"14365h7k9dcfesgujnmqp0r2twvyx8zb", "238967debc01fg45kmstqrwxuvhjyznp"},
                  est  = {"bc01fg45238967deuvhjyznpkmstqrwx", "p0r21436x8zb9dcf5h7kjnmqesgutwvy"},
@@ -210,7 +210,7 @@ public class GeoHash {
         neighbour.put('e', est);
         neighbour.put('w', west);
 
-        Map<Character, String[]> border = new HashMap<>();
+        Map<Character, String[]> border = new HashMap<Character, String[]>();
         String[] nord1 = {"prxz", "bcfguvyz" },
                  sud1 = { "028b", "0145hjnp" },
                  est1 = { "bcfguvyz", "prxz" },
@@ -245,7 +245,7 @@ public class GeoHash {
     }
 
     Map<String, String> neighbours(String geohash){
-        Map<String, String> result = new HashMap<>();
+        Map<String, String> result = new HashMap<String, String>();
 
         result.put("n",adjacent(geohash, 'n'));
         result.put("ne",adjacent(adjacent(geohash, 'n'),'e'));

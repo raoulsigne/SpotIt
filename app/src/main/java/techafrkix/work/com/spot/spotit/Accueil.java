@@ -45,16 +45,9 @@ public class Accueil extends AppCompatActivity {
                 startActivity(itSignin);
             }
         });
-//
+
         final String pass = BCrypt.hashpw("raoul", BCrypt.gensalt()).toString();
-
-        if (BCrypt.checkpw("wearedev16", pass))
-            Log.i("bcrypt", "It matches");
-        else
-            Log.i("bcrypt", "It does not match");
-
         final DBServer server = new DBServer(getApplicationContext());
-
         Thread thread = new Thread(new Runnable()
         {
             @Override
@@ -62,9 +55,15 @@ public class Accueil extends AppCompatActivity {
             {
                 try
                 {
-                    // server.inscription("raoul.signe@yahoo.fr", "raoul", pass, 1);
-                    // server.getUser_by_pseudo("raoul");
-                    server.enregistre_spot(new Spot("3.15", "18.2563", DetailSpot_New.V_MOI, "1542655844", "fqufgkertqkgfqk", "2016-05-23"));
+                    // server.register("raoul.signe@yahoo.fr", "raoul", pass, 1, "1991-02-01");
+                    // Log.i("server", server.getUsers_by_pseudo("raoul").toString());
+                    // server.enregistre_spot(new Spot("3.15", "18.2563", DetailSpot_New.V_MOI, "1542655844", "fqufgkertqkgfqk", "2016-05-23", 0, 131));
+                    // Log.i("server", server.login("raoul.signe@yahoo.fr", 1, pass).toString());
+                    // server.add_friend(131, 1);
+                    // Log.i("server", server.getAllFriends(131).toString());
+                    // Log.i("server", server.find_spot("fqufgkertqkgfqk").toString());
+                    // server.add_comment(51, 131, "je quiff la plage grave particulieremment celle de kribi");
+                     Log.i("server", server.commentaires_spot(131).toString());
                 }
                 catch (Exception e)
                 {

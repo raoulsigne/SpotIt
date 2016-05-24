@@ -12,11 +12,24 @@ public class Utilisateur implements Serializable {
     private String email;
     private String password;
     private String date_naissance;
+    private String pseudo;
+    private int nbspot;
+    private int nbrespot;
+    private int typeconnexion_id;
+    private String photo;
+    private String created;
 
     public Utilisateur(String email, String password, String date_naissance) {
         this.email = email;
         this.password = password;
         this.date_naissance = date_naissance;
+    }
+
+    public Utilisateur(String email, String password, String date_naissance, String pseudo) {
+        this.email = email;
+        this.password = password;
+        this.date_naissance = date_naissance;
+        this.pseudo = pseudo;
     }
 
     public Utilisateur(int id) {
@@ -58,6 +71,54 @@ public class Utilisateur implements Serializable {
         this.date_naissance = date_naissance;
     }
 
+    public String getPseudo() {
+        return pseudo;
+    }
+
+    public void setPseudo(String pseudo) {
+        this.pseudo = pseudo;
+    }
+
+    public int getNbspot() {
+        return nbspot;
+    }
+
+    public void setNbspot(int nbspot) {
+        this.nbspot = nbspot;
+    }
+
+    public int getNbrespot() {
+        return nbrespot;
+    }
+
+    public void setNbrespot(int nbrespot) {
+        this.nbrespot = nbrespot;
+    }
+
+    public int getTypeconnexion_id() {
+        return typeconnexion_id;
+    }
+
+    public void setTypeconnexion_id(int typeconnexion_id) {
+        this.typeconnexion_id = typeconnexion_id;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
+    public String getCreated() {
+        return created;
+    }
+
+    public void setCreated(String created) {
+        this.created = created;
+    }
+
     @Override
     public String toString() {
         return "Utilisateur{" +
@@ -65,6 +126,12 @@ public class Utilisateur implements Serializable {
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", date_naissance='" + date_naissance + '\'' +
+                ", pseudo='" + pseudo + '\'' +
+                ", nbspot=" + nbspot +
+                ", nbrespot=" + nbrespot +
+                ", typeconnexion_id=" + typeconnexion_id +
+                ", photo='" + photo + '\'' +
+                ", created='" + created + '\'' +
                 '}';
     }
 }

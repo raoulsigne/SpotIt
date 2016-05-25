@@ -52,8 +52,8 @@ public class Welcome extends AppCompatActivity {
         if (db != null) {
             spots = dbAdapteur.getAllSpots();
             Log.i("spots", spots.toString());
-            db.close();
         }
+        db.close();
 
         bar.setVisibility(View.VISIBLE);
         bar.setMax(spots.size());

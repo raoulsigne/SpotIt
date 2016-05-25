@@ -142,6 +142,7 @@ public class Spot implements Serializable{
                 ", longitude='" + longitude + '\'' +
                 ", latitude='" + latitude + '\'' +
                 ", visibilite='" + visibilite + '\'' +
+                ", visibilite_id='" + visibilite_id + '\'' +
                 ", photokey='" + photokey + '\'' +
                 ", geohash='" + geohash + '\'' +
                 ", date='" + date + '\'' +

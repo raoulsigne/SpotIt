@@ -45,6 +45,7 @@ public class DBServer {
     private static final String BASE_URL = "https://spotitproject.herokuapp.com";
     private static final String API_KEY = "012YEYQS5653278GHQSD234671QSDF26";
     private static final String URL_USER = "/api/users";
+    private static final String URL_CHECK = "/api/userwithpseudo";
     private static final String URL_LOGIN = "/api/login";
     private static final String URL_SPOT = "/api/spots";
     private static final String URL_LIST_COMMENTAIRE = "/api/spotscoms";
@@ -399,6 +400,87 @@ public class DBServer {
         }
     }
 
+
+    /**
+     * fonction qui teste si un utilisateur avec un pseudo donné existe
+     * @param pseudo pseudo à tester
+     * @return retourne un utilisateur s'il existe ou null dans le cas contraire
+     */
+    public Utilisateur getUser_by_pseudo(String pseudo){
+
+        Utilisateur user = new Utilisateur();
+        try {
+            ContentValues values = new ContentValues();
+            values.put("apikey", API_KEY);
+            values.put(MaBaseOpenHelper.COLONNE_PSEUDO, pseudo);
+
+            url = new URL(BASE_URL+URL_CHECK+"?"+getQuery(values));
+            client = (HttpURLConnection) url.openConnection();
+            //client.setDoOutput(true); this method put automatically the method to POST
+            client.setRequestMethod("GET");
+
+            StringBuilder builder = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                builder.append(line+"\n");
+            }
+            br.close();
+            Log.i(TAG, "reponse = " + builder.toString());
+
+            try {
+                JSONObject json = new JSONObject(builder.toString());
+                int statut = Integer.valueOf(json.getString("statut"));
+                if (statut == 1){
+                    JSONObject json2 = json.getJSONObject("data");
+
+                    user.setPassword((String) json2.get(MaBaseOpenHelper.COLONNE_PASSWORD));
+                    user.setEmail((String) json2.get(MaBaseOpenHelper.COLONNE_EMAIL));
+                    user.setDate_naissance((String) json2.get(MaBaseOpenHelper.COLONNE_DATE_NAISSANCE));
+                    user.setId((int) json2.get(MaBaseOpenHelper.COLONNE_USER_ID));
+                    user.setPseudo((String) json2.get(MaBaseOpenHelper.COLONNE_PSEUDO));
+                    user.setPhoto((String) json2.get(MaBaseOpenHelper.COLONNE_PHOTO_PROFILE));
+                    user.setCreated((String) json2.get(MaBaseOpenHelper.COLONNE_CREATED));
+                    user.setNbrespot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_RESPOT));
+                    user.setNbspot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_SPOT));
+                    user.setTypeconnexion_id((int) json2.get(MaBaseOpenHelper.COLONNE_TYPECONNEXION_ID));
+
+                    return user;
+                }
+                else
+                {
+                    builder.append("statut = "+json.getString("statut"));
+                    builder.append("errcode = "+json.getString("errcode"));
+                    builder.append("message = "+json.getString("message"));
+
+                    Log.i(TAG, "reponse = " + builder.toString());
+                    return null;
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "JSONException " + e.getMessage());
+                return null;
+            }
+        }
+        catch(MalformedURLException error) {
+            //Handles an incorrectly entered URL
+            Log.e(TAG,"MalformedURLException "+error.getMessage());
+            return null;
+        }
+        catch(SocketTimeoutException error) {
+            //Handles URL access timeout.
+            Log.e(TAG,"SocketTimeoutException "+error.getMessage());
+            return null;
+        }
+        catch (IOException error) {
+            //Handles input and output errors
+            Log.e(TAG,"IOException "+error.getMessage());
+            return null;
+        }
+        finally {
+            client.disconnect();
+        }
+    }
+
     /**
      * fonction qui retourne la liste des amis d'un utilisateur
      * @param user_id represente l'id de l'utilisateur concerné
@@ -675,14 +757,14 @@ public class DBServer {
                     JSONArray jArr = json.getJSONArray("data");
                     for (int i=0; i < jArr.length(); i++) {
                         JSONObject json2 = jArr.getJSONObject(i);
-                        spot.setRespot((int) json2.get(SpotsDBAdapteur.COLONNE_RESPOT));
+                        spot.setRespot((int) json2.get("respot"));
                         spot.setVisibilite_id((int) json2.get("visibilite_id"));
-                        spot.setGeohash((String) json2.get(SpotsDBAdapteur.COLONNE_GEOHASH));
-                        spot.setId((int) json2.get(MaBaseOpenHelper.COLONNE_USER_ID));
-                        spot.setLongitude((String) json2.get(SpotsDBAdapteur.COLONNE_LONGITUDE));
-                        spot.setLatitude((String) json2.get(SpotsDBAdapteur.COLONNE_LATITUDE));
-                        spot.setPhotokey((String) json2.get(SpotsDBAdapteur.COLONNE_PHOTO));
-                        spot.setUser_id((int) json2.get(SpotsDBAdapteur.COLONNE_USER_ID));
+                        spot.setGeohash((String) json2.get("hash"));
+                        spot.setId((int) json2.get("idspot"));
+                        spot.setLongitude(json2.getDouble("gpslong") + "");
+                        spot.setLatitude(json2.getDouble("gpslat") + "");
+                        spot.setPhotokey((String) json2.get("photo"));
+                        //spot.setUser_id((int) json2.get(SpotsDBAdapteur.COLONNE_USER_ID));
                         spots.add(spot);
                     }
                     return spots;

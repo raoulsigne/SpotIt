@@ -69,7 +69,8 @@ public class Accueil extends AppCompatActivity {
                     // String[] tab = {"plage", "conges", "fun"};
                     // server.add_tag(tab, 51);
                     // Log.i("server", server.tags_spot(51).toString());
-                     Log.i("server", server.find_spot_tag("fun", "").toString());
+                    // Log.i("server", server.find_spot_tag("fun", "").toString());
+                    // Log.i("server", server.getUser_by_pseudo("raoul").toString());
                 }
                 catch (Exception e)
                 {

@@ -9,6 +9,8 @@ import android.widget.Button;
 
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.util.ArrayList;
+
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 
@@ -63,7 +65,11 @@ public class Accueil extends AppCompatActivity {
                     // Log.i("server", server.getAllFriends(131).toString());
                     // Log.i("server", server.find_spot("fqufgkertqkgfqk").toString());
                     // server.add_comment(51, 131, "je quiff la plage grave particulieremment celle de kribi");
-                     Log.i("server", server.commentaires_spot(131).toString());
+                    // Log.i("server", server.commentaires_spot(51).toString());
+                    // String[] tab = {"plage", "conges", "fun"};
+                    // server.add_tag(tab, 51);
+                    // Log.i("server", server.tags_spot(51).toString());
+                     Log.i("server", server.find_spot_tag("fun", "").toString());
                 }
                 catch (Exception e)
                 {

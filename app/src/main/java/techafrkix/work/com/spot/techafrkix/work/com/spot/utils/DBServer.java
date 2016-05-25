@@ -49,6 +49,7 @@ public class DBServer {
     private static final String URL_SPOT = "/api/spots";
     private static final String URL_LIST_COMMENTAIRE = "/api/spotscoms";
     private static final String URL_TAG = "/api/spotstags";
+    private static final String URL_ADD_TAG = "/api/tags";
     private static final String URL_COMMENTAIRE = "/api/commentaires";
     private static final String URL_FIND_SPOT = "/api/findspots";
     private static final String URL_FIND_SPOT_2 = "/api/findspotswithtagorhash";
@@ -640,14 +641,19 @@ public class DBServer {
         }
     }
 
+    /**
+     * fonction qui permet de rechercher un spot en utilisant un tag et ou un hash
+     * @param tag critère de recherche par tag
+     * @param hash critère de recherche aléatoire par hash
+     * @return retourne une liste de spot correspondants aux critère de recherche
+     */
     public ArrayList<Spot> find_spot_tag(String tag, String hash){
         ArrayList<Spot> spots = new ArrayList<>();
         Spot spot = new Spot();
         ContentValues values = new ContentValues();
         values.put("apikey", API_KEY);
-        if (hash != "")
-            values.put("hash", hash);
-        values.put("tag", hash);
+        values.put("hash", hash);
+        values.put("tags", tag);
         try {
             url = new URL(BASE_URL+URL_FIND_SPOT_2+"?"+getQuery(values));
             client = (HttpURLConnection) url.openConnection();
@@ -660,7 +666,7 @@ public class DBServer {
                 builder.append(line+"\n");
             }
             br.close();
-
+            Log.i(TAG, url.toString());
             Log.i(TAG, "reponse = " + builder.toString());
             try {
                 JSONObject json = new JSONObject(builder.toString());
@@ -716,6 +722,13 @@ public class DBServer {
     }
 
 
+    /**
+     * fonction qui ajoute un commentaire à un spot
+     * @param spot_id id dudit spot
+     * @param user_id id de l'user qui fait le commentaire
+     * @param commentaire chaine de caractère correspondant au commentaire
+     * @return retourne un entier représentant la valeur de retour du serveur
+     */
     public int add_comment(int spot_id, int user_id, String commentaire){
         try {
             url = new URL(BASE_URL+URL_COMMENTAIRE);
@@ -787,6 +800,11 @@ public class DBServer {
         return 0;
     }
 
+    /**
+     * fonction qui retourne la liste des commentaires d'un spot
+     * @param spot_id représente l'id du spot concerné
+     * @return
+     */
     public ArrayList<Commentaire> commentaires_spot(int spot_id){
         ArrayList<Commentaire> comments = new ArrayList<Commentaire>();
         Commentaire comment = new Commentaire();
@@ -806,7 +824,7 @@ public class DBServer {
                 builder.append(line+"\n");
             }
             br.close();
-            Log.i(TAG, "reponse = " + builder.toString());
+            Log.i(TAG, "reponse = " + builder.toString() + "  " + client.getResponseCode());
 
             try {
                 JSONObject json = new JSONObject(builder.toString());
@@ -859,6 +877,96 @@ public class DBServer {
         }
     }
 
+    /**
+     * fonction qui ajoute des tags à un spot
+     * @param tags contient la liste des chaines représentant les tag
+     * @return retourne un entier correspondant au code de retour venant du serveur
+     */
+    public int add_tag(String[] tags, int spot_id){
+        try {
+            url = new URL(BASE_URL+URL_ADD_TAG);
+            client = (HttpURLConnection) url.openConnection();
+            client.setRequestMethod("POST");
+            client.setDoOutput(true);
+
+            OutputStream outputPost = new BufferedOutputStream(client.getOutputStream());
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputPost, "UTF-8"));
+            StringBuilder liste_tag = new StringBuilder();
+            liste_tag.append("[");
+            for (int i=0; i<tags.length; i++){
+                if (i<tags.length - 1)
+                    liste_tag.append("\"" + tags[i] + "\",");
+                else
+                    liste_tag.append("\"" + tags[i] + "\"");
+            }
+            liste_tag.append("]");
+            Log.i(TAG, liste_tag.toString());
+            ContentValues values = new ContentValues();
+            values.put("apikey", API_KEY);
+            values.put("spot_id", spot_id);
+            values.put("tags", liste_tag.toString());
+
+            writer.write(getQuery(values));
+            writer.flush();
+            writer.close();
+            outputPost.close();
+            Log.i(TAG, getQuery(values));
+
+            StringBuilder builder = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                builder.append(line+"\n");
+            }
+            br.close();
+
+            try {
+                JSONObject json = new JSONObject(builder.toString());
+                int statut = Integer.valueOf(json.getString("statut"));
+                if (statut == 1){
+                    builder.append("statut = "+json.getString("statut"));
+                    builder.append("spot_id = "+json.getString("spot_id"));
+                }
+                else
+                {
+                    builder.append("statut = "+json.getString("statut")+"\n");
+                    builder.append("errcode = "+json.getString("errcode")+"\n");
+                    builder.append("message = "+json.getString("message")+"\n");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Log.i(TAG, "reponse = "+builder.toString());
+
+        }
+        catch(MalformedURLException error) {
+            //Handles an incorrectly entered URL
+            Log.e(TAG,"MalformedURLException "+error.getMessage());
+            return 1;
+        }
+        catch(SocketTimeoutException error) {
+            //Handles URL access timeout.
+            Log.e(TAG,"SocketTimeoutException "+error.getMessage());
+            return 1;
+        }
+        catch (IOException error) {
+            //Handles input and output errors
+            Log.e(TAG,"IOException "+error.toString());
+            return 1;
+        }
+        finally {
+            client.disconnect();
+        }
+
+        return 0;
+    }
+
+
+    /**
+     * fonction qui retourne les tags d'un spot
+     * @param spot_id id du dit spot
+     * @return retourne une liste d'objets Tag
+     */
     public ArrayList<Tag> tags_spot(int spot_id){
         ArrayList<Tag> tags = new ArrayList<Tag>();
         Tag tag = new Tag();
@@ -894,7 +1002,6 @@ public class DBServer {
 
                         tags.add(tag);
                     }
-                    Log.i(TAG, "reponse = " + builder.toString());
                     return tags;
                 }
                 else
@@ -931,6 +1038,11 @@ public class DBServer {
         }
     }
 
+    /**
+     * fonction qui liste les notifications d'un utilisateur
+     * @param user_id id dudit utilisateur
+     * @return retoune une liste d'objet de type notification ou null en cas d'echec
+     */
     public ArrayList<Notification> notifications_user(int user_id){
         ArrayList<Notification> notifications = new ArrayList<>();
         Notification notification = new Notification();
@@ -1006,6 +1118,12 @@ public class DBServer {
     }
 
 
+    /**
+     * fonction qui construit la chaine devant être passée à une requête de type GET
+     * @param params un ensemble de couple clé-valeur de string
+     * @return retourne une chaine de caractère pour être passé à la requète
+     * @throws UnsupportedEncodingException
+     */
     private String getQuery(ContentValues params) throws UnsupportedEncodingException
     {
         StringBuilder result = new StringBuilder();
@@ -1024,5 +1142,32 @@ public class DBServer {
         }
 
         return result.toString();
+    }
+
+    /**
+     * fonction qui en fonction du code d'erreur retourne un string
+     * @param errorcode code d'erreur
+     * @return retourne une chaine correspondant à la chaine d'erreur
+     */
+    private String obtenirErreur(int errorcode){
+        switch (errorcode){
+            case -1:
+                return "Requête!non!autorisée!";
+            case -2:
+                return "Paramètres!manquants!";
+            case -3:
+                return "Erreur!lors!de!la!connexion!à!la!base!de!données!";
+            case -4:
+                return "Erreur!lors!de!l’exécution!d’une!requête!";
+            case -5:
+                return "Données!non!trouvées!dans!la!base!de!données!";
+            case -6:
+                return "Mauvaise!méthode!d’authentification!!";
+            case -7:
+                return "Mauvais!mot!de!passe!";
+            case -8:
+                return "Evènement!inhabituel!–!erreur!ponctuelle!";
+        }
+        return " ";
     }
 }

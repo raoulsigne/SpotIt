@@ -234,7 +234,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
      */
     private void displaySpotOnMap(){
         db = dbAdapteur.open();
-        spots = dbAdapteur.getAllSpots();
+        // spots = dbAdapteur.getAllSpots();
         LatLng coordonnees;
         if (spots != null)
             for (Spot s:

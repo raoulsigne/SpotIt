@@ -1,6 +1,7 @@
 package techafrkix.work.com.spot.spotit;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,6 +10,7 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -25,12 +27,16 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -54,10 +60,14 @@ public class TakeSnap extends Activity implements View.OnClickListener{
 
         Bundle extras = getIntent().getExtras();
 
-        longitude = extras.getDouble("longitude");
-        latitude = extras.getDouble("latitude");
-        Log.i("parametre", " longitude=" + longitude + "; latitude=" + latitude);
-
+        try {
+            longitude = extras.getDouble("longitude");
+            latitude = extras.getDouble("latitude");
+            Log.i("parametre", " longitude=" + longitude + "; latitude=" + latitude);
+        }catch (Exception e){
+            latitude = 0;
+            longitude = 0;
+        }
         // Hide the window title.
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         // getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -132,7 +142,8 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
 
     SurfaceView mSurfaceView;
     Button shutter;
-    ImageView done,clear,cameramode;
+    Button done,clear,cameramode;
+    LinearLayout linearLayout;
     SurfaceHolder mHolder;
     Size mPreviewSize;
     List<Size> mSupportedPreviewSizes;
@@ -144,22 +155,25 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
     Preview(final Context context) {
         super(context);
         currentCameraId = CameraInfo.CAMERA_FACING_BACK;
-        this.setBackgroundColor(getResources().getColor(R.color.fondsnap));
+        //this.setBackgroundColor(getResources().getColor(R.color.fondsnap));
         mSurfaceView = new SurfaceView(context);
         addView(mSurfaceView);
         shutter = new Button(context);
 
-        cameramode = new ImageView(context);
+        linearLayout = new LinearLayout(context);
+        linearLayout.setBackgroundColor(getResources().getColor(R.color.fondsnap));
+        cameramode = new Button(context);
         cameramode.setBackground(getResources().getDrawable(R.drawable.ic_refresh_white_24dp));
-        done = new ImageView(context);
+        done = new Button(context);
         done.setBackground(getResources().getDrawable(R.drawable.ic_done_white_24dp));
-        clear = new ImageView(context);
+        clear = new Button(context);
         clear.setBackground(getResources().getDrawable(R.drawable.ic_clear_white_24dp));
         shutter.setBackground(getResources().getDrawable(R.drawable.round_button));
         addView(shutter);
         addView(done);
         addView(clear);
         addView(cameramode);
+        addView(linearLayout);
 
         // Install a SurfaceHolder.Callback so we get notified when the
         // underlying surface is created and destroyed.
@@ -169,8 +183,8 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
 
         final PhotoHandler ph = new PhotoHandler(context, mCamera);
 
-        if (mCamera != null)
-            mCamera.setDisplayOrientation(90);
+//        if (mCamera != null)
+//            mCamera.setDisplayOrientation(90);
         //on prend une photo
         shutter.setOnClickListener(new OnClickListener() {
             @Override
@@ -196,15 +210,41 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
                 try {
                     if (mCamera != null) {
                         String photo = ph.saveImage(currentCameraId);
-                        Bundle bundle = new Bundle();
-                        bundle.putDouble("longitude", longitude);
-                        bundle.putDouble("latitude", latitude);
-                        bundle.putString("image", photo);
-                        Log.i("parametre", " longitude=" + longitude + "; latitude=" + latitude);
-                        Intent itDetailSpot = new Intent(context, DetailSpot_New.class);
-                        itDetailSpot.putExtras(bundle);
-                        context.startActivity(itDetailSpot);
-                        ((Activity) context).finish();
+                        Log.i("parametre", photo);
+//                        Bundle bundle = new Bundle();
+//                        bundle.putDouble("longitude", longitude);
+//                        bundle.putDouble("latitude", latitude);
+//                        bundle.putString("image", photo);
+//                        Log.i("parametre", " longitude=" + longitude + "; latitude=" + latitude);
+//                        Intent itDetailSpot = new Intent(context, DetailSpot_New.class);
+//                        itDetailSpot.putExtras(bundle);
+//                        context.startActivity(itDetailSpot);
+//                        ((Activity) context).finish();
+
+                        {
+                            AlertDialog.Builder imageDialog = new AlertDialog.Builder(context);
+                            LayoutInflater inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+
+                            View layout = inflater.inflate(R.layout.custom_fullimage_dialog,
+                                    (ViewGroup) findViewById(R.id.layout_root));
+                            ImageView image = (ImageView) layout.findViewById(R.id.fullimage);
+                            Bitmap bitmap = BitmapFactory.decodeFile(photo);
+                            Bitmap resized = Bitmap.createScaledBitmap(bitmap, 800, 800, true);
+                            image.setImageBitmap(resized);
+                            imageDialog.setView(layout);
+                            imageDialog.setPositiveButton("OK", new DialogInterface.OnClickListener(){
+
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+
+                            });
+
+
+                            imageDialog.create();
+                            imageDialog.show();
+                        }
+
                     }
                 } catch (Exception e) {
                     Log.d(TAG, e.getMessage());
@@ -249,8 +289,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
                         currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
                     }
                     mCamera = Camera.open(currentCameraId);
-                    //Code snippet for this method from somewhere on android developers, i forget where
-                    //setCameraDisplayOrientation(CameraActivity.this, currentCameraId, mCamera);
+
                     Camera.Parameters parameters = mCamera.getParameters();
                     if (parameters.getSupportedFocusModes().contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
                         parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
@@ -298,33 +337,8 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
         }
     }
 
-    public void switchCamera(Camera camera) {
-        setCamera(camera);
-        try {
-            camera.setPreviewDisplay(mHolder);
-        } catch (IOException exception) {
-            Log.e(TAG, "IOException caused by setPreviewDisplay()", exception);
-        }
-        Camera.Parameters parameters = camera.getParameters();
-        if (parameters.getSupportedFocusModes().contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
-            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-        }
-        List<String> flashModes = parameters.getSupportedFlashModes();
-        if (flashModes.contains(android.hardware.Camera.Parameters.FLASH_MODE_AUTO))
-        {
-            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-        }
-        parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
-        requestLayout();
-
-        camera.setParameters(parameters);
-    }
-
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        // We purposely disregard child measurements because act as a
-        // wrapper to a SurfaceView that centers the camera preview instead
-        // of stretching it.
         final int width = resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec);
         final int height = resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec);
         setMeasuredDimension(width, height);
@@ -343,6 +357,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
             final View child2 = getChildAt(2);
             final View child3 = getChildAt(3);
             final View child4 = getChildAt(4);
+            final View child5 = getChildAt(5);
 
             final int width = r - l;
             final int height = b - t;
@@ -361,10 +376,9 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
                         (width + scaledChildWidth) / 2, height);
                 child1.layout(0, 0, 200, 200);
             } else {
-                final int scaledChildHeight = previewHeight * width / previewWidth;
                 int hauteur = height - width;
                 //positionnement de la surface du preview
-                child.layout(0, 0, width, width);
+                child.layout(0, 0, width, height);
                 //positionnement du bouton shutter
                 child1.layout(width/2-100, width + hauteur/2 - 100, width/2+100, width + hauteur/2 + 100);
                 //positionnement du bouton valider
@@ -373,6 +387,8 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
                 child3.layout(width/2+200, width + hauteur/2 - 75, width/2+275, width + hauteur/2 + 50);
                 //positionnement du bouton de changement du mode de la camera
                 child4.layout(width/2-40, 0, width/2+40, 50);
+                //positionnement du layout qui va cacher une partie de l'écran et heberger les boutons
+                child5.layout(0, width, width, height);
             }
         }
     }
@@ -397,18 +413,18 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
     }
 
 
-    private Size getOptimalPreviewSize(List<Size> sizes, int w, int h) {
+    private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
         final double ASPECT_TOLERANCE = 0.1;
-        double targetRatio = (double) w / h;
+        double targetRatio=(double)h / w;
+
         if (sizes == null) return null;
 
-        Size optimalSize = null;
+        Camera.Size optimalSize = null;
         double minDiff = Double.MAX_VALUE;
 
         int targetHeight = h;
 
-        // Try to find an size match aspect ratio and size
-        for (Size size : sizes) {
+        for (Camera.Size size : sizes) {
             double ratio = (double) size.width / size.height;
             if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
             if (Math.abs(size.height - targetHeight) < minDiff) {
@@ -417,10 +433,9 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
             }
         }
 
-        // Cannot find the one match the aspect ratio, ignore the requirement
         if (optimalSize == null) {
             minDiff = Double.MAX_VALUE;
-            for (Size size : sizes) {
+            for (Camera.Size size : sizes) {
                 if (Math.abs(size.height - targetHeight) < minDiff) {
                     optimalSize = size;
                     minDiff = Math.abs(size.height - targetHeight);
@@ -476,8 +491,7 @@ class PhotoHandler implements Camera.PictureCallback {
         int height = bmp.getHeight();
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
-        rotatedBitmap = Bitmap.createBitmap(bmp, 0, 0,
-                width, height, matrix, true);
+        rotatedBitmap = Bitmap.createBitmap(bmp, 0, 0, width, height, matrix, true);
     }
 
     public String saveImage(int id){

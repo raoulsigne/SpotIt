@@ -49,10 +49,10 @@ public class Welcome extends AppCompatActivity {
         dbAdapteur = new SpotsDBAdapteur(getApplicationContext());
         spots = new ArrayList<Spot>();
         db = dbAdapteur.open();
-        if (db != null) {
-            spots = dbAdapteur.getAllSpots();
-            Log.i("spots", spots.toString());
-        }
+//        if (db != null) {
+//            spots = dbAdapteur.getAllSpots();
+//            Log.i("spots", spots.toString());
+//        }
         db.close();
 
         bar.setVisibility(View.VISIBLE);
@@ -142,7 +142,7 @@ public class Welcome extends AppCompatActivity {
                         finish();
                         startActivity(itmain);
                     }
-                }, 18000);
+                }, 15000);
             }
     }
 }

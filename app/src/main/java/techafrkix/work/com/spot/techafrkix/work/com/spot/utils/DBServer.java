@@ -58,9 +58,10 @@ public class DBServer {
     private static final String URL_LIST_FRIEND = "/api/friendships";
     private static final String URL_LIST_NOTIFICATION = "/api/notifications";
     private static final String URL_FIND_USER = "/api/findusers";
+    private static final String URL_FIND_SPOT_USER = "/api/allspotslistwithoffset";
 
-    private static final int CONNEXION_FB = 11;
-    private static final int CONNEXION_NORMAL = 1;
+    public static final int CONNEXION_FB = 11;
+    public static final int CONNEXION_NORMAL = 1;
 
     private static final String TAG = "DBServer";
 
@@ -266,7 +267,7 @@ public class DBServer {
                 JSONObject json = new JSONObject(builder.toString());
                 int statut = Integer.valueOf(json.getString("statut"));
                 if (statut == 1){
-                    JSONObject json2 = new JSONObject("data");
+                    JSONObject json2 = json.getJSONObject("data");
 
                     user.setPassword((String) json2.get(MaBaseOpenHelper.COLONNE_PASSWORD));
                     user.setEmail((String) json2.get(MaBaseOpenHelper.COLONNE_EMAIL));
@@ -724,20 +725,22 @@ public class DBServer {
     }
 
     /**
-     * fonction qui permet de rechercher un spot en utilisant un tag et ou un hash
-     * @param tag critère de recherche par tag
-     * @param hash critère de recherche aléatoire par hash
-     * @return retourne une liste de spot correspondants aux critère de recherche
+     * fonction qui retourne les spots d'un utilisateur
+     * @param user_id id dudit utilisateur
+     * @param offset reprsente l'indice du premier élément
+     * @param interval représente le nombre d'éléments à recuperer
+     * @return retourne une liste de spots
      */
-    public ArrayList<Spot> find_spot_tag(String tag, String hash){
+    public ArrayList<Spot> find_spot_user(int user_id, int offset, int interval){
         ArrayList<Spot> spots = new ArrayList<>();
         Spot spot = new Spot();
         ContentValues values = new ContentValues();
         values.put("apikey", API_KEY);
-        values.put("hash", hash);
-        values.put("tags", tag);
+        values.put("user_id", user_id);
+        values.put("offset", offset);
+        values.put("interval", interval);
         try {
-            url = new URL(BASE_URL+URL_FIND_SPOT_2+"?"+getQuery(values));
+            url = new URL(BASE_URL+URL_FIND_SPOT_USER+"?"+getQuery(values));
             client = (HttpURLConnection) url.openConnection();
             client.setRequestMethod("GET");
 
@@ -748,7 +751,6 @@ public class DBServer {
                 builder.append(line+"\n");
             }
             br.close();
-            Log.i(TAG, url.toString());
             Log.i(TAG, "reponse = " + builder.toString());
             try {
                 JSONObject json = new JSONObject(builder.toString());
@@ -760,7 +762,7 @@ public class DBServer {
                         spot.setRespot((int) json2.get("respot"));
                         spot.setVisibilite_id((int) json2.get("visibilite_id"));
                         spot.setGeohash((String) json2.get("hash"));
-                        spot.setId((int) json2.get("idspot"));
+                        spot.setId((int) json2.get("id"));
                         spot.setLongitude(json2.getDouble("gpslong") + "");
                         spot.setLatitude(json2.getDouble("gpslat") + "");
                         spot.setPhotokey((String) json2.get("photo"));
@@ -1199,6 +1201,80 @@ public class DBServer {
         }
     }
 
+
+    public ArrayList<Spot> find_spot_tag(String tag, String hash){
+        ArrayList<Spot> spots = new ArrayList<>();
+        Spot spot = new Spot();
+        ContentValues values = new ContentValues();
+        values.put("apikey", API_KEY);
+        values.put("hash", hash);
+        values.put("tags", tag);
+        try {
+            url = new URL(BASE_URL+URL_FIND_SPOT_2+"?"+getQuery(values));
+            client = (HttpURLConnection) url.openConnection();
+            client.setRequestMethod("GET");
+
+            StringBuilder builder = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                builder.append(line+"\n");
+            }
+            br.close();
+            Log.i(TAG, url.toString());
+            Log.i(TAG, "reponse = " + builder.toString());
+            try {
+                JSONObject json = new JSONObject(builder.toString());
+                int statut = Integer.valueOf(json.getString("statut"));
+                if (statut == 1){
+                    JSONArray jArr = json.getJSONArray("data");
+                    for (int i=0; i < jArr.length(); i++) {
+                        JSONObject json2 = jArr.getJSONObject(i);
+                        spot.setRespot((int) json2.get("respot"));
+                        spot.setVisibilite_id((int) json2.get("visibilite_id"));
+                        spot.setGeohash((String) json2.get("hash"));
+                        spot.setId((int) json2.get("idspot"));
+                        spot.setLongitude(json2.getDouble("gpslong") + "");
+                        spot.setLatitude(json2.getDouble("gpslat") + "");
+                        spot.setPhotokey((String) json2.get("photo"));
+                        //spot.setUser_id((int) json2.get(SpotsDBAdapteur.COLONNE_USER_ID));
+                        spots.add(spot);
+                    }
+                    return spots;
+                }
+                else
+                {
+                    builder.append("statut = "+json.getString("statut"));
+                    builder.append("errcode = "+json.getString("errcode"));
+                    builder.append("message = "+json.getString("message"));
+
+                    Log.i(TAG, "reponse = " + builder.toString());
+                    return null;
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "JSONException " + e.getMessage());
+                return null;
+            }
+        }
+        catch(MalformedURLException error) {
+            //Handles an incorrectly entered URL
+            Log.e(TAG,"MalformedURLException "+error.getMessage());
+            return null;
+        }
+        catch(SocketTimeoutException error) {
+            //Handles URL access timeout.
+            Log.e(TAG,"SocketTimeoutException "+error.getMessage());
+            return null;
+        }
+        catch (IOException error) {
+            //Handles input and output errors
+            Log.e(TAG,"IOException "+error.toString());
+            return null;
+        }
+        finally {
+            client.disconnect();
+        }
+    }
 
     /**
      * fonction qui construit la chaine devant être passée à une requête de type GET

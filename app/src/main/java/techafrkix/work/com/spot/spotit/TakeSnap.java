@@ -466,7 +466,8 @@ class PhotoHandler implements Camera.PictureCallback {
         int height = bmp.getHeight();
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
-        rotatedBitmap = Bitmap.createBitmap(bmp, 0, 0, width, height, matrix, true);
+        Log.i("dimension","with="+width+" height="+height);
+        rotatedBitmap = Bitmap.createBitmap(bmp, 0, 0, height, height, matrix, true);
     }
 
     public String saveImage(int id){

@@ -761,6 +761,7 @@ public class DBServer {
                     JSONArray jArr = json.getJSONArray("data");
                     for (int i=0; i < jArr.length(); i++) {
                         JSONObject json2 = jArr.getJSONObject(i);
+                        spot = new Spot();
                         spot.setRespot((int) json2.get("respot"));
                         spot.setVisibilite_id((int) json2.get("visibilite_id"));
                         spot.setGeohash((String) json2.get("hash"));

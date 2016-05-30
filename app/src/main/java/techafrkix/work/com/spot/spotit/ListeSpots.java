@@ -66,6 +66,7 @@ public class ListeSpots extends Fragment {
             @Override
             public void run() {
                 spots = server.find_spot_user(Integer.valueOf(profile.get(SessionManager.KEY_ID)), 0, 10);
+                Log.i("test", spots.toString());
             }});
 
         t.start(); // spawn thread

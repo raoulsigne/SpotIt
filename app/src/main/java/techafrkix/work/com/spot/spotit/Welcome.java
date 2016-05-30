@@ -114,9 +114,8 @@ public class Welcome extends AppCompatActivity {
                         public void onError(int id, Exception ex) {
                             // do something
                             Log.e("error chargement", ex.getMessage());
-                            Intent itmain = new Intent(getApplicationContext(), MainActivity.class);
-                            finish();
-                            startActivity(itmain);
+                            mProgressStatus++;
+                            bar.setProgress(mProgressStatus);
                         }
 
                     });

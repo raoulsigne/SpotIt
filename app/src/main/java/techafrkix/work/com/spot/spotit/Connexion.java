@@ -47,14 +47,16 @@ public class Connexion extends AppCompatActivity {
 
     UtilisateurDBAdapteur dbAdapteur;
     SQLiteDatabase db;
-    String pseudo;
+    String pseudo, sdate;
 
     // Session Manager Class
     SessionManager session;
-    int cle;
+    DBServer server;
 
     private static final String TAG = "Facebook";
     private String fbProfileName;
+
+    private Utilisateur utilisateur;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +68,7 @@ public class Connexion extends AppCompatActivity {
 
         // Session class instance
         session = new SessionManager(getApplicationContext());
+        server = new DBServer(getApplicationContext());
 
         final Intent itwelcome = new Intent(this,Welcome.class);
         dbAdapteur = new UtilisateurDBAdapteur(getApplicationContext());
@@ -75,24 +78,6 @@ public class Connexion extends AppCompatActivity {
         password = (EditText)findViewById(R.id.editText3);
         LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         Button btnLogin = (Button)findViewById(R.id.btnConnexion);
-
-//        fbTracker = new AccessTokenTracker() {
-//            @Override
-//            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
-//                if (currentAccessToken != null) {
-//                    Log.i("LOGINACTIVITY", "token tracker, current token valid");
-//                    AccessToken token = AccessToken.getCurrentAccessToken();
-//                } else {
-//                    Log.i("LOGINACTIVITY", "token tracker, current token is null");
-//                    Intent itaccueil = new Intent(getApplicationContext(), Accueil.class);
-//                    itaccueil.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK); //add flags to spot all others activities
-//                    finish();
-//                    startActivity(itaccueil);
-//                }
-//            }
-//        };
-//
-//        fbTracker.startTracking();
 
         String parent = getIntent().getExtras().getString("caller");
         if (isLoggedIn()) {
@@ -105,121 +90,155 @@ public class Connexion extends AppCompatActivity {
             }
         }
         final EditText txtPseudo = new EditText(Connexion.this);
-        txtPseudo.setHint("pseudo");
+        txtPseudo.setHint("Pseudo");
         final EditText txtDate = new EditText(Connexion.this);
-        txtDate.setHint("date de naissance jj/mm/AAAA");
+        txtDate.setHint("Date de naissance");
+        txtDate.setInputType(InputType.TYPE_CLASS_DATETIME);
+        final Button btnValider = new Button(Connexion.this);
+        btnValider.setText("Valider");
+        btnValider.setHeight(20);
+        btnValider.setBackground(getResources().getDrawable(R.drawable.button_blue));
         final LinearLayout layout = new LinearLayout(Connexion.this);
         layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(10, 0, 10, 0);
         layout.addView(txtPseudo);
         layout.addView(txtDate);
-        txtDate.setInputType(InputType.TYPE_CLASS_DATETIME);
-        final DBServer server = new DBServer(getApplicationContext());
+        layout.addView(btnValider);
         //bout de code pour gérer le bouton de connexion via facebook à l'application
         loginButton.setReadPermissions("user_friends");
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(final LoginResult loginResult) {
-                        final AlertDialog d = new AlertDialog.Builder(Connexion.this)
-                                .setTitle("Information")
-                                .setMessage("Entrez vos informations!")
-                                .setView(layout)
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int whichButton) {
+                        Toast.makeText(Connexion.this, "connexion reussi",
+                                Toast.LENGTH_LONG).show();
 
-                                    }
-                                })
-                                .show();
-                        d.setOnShowListener(new DialogInterface.OnShowListener() {
+                        //contacting facebook to get user email
+                        //prepare fields with email
+                        String[] requiredFields = new String[]{"email"};
+                        Bundle parameters = new Bundle();
+                        parameters.putString("fields", TextUtils.join(",", requiredFields));
 
+                        GraphRequest requestEmail = new GraphRequest(loginResult.getAccessToken(), "me", parameters, null, new GraphRequest.Callback()
+                        {
                             @Override
-                            public void onShow(DialogInterface dialog) {
+                            public void onCompleted (GraphResponse response)
+                            {
+                                if (response != null)
+                                {
+                                    GraphRequest.GraphJSONObjectCallback callbackEmail = new GraphRequest.GraphJSONObjectCallback()
+                                    {
+                                        @Override
+                                        public void onCompleted (JSONObject me, GraphResponse response)
+                                        {
+                                            if (response.getError() != null)
+                                            {
+                                                Log.d(TAG, "FB: cannot parse email");
+                                            }
+                                            else
+                                            {
+                                                final String email = me.optString("email");  // recupération de l'email via facebook api
+                                                Thread t1 = new Thread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        utilisateur = server.login(email, DBServer.CONNEXION_FB, " "); // tester si l'utilisateur a déjà été enrgistré
+                                                        // Creating user login session
+                                                        // For testing i am stroing name, email as follow
+                                                        // Use user real data
+                                                        session.createLoginSession(utilisateur.getPseudo(), utilisateur.getEmail(), utilisateur.getId());
 
-                                Button b = d.getButton(AlertDialog.BUTTON_POSITIVE);
-                                b.setOnClickListener(new View.OnClickListener() {
+                                                    }});
 
-                                    @Override
-                                    public void onClick(View view) {
-                                        pseudo = txtPseudo.getText().toString();
-                                        Thread thread = new Thread(new Runnable() {
-                                            @Override
-                                            public void run() {
+                                                t1.start(); // spawn thread
+                                                // wait for thread to finish
                                                 try {
-                                                    Utilisateur utilisateur = server.getUser_by_pseudo(pseudo);
+                                                    t1.join();
                                                     if (utilisateur != null){
-                                                        txtPseudo.setTextColor(getResources().getColor(R.color.pink));
+                                                        startActivity(itwelcome); // déjà enregistré on démarre l'activité Welcome
                                                     }
-                                                    else {
-                                                        //contacting facebook to get user email
+                                                    else { // on demande à l'utilisateur d'entrer ses identifiants pour l'en créer un compte
+                                                        new AlertDialog.Builder(Connexion.this)
+                                                                .setTitle("Vos Information")
+                                                                .setView(layout)
+                                                                .show();
 
-                                                        //prepare fields with email
-                                                        String[] requiredFields = new String[]{"email"};
-                                                        Bundle parameters = new Bundle();
-                                                        parameters.putString("fields", TextUtils.join(",", requiredFields));
-
-                                                        GraphRequest requestEmail = new GraphRequest(loginResult.getAccessToken(), "me", parameters, null, new GraphRequest.Callback() {
+                                                        btnValider.setOnClickListener(new View.OnClickListener() {
                                                             @Override
-                                                            public void onCompleted(GraphResponse response) {
-                                                                if (response != null) {
-                                                                    GraphRequest.GraphJSONObjectCallback callbackEmail = new GraphRequest.GraphJSONObjectCallback() {
-                                                                        @Override
-                                                                        public void onCompleted(JSONObject me, GraphResponse response) {
-                                                                            if (response.getError() != null) {
-                                                                                Log.d(TAG, "FB: cannot parse email");
-                                                                            } else {
-                                                                                final String email = me.optString("email");
-                                                                                final Utilisateur user = new Utilisateur();
-                                                                                user.setDate_naissance(txtDate.getText().toString());
-                                                                                user.setEmail(email);
-                                                                                final String pass = BCrypt.hashpw(email + Inscription._TO_CONCAT, BCrypt.gensalt()).toString();
-                                                                                user.setPassword(pass);
-                                                                                user.setPseudo(pseudo);
+                                                            public void onClick(View v) {
+                                                                pseudo = txtPseudo.getText().toString();
+                                                                sdate = txtDate.getText().toString();
+                                                                utilisateur = new Utilisateur();
 
-                                                                                Thread thread = new Thread(new Runnable() {
-                                                                                    @Override
-                                                                                    public void run() {
-                                                                                        try {
-                                                                                            Utilisateur u = server.login(user.getEmail(), DBServer.CONNEXION_FB, user.getEmail());
-                                                                                            if (u == null)
-                                                                                                cle = server.register(user.getEmail(), user.getPseudo(), pass, 1, user.getDate_naissance());
-                                                                                            else
-                                                                                                cle = u.getId();
-                                                                                        } catch (Exception e) {
-                                                                                            e.printStackTrace();
-                                                                                        }
-                                                                                    }
-                                                                                });
 
-                                                                                thread.start();
-                                                                                // Creating user login session
-                                                                                // For testing i am stroing name, email as follow
-                                                                                // Use user real data
-                                                                                session.createLoginSession(pseudo, user.getEmail(), (int) cle);
 
-                                                                                Log.i(TAG, email);
-                                                                            }
+                                                                Thread t2 = new Thread(new Runnable() {
+                                                                    @Override
+                                                                    public void run() {
+                                                                        utilisateur = server.getUser_by_pseudo(pseudo); // on teste si le pseudo est déjà utilisé dans l'application
+                                                                    }});
+
+                                                                t2.start(); // spawn thread
+
+                                                                // wait for thread to finish
+                                                                try {
+                                                                    t2.join();
+                                                                    if (utilisateur != null){
+                                                                        Log.i("Connexion", "Utilisateur avec " + pseudo + " existant");
+                                                                        txtPseudo.setTextColor(getResources().getColor(R.color.pink));
+                                                                        txtPseudo.setText(txtPseudo.getText().toString() + " existant!");
+                                                                    }
+                                                                    else {
+                                                                        final Utilisateur user = new Utilisateur();
+                                                                        user.setDate_naissance(txtDate.getText().toString());
+                                                                        user.setEmail(email);
+                                                                        String pass = BCrypt.hashpw(email+Inscription._TO_CONCAT, BCrypt.gensalt()).toString();
+                                                                        user.setPassword(pass);
+                                                                        user.setPseudo(pseudo);
+                                                                        Thread t3 = new Thread(new Runnable() {
+                                                                            @Override
+                                                                            public void run() {
+                                                                                USER_ID = server.register(user.getEmail(), user.getPseudo(),
+                                                                                        user.getPassword(), DBServer.CONNEXION_FB, user.getDate_naissance());
+
+                                                                            }});
+
+                                                                        t3.start(); // spawn thread
+                                                                        try{
+                                                                            t3.join();
+                                                                            if (USER_ID != -1) {
+                                                                                Log.i("BD", "nouvel utilisateur enregistré");
+                                                                                startActivity(itwelcome);
+                                                                            } else
+                                                                                Log.i("BD", "nouvel utilisateur non enregistré");
+                                                                            // Creating user login session
+                                                                            // For testing i am stroing name, email as follow
+                                                                            // Use user real data
+                                                                            session.createLoginSession(pseudo, user.getEmail(), USER_ID);
+
+                                                                            Log.i(TAG, email);
+                                                                        }catch (InterruptedException e) {
+                                                                            e.printStackTrace();
                                                                         }
-                                                                    };
-
-                                                                    callbackEmail.onCompleted(response.getJSONObject(), response);
+                                                                    }
+                                                                } catch (InterruptedException e) {
+                                                                    e.printStackTrace();
                                                                 }
                                                             }
                                                         });
-
-                                                        requestEmail.executeAsync();
-
-                                                        startActivity(itwelcome);
                                                     }
-                                                } catch (Exception e) {
+                                                } catch (InterruptedException e) {
                                                     e.printStackTrace();
                                                 }
                                             }
-                                        });
-                                        thread.start();
-                                    }
-                                });
+                                        }
+                                    };
+
+                                    callbackEmail.onCompleted(response.getJSONObject(), response);
+                                }
                             }
                         });
+
+                        requestEmail.executeAsync();
                     }
 
                     @Override

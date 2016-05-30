@@ -18,10 +18,13 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
 public class Welcome extends AppCompatActivity {
 
@@ -32,10 +35,19 @@ public class Welcome extends AppCompatActivity {
     private SQLiteDatabase db;
     private ArrayList<Spot> spots;
 
+    private SessionManager session;
+    private HashMap<String, String> profile;
+    private DBServer server;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
+
+        // Session class instance
+        session = new SessionManager(getApplicationContext());
+        profile = new HashMap<>();
+        server = new DBServer(getApplicationContext());
 
         RAPPORT_PROGRESSION = 0;
         bar = (ProgressBar)findViewById(R.id.progressBar);
@@ -46,23 +58,27 @@ public class Welcome extends AppCompatActivity {
     }
 
     private void loadSpots() {
-        dbAdapteur = new SpotsDBAdapteur(getApplicationContext());
-        spots = new ArrayList<Spot>();
-        db = dbAdapteur.open();
-//        if (db != null) {
-//            spots = dbAdapteur.getAllSpots();
-//            Log.i("spots", spots.toString());
-//        }
-        db.close();
 
-        bar.setVisibility(View.VISIBLE);
-        bar.setMax(spots.size());
+        spots = new ArrayList<>();
+        profile = session.getUserDetails();
 
-        File folder = new File(getApplicationContext().getFilesDir().getPath()+"/Images/");
-        if (!folder.exists())
-            folder.mkdirs();
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                spots = server.find_spot_user(Integer.valueOf(profile.get(SessionManager.KEY_ID)), 0, 10);
+            }});
 
-        if(spots != null & spots.size() > 0 & MapsActivity.isNetworkAvailable(this)) {
+        t.start(); // spawn thread
+        try{
+            t.join();
+            bar.setVisibility(View.VISIBLE);
+            bar.setMax(spots.size());
+
+            File folder = new File(getApplicationContext().getFilesDir().getPath()+"/Images/");
+            if (!folder.exists())
+                folder.mkdirs();
+
+            if(spots != null & spots.size() > 0 & MapsActivity.isNetworkAvailable(this)) {
                 for (final Spot s : spots) {
                     final File file = new File(getApplicationContext().getFilesDir().getPath() + "/Images/" + s.getPhotokey() + ".jpg");
                     AWS_Tools aws_tools = new AWS_Tools(getApplicationContext());
@@ -98,6 +114,9 @@ public class Welcome extends AppCompatActivity {
                         public void onError(int id, Exception ex) {
                             // do something
                             Log.e("error chargement", ex.getMessage());
+                            Intent itmain = new Intent(getApplicationContext(), MainActivity.class);
+                            finish();
+                            startActivity(itmain);
                         }
 
                     });
@@ -144,5 +163,8 @@ public class Welcome extends AppCompatActivity {
                     }
                 }, 15000);
             }
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

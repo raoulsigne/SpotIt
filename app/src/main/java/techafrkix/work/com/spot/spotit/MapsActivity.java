@@ -47,7 +47,9 @@ import java.util.HashMap;
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.MyMarker;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
 public class MapsActivity extends Fragment implements OnMapReadyCallback {
 
@@ -57,11 +59,13 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
     GoogleApiClient mGoogleApiClient;
     LocationRequest locationRequest;
     ArrayList<Spot> spots;
-    private SpotsDBAdapteur dbAdapteur;
-    SQLiteDatabase db;
 
     private HashMap<Marker, MyMarker> mMarkersHashMap;
     private ArrayList<MyMarker> mMyMarkersArray = new ArrayList<MyMarker>();
+
+    private SessionManager session;
+    private HashMap<String, String> profile;
+    private DBServer server;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,8 +73,12 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.activity_maps, container, false);
         spots = new ArrayList<Spot>();
-        dbAdapteur = new SpotsDBAdapteur(getActivity());
         mMarkersHashMap = new HashMap<Marker, MyMarker>();
+
+        // Session class instance
+        session = new SessionManager(getActivity());
+        profile = new HashMap<>();
+        server = new DBServer(getActivity());
 
         buildGoogleApiClient();
         if (mGoogleApiClient != null) {
@@ -233,21 +241,31 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
      * afficher les spots sur la carte en utilisant leur coordonnées
      */
     private void displaySpotOnMap(){
-        db = dbAdapteur.open();
-        // spots = dbAdapteur.getAllSpots();
-        LatLng coordonnees;
-        if (spots != null)
-            for (Spot s:
-                 spots) {
-                // Add a marker to spot position
-                coordonnees = new LatLng(Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude()));
-                //mMap.addMarker(new MarkerOptions().position(coordonnees).title("Spot "+ s.getId() + " : " +s.getGeohash()));
-                Log.i("map", "marker du spot " + s.getGeohash());
-                mMyMarkersArray.add(new MyMarker(s.getDate(),s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude())));
-            }
-        db.close();
+        profile = session.getUserDetails();
 
-        plotMarkers(mMyMarkersArray);
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                spots = server.find_spot_user(Integer.valueOf(profile.get(SessionManager.KEY_ID)), 0, 10);
+            }});
+
+        t.start(); // spawn thread
+        try {
+            t.join();
+            LatLng coordonnees;
+            if (spots != null)
+                for (Spot s:
+                        spots) {
+                    // Add a marker to spot position
+                    coordonnees = new LatLng(Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude()));
+                    //mMap.addMarker(new MarkerOptions().position(coordonnees).title("Spot "+ s.getId() + " : " +s.getGeohash()));
+                    Log.i("map", "marker du spot " + s.getGeohash());
+                    mMyMarkersArray.add(new MyMarker(s.getDate(),s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude())));
+                }
+            plotMarkers(mMyMarkersArray);
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void plotMarkers(ArrayList<MyMarker> markers)

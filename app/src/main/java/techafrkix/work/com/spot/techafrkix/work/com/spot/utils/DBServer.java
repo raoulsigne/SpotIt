@@ -63,6 +63,8 @@ public class DBServer {
     public static final int CONNEXION_FB = 11;
     public static final int CONNEXION_NORMAL = 1;
 
+    public static final int SUCCESS = 0;
+
     private static final String TAG = "DBServer";
 
     private URL url;

@@ -17,21 +17,25 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.GeoHash;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
 public class DetailSpot_New extends AppCompatActivity {
 
     EditText edtLat, edtLong;
     TextView txtMoi, txtAmis, txtPublic;
 
-    private SpotsDBAdapteur dbAdapteur;
-    SQLiteDatabase db;
     AWS_Tools aws_tools;
-
+    private SessionManager session;
+    private HashMap<String, String> profile;
+    private DBServer server;
+    private  int cle;
     private String visibilite, imagepath;
 
     public static final String V_MOI = "moi";
@@ -44,12 +48,16 @@ public class DetailSpot_New extends AppCompatActivity {
         setContentView(R.layout.fragment_detail_spot);
         double longitude, latitude;
 
+        // Session class instance
+        session = new SessionManager(getApplicationContext());
+        profile = new HashMap<>();
+        server = new DBServer(getApplicationContext());
+
         Bundle extras = getIntent().getExtras();
 
         imagepath = extras.getString("image");
         longitude = extras.getDouble("longitude");
         latitude = extras.getDouble("latitude");
-        dbAdapteur = new SpotsDBAdapteur(getApplicationContext());
         aws_tools = new AWS_Tools(getApplicationContext());
 
         edtLat = (EditText)findViewById(R.id.edtLatitude);
@@ -115,49 +123,60 @@ public class DetailSpot_New extends AppCompatActivity {
                     geoHash.encoder();
                     String temps = String.valueOf(System.currentTimeMillis());
 
-                    Spot spot = new Spot();
+                    final Spot spot = new Spot();
                     spot.setLongitude(edtLong.getText().toString());
                     spot.setLatitude(edtLat.getText().toString());
                     spot.setVisibilite(visibilite);
                     spot.setGeohash(geoHash.getHash());
                     spot.setPhotokey(temps);
+                    profile = session.getUserDetails();
+                    spot.setUser_id(Integer.valueOf(profile.get(SessionManager.KEY_ID)));
 
                     //stockage du spot dans la BD embarqué
-                    db = dbAdapteur.open();
-                    long cle = dbAdapteur.insertSpot(spot);
+                    Thread t = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            cle = server.enregistre_spot(spot);
+                        }});
 
-                    if (cle != -1) {
-                        Log.i("BD", "nouveau spot enregistré");
-                    }
-                    else {
-                        Log.i("BD", "nouveau spot non enregistré");
-                    }
-                    db.close();
-
-                    //stockage de la photo sur le serveur amazon
+                    t.start(); // spawn thread
                     try {
-                        File folder = new File(getApplicationContext().getFilesDir().getPath()+"/Images/");
-                        if (!folder.exists())
-                            folder.mkdirs();
-                        File file = new File(getApplicationContext().getFilesDir().getPath()+"/Images/"+temps+".jpg");
-                        OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
-                        Bitmap bitmap = BitmapFactory.decodeFile(imagepath);
-                        Bitmap resized = Bitmap.createScaledBitmap(bitmap, 800, 800, true);
-                        resized.compress(Bitmap.CompressFormat.JPEG, 50, os);
-                        os.close();
-                        aws_tools = new AWS_Tools(DetailSpot_New.this);
-                        aws_tools.uploadPhoto(file,temps);
-                    }catch (Exception e)
-                    {
-                        Log.e("file",e.getMessage());
+                        t.join();
+                        if (cle == DBServer.SUCCESS) {
+                            Log.i("BD", "nouveau spot enregistré");
+                            //stockage de la photo sur le serveur amazon
+                            try {
+                                File folder = new File(getApplicationContext().getFilesDir().getPath()+"/Images/");
+                                if (!folder.exists())
+                                    folder.mkdirs();
+                                File file = new File(getApplicationContext().getFilesDir().getPath()+"/Images/"+temps+".jpg");
+                                OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
+                                Bitmap bitmap = BitmapFactory.decodeFile(imagepath);
+                                Bitmap resized = Bitmap.createScaledBitmap(bitmap, 800, 800, true);
+                                resized.compress(Bitmap.CompressFormat.JPEG, 50, os);
+                                os.close();
+                                aws_tools = new AWS_Tools(DetailSpot_New.this);
+                                aws_tools.uploadPhoto(file, temps);
+                            }catch (Exception e)
+                            {
+                                Log.e("file",e.getMessage());
+                                Toast.makeText(getApplicationContext(), "Problème de chargement de la photo", Toast.LENGTH_SHORT).show();
+                            }
+
+
+                            edtLat.setText("");
+                            edtLong.setText("");
+                            vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi));
+                            vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend));
+                            vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.publics));
+                        }
+                        else {
+                            Log.i("BD", "nouveau spot non enregistré");
+                            Toast.makeText(getApplicationContext(), "Nouveau spot non enregistré", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-
-
-                    edtLat.setText("");
-                    edtLong.setText("");
-                    vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi));
-                    vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend));
-                    vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.publics));
                 }
                 else
                     Toast.makeText(getApplicationContext(), "Formulaire non conforme", Toast.LENGTH_SHORT).show();

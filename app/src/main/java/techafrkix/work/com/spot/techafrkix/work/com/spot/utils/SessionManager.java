@@ -33,13 +33,13 @@ public class SessionManager {
     private static final String IS_LOGIN = "IsLoggedIn";
 
     // User name (make variable public to access from outside)
-    public static final String KEY_NAME = "name";
+    public static final String KEY_NAME = "pseudo";
 
     // Email address (make variable public to access from outside)
     public static final String KEY_EMAIL = "email";
 
     // <user Id (make variable public to access from outside)
-    public static final String KEY_ID = "email";
+    public static final String KEY_ID = "id";
 
     // Constructor
     public SessionManager(Context context){
@@ -62,7 +62,7 @@ public class SessionManager {
         editor.putString(KEY_EMAIL, email);
 
         //storing id in pref
-        editor.putInt(KEY_ID, id);
+        editor.putString(KEY_ID, String.valueOf(id));
 
         // commit changes
         editor.commit();
@@ -80,7 +80,7 @@ public class SessionManager {
         user.put(KEY_EMAIL, pref.getString(KEY_EMAIL, null));
 
         // user id
-        user.put(KEY_ID, String.valueOf(pref.getInt(KEY_ID, 0)));
+        user.put(KEY_ID, pref.getString(KEY_ID, null));
 
         // return user
         return user;
@@ -95,14 +95,14 @@ public class SessionManager {
         editor.commit();
 
         // After logout redirect user to Loing Activity
-        Intent i = new Intent(_context, Accueil.class);
+        // Intent i = new Intent(_context, Accueil.class);
         // Closing all the Activities
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        // i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         // Add new Flag to start new Activity
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        // i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         // Staring Login Activity
-        _context.startActivity(i);
+        // _context.startActivity(i);
     }
 }

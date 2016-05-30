@@ -211,40 +211,15 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
                     if (mCamera != null) {
                         String photo = ph.saveImage(currentCameraId);
                         Log.i("parametre", photo);
-//                        Bundle bundle = new Bundle();
-//                        bundle.putDouble("longitude", longitude);
-//                        bundle.putDouble("latitude", latitude);
-//                        bundle.putString("image", photo);
-//                        Log.i("parametre", " longitude=" + longitude + "; latitude=" + latitude);
-//                        Intent itDetailSpot = new Intent(context, DetailSpot_New.class);
-//                        itDetailSpot.putExtras(bundle);
-//                        context.startActivity(itDetailSpot);
-//                        ((Activity) context).finish();
-
-                        {
-                            AlertDialog.Builder imageDialog = new AlertDialog.Builder(context);
-                            LayoutInflater inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-
-                            View layout = inflater.inflate(R.layout.custom_fullimage_dialog,
-                                    (ViewGroup) findViewById(R.id.layout_root));
-                            ImageView image = (ImageView) layout.findViewById(R.id.fullimage);
-                            Bitmap bitmap = BitmapFactory.decodeFile(photo);
-                            Bitmap resized = Bitmap.createScaledBitmap(bitmap, 800, 800, true);
-                            image.setImageBitmap(resized);
-                            imageDialog.setView(layout);
-                            imageDialog.setPositiveButton("OK", new DialogInterface.OnClickListener(){
-
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-
-                            });
-
-
-                            imageDialog.create();
-                            imageDialog.show();
-                        }
-
+                        Bundle bundle = new Bundle();
+                        bundle.putDouble("longitude", longitude);
+                        bundle.putDouble("latitude", latitude);
+                        bundle.putString("image", photo);
+                        Log.i("parametre", " longitude=" + longitude + "; latitude=" + latitude);
+                        Intent itDetailSpot = new Intent(context, DetailSpot_New.class);
+                        itDetailSpot.putExtras(bundle);
+                        context.startActivity(itDetailSpot);
+                        ((Activity) context).finish();
                     }
                 } catch (Exception e) {
                     Log.d(TAG, e.getMessage());

@@ -35,6 +35,7 @@ import java.io.File;
 
 import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.GeoHash;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, FragmentAccueil.OnFragmentInteractionListener{
@@ -62,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private SpotsDBAdapteur dbAdapteur;
     SQLiteDatabase db;
 
+    private SessionManager session;
+
     ImageButton imgHome, imgList, imgAdd, imgDisconnect;
     TextView txtHome, txtList, txtAdd, txtDisconnect;
 
@@ -71,6 +74,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main3);
+
+        // Session class instance
+        session = new SessionManager(getApplicationContext());
 
         MainActivity.context = getApplicationContext();
 
@@ -216,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                 //traitement de l'action lors du click
                 if (menuactif != MENU_ACTIF_DECONNECT) {
+                    session.logoutUser();
                     Intent itdeconnect = new Intent(getApplicationContext(), Connexion.class);
                     itdeconnect.putExtra("caller","Main");
                     itdeconnect.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK); //add flags to spot all others activities

@@ -41,6 +41,9 @@ public class SessionManager {
     // <user Id (make variable public to access from outside)
     public static final String KEY_ID = "id";
 
+    // <user Id (make variable public to access from outside)
+    public static final String KEY_OFFSET = "offset";
+
     // Constructor
     public SessionManager(Context context){
         this._context = context;
@@ -64,6 +67,9 @@ public class SessionManager {
         //storing id in pref
         editor.putString(KEY_ID, String.valueOf(id));
 
+        //storing offset in pref
+        editor.putString(KEY_OFFSET, String.valueOf(0));
+
         // commit changes
         editor.commit();
     }
@@ -82,8 +88,23 @@ public class SessionManager {
         // user id
         user.put(KEY_ID, pref.getString(KEY_ID, null));
 
+        // user offset to download spot
+        user.put(KEY_OFFSET, pref.getString(KEY_OFFSET, null));
+
         // return user
         return user;
+    }
+
+    /**
+     * set the value of the offset inside preferences
+     * @param offset value to be set represent the value to use in request to get spots
+     */
+    public void putOffset(int offset){
+        //storing offset in pref
+        editor.putString(KEY_OFFSET, String.valueOf(offset));
+
+        // commit changes
+        editor.commit();
     }
 
     /**

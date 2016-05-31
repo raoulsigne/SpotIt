@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Surface;
@@ -40,6 +42,8 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 
 public class TakeSnap extends Activity implements View.OnClickListener{
 
@@ -215,7 +219,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
                         bundle.putDouble("longitude", longitude);
                         bundle.putDouble("latitude", latitude);
                         bundle.putString("image", photo);
-                        Log.i("parametre", " longitude=" + longitude + "; latitude=" + latitude);
+                        Log.i("photo", photo);
                         Intent itDetailSpot = new Intent(context, DetailSpot_New.class);
                         itDetailSpot.putExtras(bundle);
                         context.startActivity(itDetailSpot);
@@ -354,6 +358,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
                 int hauteur = height - width;
                 //positionnement de la surface du preview
                 child.layout(0, 0, width, height);
+                Log.i("PhotoHandler", "Preview dimension " + width + " " + height + " rapport = " + (double)height/width);
                 //positionnement du bouton shutter
                 child1.layout(width/2-100, width + hauteur/2 - 100, width/2+100, width + hauteur/2 + 100);
                 //positionnement du bouton valider
@@ -448,33 +453,20 @@ class PhotoHandler implements Camera.PictureCallback {
 
     @Override
     public void onPictureTaken(byte[] bytes, Camera cam) {
-        Log.i("PhotoHandler", "Picture taken!");
-        File pictureFileDir = getDir();
-
-        if (!pictureFileDir.exists() && !pictureFileDir.mkdirs()) {
-
-            Log.d("PhotoHandler", "Can't create directory to save image.");
-            Toast.makeText(context, "Can't create directory to save image.",
-                    Toast.LENGTH_LONG).show();
-            return;
-
-        }
-
         //roter la photo pour permettre qu'elle apparaisse comme elle a été prise rotation de 90 dégré
         bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         int width = bmp.getWidth();
         int height = bmp.getHeight();
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
-        Log.i("dimension","with="+width+" height="+height);
         rotatedBitmap = Bitmap.createBitmap(bmp, 0, 0, height, height, matrix, true);
+        Log.i("PhotoHandler", "bitmap dimension " + width + " " + height + " rapport ="+(double)width/height);
     }
 
     public String saveImage(int id){
         File pictureFileDir = getDir();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-        String date = dateFormat.format(new Date());
-        photoFile = "Picture_" + date + ".jpg";
+        String temps = String.valueOf(System.currentTimeMillis());
+        photoFile = temps + ".jpg";
 
         if (!pictureFileDir.exists() && !pictureFileDir.mkdirs()) {
 
@@ -501,6 +493,7 @@ class PhotoHandler implements Camera.PictureCallback {
             //fos.write(bytes);
             fos.close();
             if (result) {
+                Log.i("photo", filename);
                 return filename;
             }
             else {
@@ -519,8 +512,7 @@ class PhotoHandler implements Camera.PictureCallback {
     }
 
     private File getDir() {
-        File sdDir = Environment
-                .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        return new File(sdDir, "SpotItPictures");
+        String dossier = context.getFilesDir().getPath()+ DBServer.DOSSIER_IMAGE;
+        return new File(dossier);
     }
 }

@@ -64,6 +64,7 @@ public class DBServer {
     public static final int CONNEXION_NORMAL = 1;
 
     public static final int SUCCESS = 0;
+    public static final String DOSSIER_IMAGE = "/SpotItPictures/";
 
     private static final String TAG = "DBServer";
 

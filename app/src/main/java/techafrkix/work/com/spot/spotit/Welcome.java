@@ -73,14 +73,16 @@ public class Welcome extends AppCompatActivity {
             t.join();
             bar.setVisibility(View.VISIBLE);
             bar.setMax(spots.size());
-
-            File folder = new File(getApplicationContext().getFilesDir().getPath()+"/Images/");
+            String dossier = getApplicationContext().getFilesDir().getPath()+DBServer.DOSSIER_IMAGE;
+            Log.i("Photo", dossier);
+            File folder = new File(dossier);
             if (!folder.exists())
                 folder.mkdirs();
 
             if(spots != null & spots.size() > 0 & MapsActivity.isNetworkAvailable(this)) {
                 for (final Spot s : spots) {
-                    final File file = new File(getApplicationContext().getFilesDir().getPath() + "/Images/" + s.getPhotokey() + ".jpg");
+                    final File file = new File(dossier + File.separator + s.getPhotokey() + ".jpg");
+                    Log.i("test", file.getAbsolutePath());
                     AWS_Tools aws_tools = new AWS_Tools(getApplicationContext());
                     int transfertId = aws_tools.download(file, s.getPhotokey());
                     TransferUtility transferUtility = aws_tools.getTransferUtility();

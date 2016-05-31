@@ -34,6 +34,7 @@ import com.google.android.gms.location.LocationServices;
 import java.io.File;
 
 import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.GeoHash;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
@@ -189,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 if (menuactif != MENU_ACTIF_ADD) {
                     menuactif = MENU_ACTIF_ADD;
                     Bundle bundle = new Bundle();
-                    bundle.putString("image", selectedImagePath);
+                    //bundle.putString("image", selectedImagePath);
                     if (mLastLocation != null) {
                         Log.i("location", "location not null");
                         bundle.putDouble("longitude", mLastLocation.getLongitude());
@@ -462,10 +463,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     private void vidercache(){
         // Your directory with files to be deleted
-        String sdcard = getApplicationContext().getFilesDir().getPath() + "/Images/";
+        String dossier = getApplicationContext().getFilesDir().getPath()+ DBServer.DOSSIER_IMAGE;
 
         // go to your directory
-        File fileList = new File( sdcard );
+        File fileList = new File( dossier );
 
         //check if dir is not null
         if (fileList != null){

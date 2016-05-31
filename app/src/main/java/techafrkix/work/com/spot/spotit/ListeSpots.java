@@ -3,6 +3,7 @@ package techafrkix.work.com.spot.spotit;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
@@ -37,6 +39,10 @@ public class ListeSpots extends Fragment {
     private HashMap<String, String> profile;
     private DBServer server;
 
+    ProgressDialog pDialog;
+    private ArrayList<Spot> tampon;
+    private int offset;
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -48,6 +54,17 @@ public class ListeSpots extends Fragment {
         View view = inflater.inflate(R.layout.activity_liste_spots, container, false);
         listView = (ListView) view.findViewById(R.id.listView);
 
+        spots = new ArrayList<>();
+        offset = 0;
+
+        // Creating a button - Load More
+        Button btnLoadMore = new Button(getActivity());
+        btnLoadMore.setText("Load More");
+        btnLoadMore.setBackground(getResources().getDrawable(R.drawable.button_blue));
+
+        // Adding button to listview at footer
+        listView.addFooterView(btnLoadMore);
+
         // Session class instance
         session = new SessionManager(getActivity());
         profile = new HashMap<>();
@@ -56,16 +73,42 @@ public class ListeSpots extends Fragment {
         spotsimages = new HashMap<String, Bitmap>();
         loadSpots();
 
+        /**
+         * Listening to Load More button click event
+         * */
+        btnLoadMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                // Starting a new async task
+                loadSpots();
+            }
+        });
+
         return view;
     }
 
     private void loadSpots() {
-        profile = session.getUserDetails();
+        // Showing progress dialog before sending http request
+        pDialog = new ProgressDialog(getActivity());
+        pDialog.setMessage("Please wait..");
+        pDialog.setIndeterminate(true);
+        pDialog.setCancelable(false);
+        pDialog.show();
 
+        profile = session.getUserDetails();
+        tampon = new ArrayList<>();
+
+        Log.i("offset", offset+"");
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                spots = server.find_spot_user(Integer.valueOf(profile.get(SessionManager.KEY_ID)), 0, 10);
+                tampon = server.find_spot_user(Integer.valueOf(profile.get(SessionManager.KEY_ID)), offset, offset + 10);
+                for (Spot s :
+                        tampon) {
+                    spots.add(s);
+                }
+                //set the value of the offset that will be use next time
+                offset += 10; //session.putOffset(offset + 10);
                 Log.i("test", spots.toString());
             }});
 
@@ -73,8 +116,8 @@ public class ListeSpots extends Fragment {
         try {
             t.join();
             Log.i("spots", spots.toString());
-
-            File folder = new File(getActivity().getFilesDir().getPath()+"/Images/");
+            String dossier = getActivity().getApplicationContext().getFilesDir().getPath()+DBServer.DOSSIER_IMAGE;
+            File folder = new File(dossier);
             if (!folder.exists())
                 folder.mkdirs();
 
@@ -88,9 +131,9 @@ public class ListeSpots extends Fragment {
                 barProgressDialog.show();
 
                 for (final Spot s : spots) {
-                    final File file = new File(getActivity().getFilesDir().getPath() + "/Images/" + s.getPhotokey() + ".jpg");
+                    final File file = new File(dossier+ File.separator  + s.getPhotokey() + ".jpg");
                     if (file.exists()) {
-                        Log.i("file", "file exists");
+                        Log.i("file", "file exists " + dossier + s.getPhotokey() + ".jpg");
                         spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
                         barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
                         if (barProgressDialog.getProgress() == spots.size()) {
@@ -124,10 +167,16 @@ public class ListeSpots extends Fragment {
                                 }
                                 if (barProgressDialog.getProgress() == spots.size()) {
                                     barProgressDialog.dismiss();
+                                    // get listview current position - used to maintain scroll position
+                                    int currentPosition = listView.getFirstVisiblePosition();
+
                                     // Create the adapter to convert the array to views
                                     adapter = new SpotAdapter(getActivity(), spots, spotsimages);
                                     // Attach the adapter to a ListView
                                     listView.setAdapter(adapter);
+
+                                    // Setting new scroll position
+                                    listView.setSelectionFromTop(currentPosition + 1, 0);
                                 }
                             }
 
@@ -145,6 +194,8 @@ public class ListeSpots extends Fragment {
             e.printStackTrace();
         }
 
+        // closing progress dialog
+        pDialog.dismiss();
     }
 
     @Override

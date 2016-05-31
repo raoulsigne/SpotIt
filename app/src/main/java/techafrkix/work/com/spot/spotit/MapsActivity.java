@@ -143,7 +143,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
             public boolean onMarkerClick(final com.google.android.gms.maps.model.Marker marker)
             {
                 final MyMarker myMarker = mMarkersHashMap.get(marker);
-                final File file = new File(getActivity().getFilesDir().getPath()+"/Images/"+myMarker.getmIcon()+".jpg");
+                String dossier = getActivity().getApplicationContext().getFilesDir().getPath()+DBServer.DOSSIER_IMAGE;
+                final File file = new File(dossier + File.separator + myMarker.getmIcon() + ".jpg");
 
                 if(file.exists()){
                     // marker.showInfoWindow();

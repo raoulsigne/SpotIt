@@ -60,6 +60,8 @@ public class DetailSpot_New extends AppCompatActivity {
         latitude = extras.getDouble("latitude");
         aws_tools = new AWS_Tools(getApplicationContext());
 
+        Log.i("Photo", imagepath);
+
         edtLat = (EditText)findViewById(R.id.edtLatitude);
         edtLong = (EditText)findViewById(R.id.edtLongitude);
         Button valider = (Button)findViewById(R.id.btnValider);
@@ -143,24 +145,22 @@ public class DetailSpot_New extends AppCompatActivity {
                     try {
                         t.join();
                         if (cle == DBServer.SUCCESS) {
-                            Log.i("BD", "nouveau spot enregistré");
                             //stockage de la photo sur le serveur amazon
                             try {
-                                File folder = new File(getApplicationContext().getFilesDir().getPath()+"/Images/");
+                                File folder = new File(getApplicationContext().getFilesDir().getPath()+"/SpotItPictures/");
                                 if (!folder.exists())
                                     folder.mkdirs();
-                                File file = new File(getApplicationContext().getFilesDir().getPath()+"/Images/"+temps+".jpg");
+                                File file = new File(getApplicationContext().getFilesDir().getPath()+"/SpotItPictures/"+temps+".jpg");
                                 OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
                                 Bitmap bitmap = BitmapFactory.decodeFile(imagepath);
                                 Bitmap resized = Bitmap.createScaledBitmap(bitmap, 800, 800, true);
                                 resized.compress(Bitmap.CompressFormat.JPEG, 50, os);
                                 os.close();
                                 aws_tools = new AWS_Tools(DetailSpot_New.this);
-                                aws_tools.uploadPhoto(file, temps);
+                                aws_tools.uploadPhoto(file,temps);
                             }catch (Exception e)
                             {
-                                Log.e("file",e.getMessage());
-                                Toast.makeText(getApplicationContext(), "Problème de chargement de la photo", Toast.LENGTH_SHORT).show();
+                                Log.e("file", e.getMessage());
                             }
 
 

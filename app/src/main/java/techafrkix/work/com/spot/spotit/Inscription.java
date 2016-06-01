@@ -52,7 +52,7 @@ import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
 public class Inscription extends AppCompatActivity {
 
-    public static  final  String _TO_CONCAT = "cs457syu89iuer8poier787";
+    public static  final  String _TO_CONCAT = "$2a$10$cs457syu89iuer8poier787";
     protected EditText pseudo, email, password, date;
     Switch switch_pwd;
     LoginButton fbSignin;
@@ -127,13 +127,24 @@ public class Inscription extends AppCompatActivity {
         date.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
                 int action = event.getActionMasked();
-                if (action == MotionEvent.ACTION_DOWN && action!=MotionEvent.ACTION_CANCEL) {
+                if (action == MotionEvent.ACTION_DOWN && action != MotionEvent.ACTION_CANCEL) {
                     DialogFragment newFragment = new DatePickerFragment();
                     newFragment.show(getSupportFragmentManager(), "datePicker");
                 }
                 return true;
             }
         });
+        pseudo.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getActionMasked();
+                if (action == MotionEvent.ACTION_UP && action!=MotionEvent.ACTION_CANCEL) {
+                    if (pseudo.getText().toString() == "")
+                        pseudo.setTextColor(getResources().getColor(R.color.noir));
+                }
+                return true;
+            }
+        });
+
         //traitement des actions des boutons
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,29 +157,51 @@ public class Inscription extends AppCompatActivity {
                     user.setEmail(email.getText().toString());
                     user.setPassword(password.getText().toString());
 
-                    Thread t = new Thread(new Runnable() {
+                    Thread t1 = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            USER_ID = server.register(user.getEmail(), user.getPseudo(),
-                                    user.getPassword(), DBServer.CONNEXION_NORMAL, user.getDate_naissance());
+                            utilisateur = server.getUser_by_pseudo(user.getPseudo());
                         }});
 
-                    t.start(); // spawn thread
-                    try{
-                        t.join();
-                        if (USER_ID != -1) {
-                            Log.i("BD", "nouvel utilisateur enregistré");
-                            // Creating user login session
-                            // For testing i am stroing name, email as follow
-                            // Use user real data
-                            session.createLoginSession(user.getPseudo(), user.getEmail(), USER_ID);
-                            startActivity(itmain);
-                        } else {
-                            Log.i("BD", "nouvel utilisateur non enregistré");
+                    t1.start(); // spawn thread
+                    // wait for thread to finish
+                    try {
+                        t1.join();
+                        if (utilisateur == null) {
+                            Thread t = new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    String pass = BCrypt.hashpw(user.getPassword(), _TO_CONCAT).toString();
+                                    USER_ID = server.register(user.getEmail(), user.getPseudo(),
+                                            pass, DBServer.CONNEXION_NORMAL, user.getDate_naissance());
+                                }});
+
+                            t.start(); // spawn thread
+                            try{
+                                t.join();
+                                if (USER_ID != -1) {
+                                    Log.i("BD", "nouvel utilisateur enregistré");
+                                    // Creating user login session
+                                    // For testing i am stroing name, email as follow
+                                    // Use user real data
+                                    session.createLoginSession(user.getPseudo(), user.getEmail(), USER_ID);
+                                    startActivity(itmain);
+                                } else {
+                                    Log.i("BD", "nouvel utilisateur non enregistré");
+                                    Toast.makeText(getApplicationContext(),"Echec de l'enregistrement! vérifier la connexion",Toast.LENGTH_SHORT).show();
+                                }
+                            }catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }else{
+                            pseudo.setText(pseudo.getText().toString() + " existe déjà!");
+                            pseudo.setTextColor(getResources().getColor(R.color.pink));
                         }
+
                     }catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+
                 }
             }
         });
@@ -403,7 +436,7 @@ public class Inscription extends AppCompatActivity {
             String mois = String.valueOf(month), jour = String.valueOf(day);
             if (month < 10) mois = "0"+month;
             if (day < 10) jour = "0"+day;
-            date.setText(jour + "/" + mois + "/" + year);
+            date.setText(year + "-" + mois + "-" + jour);
         }
     }
 }

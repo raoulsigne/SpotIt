@@ -31,8 +31,6 @@ public class Welcome extends AppCompatActivity {
     private static int RAPPORT_PROGRESSION = 0;
     private ProgressBar bar = null;
     private int mProgressStatus = 0;
-    private SpotsDBAdapteur dbAdapteur;
-    private SQLiteDatabase db;
     private ArrayList<Spot> spots;
 
     private SessionManager session;
@@ -71,15 +69,16 @@ public class Welcome extends AppCompatActivity {
         t.start(); // spawn thread
         try{
             t.join();
-            bar.setVisibility(View.VISIBLE);
-            bar.setMax(spots.size());
-            String dossier = getApplicationContext().getFilesDir().getPath()+DBServer.DOSSIER_IMAGE;
-            Log.i("Photo", dossier);
-            File folder = new File(dossier);
-            if (!folder.exists())
-                folder.mkdirs();
-
             if(spots != null & spots.size() > 0 & MapsActivity.isNetworkAvailable(this)) {
+                bar.setVisibility(View.VISIBLE);
+                bar.setMax(spots.size());
+                String dossier = getApplicationContext().getFilesDir().getPath()+DBServer.DOSSIER_IMAGE;
+                Log.i("Photo", dossier);
+                File folder = new File(dossier);
+                if (!folder.exists())
+                    folder.mkdirs();
+
+
                 for (final Spot s : spots) {
                     final File file = new File(dossier + File.separator + s.getPhotokey() + ".jpg");
                     Log.i("test", file.getAbsolutePath());

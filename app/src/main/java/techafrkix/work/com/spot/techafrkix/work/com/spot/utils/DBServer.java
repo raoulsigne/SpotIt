@@ -118,6 +118,7 @@ public class DBServer {
                 builder.append(line+"\n");
             }
             br.close();
+            Log.i(TAG, "reponse = " + builder.toString());
 
             try {
                 JSONObject json = new JSONObject(builder.toString());
@@ -125,6 +126,7 @@ public class DBServer {
                 if (statut == 1){
                     builder.append("statut = "+json.getString("statut"));
                     builder.append("insertId = "+json.getString("insertId"));
+                    return json.getInt("insertId");
                 }
                 else
                 {
@@ -135,29 +137,28 @@ public class DBServer {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            Log.i(TAG, "reponse = "+builder.toString());
 
         }
         catch(MalformedURLException error) {
             //Handles an incorrectly entered URL
             Log.e(TAG,"MalformedURLException "+error.getMessage());
-            return 1;
+            return -1;
         }
         catch(SocketTimeoutException error) {
             //Handles URL access timeout.
             Log.e(TAG,"SocketTimeoutException "+error.getMessage());
-            return 1;
+            return -1;
         }
         catch (IOException error) {
             //Handles input and output errors
             Log.e(TAG,"IOException "+error.toString());
-            return 1;
+            return -1;
         }
         finally {
             client.disconnect();
         }
 
-        return 0;
+        return -1;
     }
 
     /**

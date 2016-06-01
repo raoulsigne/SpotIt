@@ -89,6 +89,7 @@ public class Connexion extends AppCompatActivity {
                 LoginManager.getInstance().logOut();
             }
         }
+
         final EditText txtPseudo = new EditText(Connexion.this);
         txtPseudo.setHint("Pseudo");
         final EditText txtDate = new EditText(Connexion.this);
@@ -142,11 +143,6 @@ public class Connexion extends AppCompatActivity {
                                                     @Override
                                                     public void run() {
                                                         utilisateur = server.login(email, DBServer.CONNEXION_FB, " "); // tester si l'utilisateur a déjà été enrgistré
-                                                        // Creating user login session
-                                                        // For testing i am stroing name, email as follow
-                                                        // Use user real data
-                                                        session.createLoginSession(utilisateur.getPseudo(), utilisateur.getEmail(), utilisateur.getId());
-
                                                     }});
 
                                                 t1.start(); // spawn thread
@@ -154,6 +150,11 @@ public class Connexion extends AppCompatActivity {
                                                 try {
                                                     t1.join();
                                                     if (utilisateur != null){
+                                                        // Creating user login session
+                                                        // For testing i am stroing name, email as follow
+                                                        // Use user real data
+                                                        session.createLoginSession(utilisateur.getPseudo(), utilisateur.getEmail(), utilisateur.getId());
+
                                                         startActivity(itwelcome); // déjà enregistré on démarre l'activité Welcome
                                                     }
                                                     else { // on demande à l'utilisateur d'entrer ses identifiants pour l'en créer un compte
@@ -207,14 +208,15 @@ public class Connexion extends AppCompatActivity {
                                                                             t3.join();
                                                                             if (USER_ID != -1) {
                                                                                 Log.i("BD", "nouvel utilisateur enregistré");
-                                                                                startActivity(itwelcome);
-                                                                            } else
-                                                                                Log.i("BD", "nouvel utilisateur non enregistré");
-                                                                            // Creating user login session
-                                                                            // For testing i am stroing name, email as follow
-                                                                            // Use user real data
-                                                                            session.createLoginSession(pseudo, user.getEmail(), USER_ID);
+                                                                                // Creating user login session
+                                                                                // For testing i am stroing name, email as follow
+                                                                                // Use user real data
+                                                                                session.createLoginSession(pseudo, user.getEmail(), USER_ID);
 
+                                                                                startActivity(itwelcome);
+                                                                            } else {
+                                                                                Log.i("BD", "nouvel utilisateur non enregistré");
+                                                                            }
                                                                             Log.i(TAG, email);
                                                                         }catch (InterruptedException e) {
                                                                             e.printStackTrace();
@@ -259,25 +261,35 @@ public class Connexion extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //ecrire le code correspondant au traitement à affectuer sur le click du bouton login
-                Utilisateur utilisateur = new Utilisateur();
                 if (email.getText().toString() != " " & password.getText().toString() != ""){
-                    db = dbAdapteur.open();
-                    utilisateur = dbAdapteur.getUtilisateur(email.getText().toString(),password.getText().toString());
-                    if (utilisateur != null) {
-                        Log.i("BD", "utilisateur connecté");
+                    Thread t1 = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            utilisateur = server.login(email.getText().toString(), DBServer.CONNEXION_NORMAL, password.getText().toString());
+                        }});
 
-                        // Creating user login session
-                        // For testing i am stroing name, email as follow
-                        // Use user real data
-                        session.createLoginSession("name", utilisateur.getEmail(), utilisateur.getId());
+                    t1.start(); // spawn thread
+                    // wait for thread to finish
+                    try {
+                        t1.join();
 
-                        startActivity(itwelcome);
-                    } else {
-                        Log.i("BD", "utilisateur non connecté");
-                        password.setText("");
-                        Toast.makeText(getApplicationContext(),"Echec vérifier les informations entrées", Toast.LENGTH_SHORT).show();
+                        if (utilisateur != null) {
+                            Log.i("BD", "utilisateur connecté");
+
+                            // Creating user login session
+                            // For testing i am stroing name, email as follow
+                            // Use user real data
+                            session.createLoginSession(utilisateur.getPseudo(), utilisateur.getEmail(), utilisateur.getId());
+
+                            startActivity(itwelcome);
+                        } else {
+                            Log.i("BD", "utilisateur non connecté");
+                            password.setText("");
+                            Toast.makeText(getApplicationContext(),"Echec vérifier les informations entrées", Toast.LENGTH_SHORT).show();
+                        }
+                    }catch (InterruptedException e){
+                        Log.e(TAG, e.getMessage());
                     }
-                    db.close();
                 }
             }
         });
@@ -306,6 +318,8 @@ public class Connexion extends AppCompatActivity {
     }
 
     public boolean isLoggedIn() {
+        if (session.isLogin())
+            return true;
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         return accessToken != null;
     }

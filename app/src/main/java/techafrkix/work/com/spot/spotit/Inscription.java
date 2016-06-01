@@ -3,13 +3,16 @@ package techafrkix.work.com.spot.spotit;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -35,15 +38,20 @@ import java.util.Arrays;
 
 import techafrkix.work.com.spot.bd.Utilisateur;
 import techafrkix.work.com.spot.bd.UtilisateurDBAdapteur;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
 public class Inscription extends AppCompatActivity {
 
     public static  final  String _TO_CONCAT = "cs457syu89iuer8poier787";
-    EditText email, password, date;
+    EditText pseudo, email, password, date;
     LoginButton fbSignin;
     Button signin;
     ProgressDialog progress;
 
+    // Session Manager Class
+    SessionManager session;
+    DBServer server;
     UtilisateurDBAdapteur dbAdapteur;
     SQLiteDatabase db;
     CallbackManager callbackManager;
@@ -54,6 +62,9 @@ public class Inscription extends AppCompatActivity {
     private String fbProfileName;
     private ProfileTracker profileTracker;
     private AccessTokenTracker accessTokenTracker;
+    int USER_ID;
+    private Utilisateur utilisateur;
+    String s_pseudo, sdate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,9 +73,15 @@ public class Inscription extends AppCompatActivity {
         callbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.activity_inscription);
 
+        // Session class instance
+        session = new SessionManager(getApplicationContext());
+        server = new DBServer(getApplicationContext());
+        final Intent itmain = new Intent(this,MainActivity.class);
+
         //recuperation des elements graphiques
         fbSignin = (LoginButton)findViewById(R.id.login_button);
         signin = (Button)findViewById(R.id.button);
+        pseudo = (EditText)findViewById(R.id.pseudo);
         email = (EditText)findViewById(R.id.emailadress);
         password = (EditText)findViewById(R.id.password);
         date = (EditText)findViewById(R.id.editText);
@@ -81,19 +98,37 @@ public class Inscription extends AppCompatActivity {
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utilisateur user = new Utilisateur();
-                if (email.getText().toString() != "" & password.getText().toString() != "" & date.getText().toString() != "") {
+                final Utilisateur user = new Utilisateur();
+                if (pseudo.getText().toString() != "" & email.getText().toString() != "" & password.getText().toString() != "" &
+                        date.getText().toString() != "") {
+                    user.setPseudo(pseudo.getText().toString());
                     user.setDate_naissance(date.getText().toString());
                     user.setEmail(email.getText().toString());
                     user.setPassword(password.getText().toString());
-                    db = dbAdapteur.open();
-                    long cle = dbAdapteur.insertUtilisateur(user);
-                    if (cle != -1) {
-                        Log.i("BD", "nouvel utilisateur enregistré");
-                        startActivity(mainintent);
-                    } else
-                        Log.i("BD", "nouvel utilisateur non enregistré");
-                    db.close();
+
+                    Thread t = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            USER_ID = server.register(user.getEmail(), user.getPseudo(),
+                                    user.getPassword(), DBServer.CONNEXION_NORMAL, user.getDate_naissance());
+                        }});
+
+                    t.start(); // spawn thread
+                    try{
+                        t.join();
+                        if (USER_ID != -1) {
+                            Log.i("BD", "nouvel utilisateur enregistré");
+                            // Creating user login session
+                            // For testing i am stroing name, email as follow
+                            // Use user real data
+                            session.createLoginSession(user.getPseudo(), user.getEmail(), USER_ID);
+                            startActivity(itmain);
+                        } else {
+                            Log.i("BD", "nouvel utilisateur non enregistré");
+                        }
+                    }catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -122,15 +157,31 @@ public class Inscription extends AppCompatActivity {
             }
         };
 
+        final EditText txtPseudo = new EditText(Inscription.this);
+        txtPseudo.setHint("Pseudo");
+        final EditText txtDate = new EditText(Inscription.this);
+        txtDate.setHint("Date de naissance");
+        txtDate.setInputType(InputType.TYPE_CLASS_DATETIME);
+        final Button btnValider = new Button(Inscription.this);
+        btnValider.setText("Valider");
+        btnValider.setHeight(20);
+        btnValider.setBackground(getResources().getDrawable(R.drawable.button_blue));
+        final LinearLayout layout = new LinearLayout(Inscription.this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(10, 0, 10, 0);
+        layout.addView(txtPseudo);
+        layout.addView(txtDate);
+        layout.addView(btnValider);
+
         fbSignin.setReadPermissions(Arrays.asList(
                 "public_profile", "email", "user_birthday", "user_friends"));
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                     @Override
-                    public void onSuccess(LoginResult loginResult) {
+                    public void onSuccess(final LoginResult loginResult) {
                         Toast.makeText(Inscription.this, "connexion reussi",
                                 Toast.LENGTH_LONG).show();
-                        final String token = loginResult.getAccessToken().getToken();
 
+                        //contacting facebook to get user email
                         //prepare fields with email
                         String[] requiredFields = new String[]{"email"};
                         Bundle parameters = new Bundle();
@@ -154,23 +205,95 @@ public class Inscription extends AppCompatActivity {
                                             }
                                             else
                                             {
-                                                String email = me.optString("email");
-                                                Utilisateur user = new Utilisateur();
-                                                user.setDate_naissance("");
-                                                String pass = BCrypt.hashpw(email + Inscription._TO_CONCAT, BCrypt.gensalt()).toString();
-                                                user.setEmail(pass);
-                                                user.setPassword(fbProfileName.replaceAll("\\s","").toLowerCase());
-                                                db = dbAdapteur.open();
-                                                long cle = dbAdapteur.insertUtilisateur(user);
-                                                if (cle != -1) {
-                                                    Log.i("BD", "nouvel utilisateur enregistré");
-                                                    startActivity(mainintent);
-                                                } else
-                                                    Log.i("BD", "nouvel utilisateur non enregistré");
-                                                db.close();
-                                                Log.i(TAG, email);
-                                                startActivity(mainintent);
-                                                Toast.makeText(getApplicationContext(),"Vos informations ont été enregistrées",Toast.LENGTH_SHORT).show();
+                                                final String email = me.optString("email");  // recupération de l'email via facebook api
+                                                Thread t1 = new Thread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        utilisateur = server.login(email, DBServer.CONNEXION_FB, " "); // tester si l'utilisateur a déjà été enrgistré
+                                                    }});
+
+                                                t1.start(); // spawn thread
+                                                // wait for thread to finish
+                                                try {
+                                                    t1.join();
+                                                    if (utilisateur != null){
+                                                        // Creating user login session
+                                                        // For testing i am stroing name, email as follow
+                                                        // Use user real data
+                                                        session.createLoginSession(utilisateur.getPseudo(), utilisateur.getEmail(), utilisateur.getId());
+
+                                                        startActivity(itmain); // déjà enregistré on démarre l'activité Welcome
+                                                    }
+                                                    else { // on demande à l'utilisateur d'entrer ses identifiants pour l'en créer un compte
+                                                        new AlertDialog.Builder(Inscription.this)
+                                                                .setTitle("Vos Information")
+                                                                .setView(layout)
+                                                                .show();
+
+                                                        btnValider.setOnClickListener(new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View v) {
+                                                                s_pseudo = txtPseudo.getText().toString();
+                                                                sdate = txtDate.getText().toString();
+                                                                utilisateur = new Utilisateur();
+
+
+
+                                                                Thread t2 = new Thread(new Runnable() {
+                                                                    @Override
+                                                                    public void run() {
+                                                                        utilisateur = server.getUser_by_pseudo(s_pseudo); // on teste si le pseudo est déjà utilisé dans l'application
+                                                                    }});
+
+                                                                t2.start(); // spawn thread
+
+                                                                // wait for thread to finish
+                                                                try {
+                                                                    t2.join();
+                                                                    if (utilisateur != null){
+                                                                        Log.i("Connexion", "Utilisateur avec " + pseudo + " existant");
+                                                                        txtPseudo.setTextColor(getResources().getColor(R.color.pink));
+                                                                        txtPseudo.setText(txtPseudo.getText().toString() + " existant!");
+                                                                    }
+                                                                    else {
+                                                                        final Utilisateur user = new Utilisateur();
+                                                                        user.setDate_naissance(txtDate.getText().toString());
+                                                                        user.setEmail(email);
+                                                                        String pass = BCrypt.hashpw(email+Inscription._TO_CONCAT, BCrypt.gensalt()).toString();
+                                                                        user.setPassword(pass);
+                                                                        user.setPseudo(s_pseudo);
+                                                                        Thread t3 = new Thread(new Runnable() {
+                                                                            @Override
+                                                                            public void run() {
+                                                                                USER_ID = server.register(user.getEmail(), user.getPseudo(),
+                                                                                        user.getPassword(), DBServer.CONNEXION_FB, user.getDate_naissance());
+                                                                            }});
+
+                                                                        t3.start(); // spawn thread
+                                                                        try{
+                                                                            t3.join();
+                                                                            if (USER_ID != -1) {
+                                                                                Log.i("BD", "nouvel utilisateur enregistré");
+                                                                                // Creating user login session
+                                                                                // For testing i am stroing name, email as follow
+                                                                                // Use user real data
+                                                                                session.createLoginSession(utilisateur.getPseudo(), utilisateur.getEmail(), USER_ID);
+                                                                                startActivity(itmain);
+                                                                            } else
+                                                                                Log.i("BD", "nouvel utilisateur non enregistré");
+                                                                        }catch (InterruptedException e) {
+                                                                            e.printStackTrace();
+                                                                        }
+                                                                    }
+                                                                } catch (InterruptedException e) {
+                                                                    e.printStackTrace();
+                                                                }
+                                                            }
+                                                        });
+                                                    }
+                                                } catch (InterruptedException e) {
+                                                    e.printStackTrace();
+                                                }
                                             }
                                         }
                                     };

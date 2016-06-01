@@ -30,7 +30,7 @@ public class SessionManager {
     private static final String PREF_NAME = "AndroidHivePref";
 
     // All Shared Preferences Keys
-    private static final String IS_LOGIN = "IsLoggedIn";
+    public static final String IS_LOGIN = "IsLoggedIn";
 
     // User name (make variable public to access from outside)
     public static final String KEY_NAME = "pseudo";
@@ -95,6 +95,13 @@ public class SessionManager {
         return user;
     }
 
+    /**
+     * test if an user is connected
+     * @return true or false depending of the status of user
+     */
+    public boolean isLogin(){
+        return pref.getBoolean(IS_LOGIN, false);
+    }
     /**
      * set the value of the offset inside preferences
      * @param offset value to be set represent the value to use in request to get spots

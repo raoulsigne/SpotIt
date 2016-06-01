@@ -33,6 +33,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedOutputStream;
@@ -49,7 +50,7 @@ import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 
 public class TakeSnap extends Activity implements View.OnClickListener{
 
-    private Preview mPreview;
+    protected Preview mPreview;
     Camera mCamera;
     int numberOfCameras;
     int cameraCurrentlyLocked;
@@ -148,6 +149,7 @@ public class TakeSnap extends Activity implements View.OnClickListener{
         SurfaceView mSurfaceView;
         Button shutter;
         Button done,clear,cameramode;
+        TextView txtValider, txtAnnuler;
         LinearLayout linearLayout;
         SurfaceHolder mHolder;
         Size mPreviewSize;
@@ -165,6 +167,12 @@ public class TakeSnap extends Activity implements View.OnClickListener{
             addView(mSurfaceView);
             shutter = new Button(context);
 
+            txtAnnuler = new TextView(context);
+            txtAnnuler.setTextColor(getResources().getColor(R.color.blanc));
+            txtAnnuler.setText("Annuler");
+            txtValider = new TextView(context);
+            txtValider.setTextColor(getResources().getColor(R.color.blanc));
+            txtValider.setText("Valider");
             linearLayout = new LinearLayout(context);
             linearLayout.setBackgroundColor(getResources().getColor(R.color.fondsnap));
             cameramode = new Button(context);
@@ -179,6 +187,8 @@ public class TakeSnap extends Activity implements View.OnClickListener{
             addView(clear);
             addView(cameramode);
             addView(linearLayout);
+            addView(txtValider);
+            addView(txtAnnuler);
 
             // Install a SurfaceHolder.Callback so we get notified when the
             // underlying surface is created and destroyed.
@@ -338,6 +348,8 @@ public class TakeSnap extends Activity implements View.OnClickListener{
                 final View child3 = getChildAt(3);
                 final View child4 = getChildAt(4);
                 final View child5 = getChildAt(5);
+                final View child6 = getChildAt(6);
+                final View child7 = getChildAt(7);
 
                 final int width = r - l;
                 final int height = b - t;
@@ -361,17 +373,22 @@ public class TakeSnap extends Activity implements View.OnClickListener{
                     int pixels = (int) (40 * scale + 0.5f);
                     int pixels_btn = (int) (30 * scale + 0.5f);
                     int padding = (int) (50 * scale + 0.5f);
+                    int txt_width = (int) (45 * scale + 0.5f);
 
                     int hauteur = height - width;
                     //positionnement de la surface du preview
                     child.layout(0, 0, width, height);
-                    Log.i("PhotoHandler", "Preview dimension " + width + " " + height + " rapport = " + (double)height/width);
+                    Log.i("PhotoHandler", "Preview dimension " + width + " " + height + " rapport = " + (double) height / width);
                     //positionnement du bouton shutter
                     child1.layout(width/2-pixels, width+hauteur/2-pixels, width/2+pixels, width+hauteur/2+pixels);
                     //positionnement du bouton valider
                     child2.layout(padding, width+hauteur/2 - pixels_btn, padding + pixels_btn, width+hauteur/2 + pixels_btn);
+                    //positionnement du texte du bouton valider
+                    child6.layout(padding - txt_width/2 + pixels_btn/2, width+hauteur/2 + pixels_btn, padding + txt_width/2 + pixels_btn/2, width+hauteur/2 + 2*pixels_btn);
                     //positionnement du bouton annuler
                     child3.layout(width - padding - pixels_btn, width+hauteur/2 - pixels_btn, width - padding, width+hauteur/2 + pixels_btn);
+                    //positionnement du texte du bouton annuler
+                    child7.layout(width - padding - pixels_btn - txt_width/2 + pixels_btn/2, width+hauteur/2 + pixels_btn, width - padding + txt_width/2 + pixels_btn/2, width+hauteur/2 + 2*pixels_btn);
                     //positionnement du bouton de changement du mode de la camera
                     child4.layout(width/2-pixels_btn/2, 0, width/2+pixels_btn/2, pixels_btn);
                     //positionnement du layout qui va cacher une partie de l'écran et heberger les boutons
@@ -460,13 +477,6 @@ public class TakeSnap extends Activity implements View.OnClickListener{
 
         @Override
         public void onPictureTaken(byte[] bytes, Camera cam) {
-            //get the screen size
-            WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-            Display display = wm.getDefaultDisplay();
-            Point size = new Point();
-            display.getSize(size);
-            int screen_width = size.x;
-            int screen_height = size.y;
 
             //roter la photo pour permettre qu'elle apparaisse comme elle a été prise rotation de 90 dégré
             bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
@@ -475,10 +485,10 @@ public class TakeSnap extends Activity implements View.OnClickListener{
             Matrix matrix = new Matrix();
             matrix.postRotate(90);
             rotatedBitmap = Bitmap.createBitmap(bmp, 0, 0, height, height, matrix, true);
-
+//
 //            double rapport_width = (double) height/screen_width;
 //            double rapport_height = (double) height/screen_height;
-//            rotatedBitmap = Bitmap.createBitmap(bmp, 0, 0, height, (int)(screen_width*rapport_height), matrix, true);
+//            rotatedBitmap = Bitmap.createBitmap(bmp, 0, 0, height, height, matrix, true);
 //            ImageView image = new ImageView(context);
 //            image.setImageBitmap(rotatedBitmap);
 //            AlertDialog.Builder builder =
@@ -513,10 +523,16 @@ public class TakeSnap extends Activity implements View.OnClickListener{
             if (id == CameraInfo.CAMERA_FACING_FRONT) {
                 int width = bmp.getWidth();
                 int height = bmp.getHeight();
+                int value = 0;
+                if (height <= width) {
+                    value = height;
+                } else {
+                    value = width;
+                }
                 Matrix matrix = new Matrix();
                 matrix.postRotate(270);
                 rotatedBitmap = Bitmap.createBitmap(bmp, 0, 0,
-                        width, height, matrix, true);
+                        value, value, matrix, true);
             }
             try {
                 FileOutputStream fos = new FileOutputStream(pictureFile);

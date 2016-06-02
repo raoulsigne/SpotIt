@@ -47,7 +47,5 @@ public class Accueil extends AppCompatActivity {
                 startActivity(itSignin);
             }
         });
-
-        Log.i("test", BCrypt.gensalt());
     }
 }

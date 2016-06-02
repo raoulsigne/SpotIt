@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.TypedArray;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
@@ -114,10 +115,18 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         settings.setMyLocationButtonEnabled(true);
 
         //try to position the location button in the sreen bottom
+        //get the dimension of the screen
         int width = this.getResources().getDisplayMetrics().widthPixels;
         int height = this.getResources().getDisplayMetrics().heightPixels;
-        Log.i("size",width+ " " + height);
-        mMap.setPadding(0, height - 220, 0, 0);
+
+        final float scale = getContext().getResources().getDisplayMetrics().density; // calcul du ratio entre les pixels de l'écran
+        //get the size of tha actionbar which are at the bottom on the screen
+        final TypedArray styledAttributes = getContext().getTheme().obtainStyledAttributes(
+                new int[] { android.R.attr.actionBarSize });
+        int mActionBarSize = (int) styledAttributes.getDimension(0, 0);
+        styledAttributes.recycle();
+        int pixels = (int) ((mActionBarSize + 5) * scale + 0.5f);
+        mMap.setPadding(0, height - pixels, 0, 0); // position the pading of the map which will help to set the location button at the bottom
 
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

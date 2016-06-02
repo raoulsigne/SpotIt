@@ -52,7 +52,7 @@ import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
 public class Inscription extends AppCompatActivity {
 
-    public static  final  String _TO_CONCAT = "$2a$10$cs457syu89iuer8poier787";
+    public static  final  String _TO_CONCAT = "cs457syu89iuer8poier787";
     protected EditText pseudo, email, password, date;
     Switch switch_pwd;
     LoginButton fbSignin;
@@ -171,7 +171,7 @@ public class Inscription extends AppCompatActivity {
                             Thread t = new Thread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    String pass = BCrypt.hashpw(user.getPassword(), _TO_CONCAT).toString();
+                                    String pass = BCrypt.hashpw(user.getPassword()+_TO_CONCAT, BCrypt.gensalt(12)).toString();
                                     USER_ID = server.register(user.getEmail(), user.getPseudo(),
                                             pass, DBServer.CONNEXION_NORMAL, user.getDate_naissance());
                                 }});

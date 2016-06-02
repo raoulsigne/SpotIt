@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.ListView;
 
@@ -43,6 +44,8 @@ public class ListeSpots extends Fragment {
     private ArrayList<Spot> tampon;
     private int offset;
 
+    private int preLast;
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -56,6 +59,7 @@ public class ListeSpots extends Fragment {
 
         spots = new ArrayList<>();
         offset = 0;
+        preLast = 0;
 
         // Creating a button - Load More
         Button btnLoadMore = new Button(getActivity());
@@ -81,6 +85,27 @@ public class ListeSpots extends Fragment {
             public void onClick(View arg0) {
                 // Starting a new async task
                 loadSpots();
+            }
+        });
+
+        /**
+         * Handle when reaching the end of the list
+         */
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                final int lastItem = firstVisibleItem + visibleItemCount;
+                if(lastItem == totalItemCount) {
+                    if(preLast!=lastItem){ //to avoid multiple calls for last item
+                        Log.i("Last", "Last");
+                        preLast = lastItem;
+                    }
+                }
             }
         });
 

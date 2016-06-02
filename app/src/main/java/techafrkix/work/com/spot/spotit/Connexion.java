@@ -10,11 +10,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -44,6 +47,7 @@ public class Connexion extends AppCompatActivity {
     private AccessTokenTracker fbTracker;
     CallbackManager callbackManager;
     EditText email, password;
+    Switch switch_pwd;
 
     UtilisateurDBAdapteur dbAdapteur;
     SQLiteDatabase db;
@@ -70,14 +74,34 @@ public class Connexion extends AppCompatActivity {
         session = new SessionManager(getApplicationContext());
         server = new DBServer(getApplicationContext());
 
-        final Intent itwelcome = new Intent(this,Welcome.class);
-        dbAdapteur = new UtilisateurDBAdapteur(getApplicationContext());
-
         //recuperation des elements de l'activité
         email = (EditText)findViewById(R.id.editText2);
         password = (EditText)findViewById(R.id.editText3);
         LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         Button btnLogin = (Button)findViewById(R.id.btnConnexion);
+
+        final Intent itwelcome = new Intent(this,Welcome.class);
+        dbAdapteur = new UtilisateurDBAdapteur(getApplicationContext());
+
+        switch_pwd = (Switch)findViewById(R.id.switch_pwd);
+        switch_pwd.setChecked(false);
+
+        switch_pwd.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                                         boolean isChecked) {
+                if (isChecked) {
+                    // The toggle is enabled
+                    password.setTransformationMethod(null);
+                    switch_pwd.setText("Hide");
+                } else {
+                    // The toggle is disabled
+                    password.setTransformationMethod(new PasswordTransformationMethod());
+                    switch_pwd.setText("Show");
+                }
+            }
+        });
 
         String parent = getIntent().getExtras().getString("caller");
         if (isLoggedIn()) {

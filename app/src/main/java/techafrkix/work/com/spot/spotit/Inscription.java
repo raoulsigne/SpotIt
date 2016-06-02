@@ -3,6 +3,7 @@ package techafrkix.work.com.spot.spotit;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.app.DialogFragment;
@@ -15,6 +16,7 @@ import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
@@ -141,6 +143,10 @@ public class Inscription extends AppCompatActivity {
                     if (pseudo.getText().toString() == "")
                         pseudo.setTextColor(getResources().getColor(R.color.noir));
                 }
+                pseudo.requestFocus();  // request focus
+                //open keyboard inside edittext pseudo
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(pseudo, InputMethodManager.SHOW_IMPLICIT);
                 return true;
             }
         });
@@ -205,30 +211,32 @@ public class Inscription extends AppCompatActivity {
                 }
             }
         });
+        String parent = getIntent().getExtras().getString("caller");
+        if (parent.compareTo("Main") == 0) {
+            accessTokenTracker = new AccessTokenTracker() {
+                @Override
+                protected void onCurrentAccessTokenChanged(
+                        AccessToken oldAccessToken,
+                        AccessToken currentAccessToken) {
+                    fbAuthToken = currentAccessToken.getToken();
+                    fbUserID = currentAccessToken.getUserId();
 
-        accessTokenTracker = new AccessTokenTracker() {
-            @Override
-            protected void onCurrentAccessTokenChanged(
-                    AccessToken oldAccessToken,
-                    AccessToken currentAccessToken) {
-                fbAuthToken = currentAccessToken.getToken();
-                fbUserID = currentAccessToken.getUserId();
+                    Log.i(TAG, "User id: " + fbUserID);
+                    Log.i(TAG, "Access token tracker: " + currentAccessToken.toString());
 
-                Log.d(TAG, "User id: " + fbUserID);
-                Log.d(TAG, "Access token tracker: " + currentAccessToken.toString());
+                }
+            };
+            profileTracker = new ProfileTracker() {
+                @Override
+                protected void onCurrentProfileChanged(
+                        Profile oldProfile,
+                        Profile currentProfile) {
+                    fbProfileName = currentProfile.getName();
 
-            }
-        };
-        profileTracker = new ProfileTracker() {
-            @Override
-            protected void onCurrentProfileChanged(
-                    Profile oldProfile,
-                    Profile currentProfile) {
-                fbProfileName = currentProfile.getName();
-
-                Log.d(TAG, "User name: " + fbProfileName + " " + currentProfile.toString());
-            }
-        };
+                    Log.i(TAG, "User name: " + fbProfileName + " " + currentProfile.toString());
+                }
+            };
+        }
 
         final EditText txtPseudo = new EditText(Inscription.this);
         txtPseudo.setHint("Pseudo");

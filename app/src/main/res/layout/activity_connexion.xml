@@ -88,36 +88,51 @@
                 android:padding="10dp"
                 android:hint="Email"/>
 
-            <EditText
-                android:layout_width="300dp"
+            <RelativeLayout android:layout_width="300dp"
                 android:layout_height="40dp"
-                android:inputType="textPassword"
-                android:ems="10"
-                android:id="@+id/editText3"
+                android:id="@+id/bloc_pwd"
                 android:layout_below="@+id/editText2"
                 android:layout_alignRight="@+id/editText2"
-                android:layout_alignEnd="@+id/editText2"
-                android:background="#FFFFFF"
-                android:textSize="15sp"
-                android:padding="10dp"
-                android:hint="Password"
-                android:layout_alignLeft="@+id/editText2"
-                android:layout_alignStart="@+id/editText2" />
+                android:layout_alignEnd="@+id/editText2" >
+
+                <EditText
+                    android:layout_width="300dp"
+                    android:layout_height="40dp"
+                    android:inputType="textPassword"
+                    android:ems="10"
+                    android:id="@+id/editText3"
+                    android:layout_gravity="center_horizontal"
+                    android:background="#FFFFFF"
+                    android:hint="Password"
+                    android:padding="10dp"
+                    android:textSize="15sp"
+                    android:radius="5dp"/>
+
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Show"
+                    android:id="@+id/switch_pwd"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+
+            </RelativeLayout>
 
             <Button
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:text="Log in"
                 android:id="@+id/btnConnexion"
-                android:layout_below="@+id/editText3"
+                android:layout_below="@+id/bloc_pwd"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp"
                 android:textAllCaps="false"
                 android:background="@drawable/button_blue"
-                android:layout_alignLeft="@+id/editText3"
-                android:layout_alignStart="@+id/editText3"
-                android:layout_alignRight="@+id/editText3"
-                android:layout_alignEnd="@+id/editText3"
+                android:layout_alignLeft="@+id/bloc_pwd"
+                android:layout_alignStart="@+id/bloc_pwd"
+                android:layout_alignRight="@+id/bloc_pwd"
+                android:layout_alignEnd="@+id/bloc_pwd"
                 android:layout_marginTop="10dp"
                 style="?android:attr/borderlessButtonStyle"/>
 

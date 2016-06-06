@@ -183,7 +183,7 @@ public class Connexion extends AppCompatActivity {
                                                     }
                                                     else { // on demande à l'utilisateur d'entrer ses identifiants pour l'en créer un compte
                                                         new AlertDialog.Builder(Connexion.this)
-                                                                .setTitle("Vos Information")
+                                                                .setTitle("Vos Informations")
                                                                 .setView(layout)
                                                                 .show();
 

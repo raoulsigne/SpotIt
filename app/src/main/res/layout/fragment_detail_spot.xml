@@ -4,69 +4,36 @@
     android:layout_height="match_parent"
     tools:context="techafrkix.work.com.spot.spotit.DetailSpot">
 
-    <!-- TODO: Update blank fragment layout -->
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/fond_detail">
-
         <LinearLayout android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Coordonnées"
-                android:textColor="#494949"
-                android:textAlignment="center"
-                android:textSize="13sp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="40dp"/>
-            <LinearLayout
+            android:orientation="vertical"
+            android:background="@color/fond_detail">
+
+
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:id="@+id/imgspot"
+                android:scaleType="centerCrop"
                 android:layout_gravity="center_horizontal"
-                android:background="@color/blanc"
-                android:layout_marginTop="5dp">
-                <EditText
-                    android:layout_width="320dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:inputType="numberDecimal"
-                    android:textSize="11sp"
-                    android:textColor="@color/noir"
-                    android:id="@+id/edtLatitude"
-                    android:layout_gravity="center_horizontal"
-                    android:hint="Latitude"
-                    android:padding="10dp"/>
+                android:layout_marginBottom="10dp"/>
 
-                <EditText
-                    android:layout_width="320dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:inputType="numberDecimal"
-                    android:textSize="11sp"
-                    android:textColor="@color/noir"
-                    android:id="@+id/edtLongitude"
-                    android:layout_gravity="center_horizontal"
-                    android:hint="Longitude"
-                    android:padding="10dp"/>
-            </LinearLayout>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Qui peut voire ce spot ?"
+                android:text="Who can see this spot ?"
                 android:textColor="#494949"
-                android:textSize="13sp"
+                android:textSize="16sp"
                 android:textAlignment="center"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="35dp"
                 android:layout_marginBottom="5dp"/>
 
             <LinearLayout
-                android:layout_width="320dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
                 android:orientation="horizontal"
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
@@ -89,9 +56,9 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Moi"
+                        android:text="Only me"
                         android:id="@+id/txtMoi"
-                        android:textSize="10sp"
+                        android:textSize="11sp"
                         android:textAlignment="center"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="8dp"/>
@@ -113,8 +80,8 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Mes amis"
-                        android:textSize="10sp"
+                        android:text="Friends"
+                        android:textSize="11sp"
                         android:id="@+id/txtAmis"
                         android:textAlignment="center"
                         android:layout_gravity="center_horizontal"
@@ -137,8 +104,8 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Tout le monde"
-                        android:textSize="10sp"
+                        android:text="Publics"
+                        android:textSize="11sp"
                         android:textAlignment="center"
                         android:id="@+id/txtPublic"
                         android:layout_gravity="center_horizontal"
@@ -161,5 +128,5 @@
             style="?android:attr/borderlessButtonStyle"/>
 
     </LinearLayout>
-    </ScrollView>
+
 </FrameLayout>

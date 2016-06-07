@@ -13,51 +13,92 @@
         <LinearLayout
             android:id="@+id/infos"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="wrap_content"
             android:background="@color/blanc">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_marginLeft="10dp">
 
                 <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/profile_image"
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
                     android:layout_marginTop="10dp"
                     android:src="@drawable/profile"
                     app:civ_border_color="#FF000000"
                     app:civ_border_width="2dp" />
                 <TextView
+                    android:id="@+id/txtmodify"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="8dp"
                     android:layout_gravity="center_horizontal"
                     android:text="Modify"
                     android:textStyle="bold"
+                    android:clickable="true"
                     android:textColor="@color/mainblue"/>
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="30dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Stephen Curry"
+                    android:textColor="@color/mainblue"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:id="@+id/textView6" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="28 spots | 15 respots"
+                    android:id="@+id/textView12" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="26 Friends"
+                    android:id="@+id/textView11" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Log out"
+                    android:textColor="@color/mainblue"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:clickable="true"
+                    android:id="@+id/txtlogout" />
             </LinearLayout>
+
         </LinearLayout>
 
-        <LinearLayout
+        <fragment
             android:id="@+id/mymap"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/background_new">
+            android:background="@drawable/background_new"
+            android:name="com.google.android.gms.maps.SupportMapFragment">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:gravity="bottom"
-                android:paddingBottom="15dp">
+                android:paddingBottom="35dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -82,7 +123,7 @@
                 </LinearLayout>
 
             </RelativeLayout>
-        </LinearLayout>
+        </fragment>
 
     </LinearLayout>
 </FrameLayout>

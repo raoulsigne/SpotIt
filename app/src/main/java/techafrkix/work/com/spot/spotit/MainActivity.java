@@ -39,19 +39,23 @@ import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.GeoHash;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, FragmentAccueil.OnFragmentInteractionListener{
+        GoogleApiClient.OnConnectionFailedListener, FragmentAccueil.OnFragmentInteractionListener, Account.OnFragmentInteractionListener,
+        MapsActivity.OnFragmentInteractionListener, ListeSpots.OnFragmentInteractionListener, DetailSpot.OnFragmentInteractionListener{
 
     private static Context context;
 
     MapsActivity fgAccueil;
     ListeSpots fgSpots;
+    Account fgAccount;
+    DetailSpot fgDetailspot;
     FragmentTransaction ft;
 
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 3;
-    public static final int MENU_ACTIF_ACCUEIL = 1;
-    public static final int MENU_ACTIF_LIST = 2;
-    public static final int MENU_ACTIF_ADD = 3;
-    public static final int MENU_ACTIF_DECONNECT = 4;
+    public static final int MENU_ACTIF_HOME = 1;
+    public static final int MENU_ACTIF_SOCIAL = 2;
+    public static final int MENU_ACTIF_NEW = 3;
+    public static final int MENU_ACTIF_NOTIFICATION = 4;
+    public static final int MENU_ACTIF_ACCOUNT = 5;
 
     private static final int CAMERA_REQUEST = 1;
     private static final int WRITE_REQUEST = 2;
@@ -66,8 +70,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     private SessionManager session;
 
-    ImageButton imgHome, imgList, imgAdd, imgDisconnect;
-    TextView txtHome, txtList, txtAdd, txtDisconnect;
+    ImageButton imgHome, imgSocial, imgNew, imgNotification, imgAccount;
+    TextView txtHome, txtSocial, txtNew, txtNotification, txtAccount;
 
     int menuactif;
 
@@ -82,17 +86,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         MainActivity.context = getApplicationContext();
 
         imgHome = (ImageButton)findViewById(R.id.imgHome);
-        imgList = (ImageButton)findViewById(R.id.imgList);
-        imgAdd = (ImageButton)findViewById(R.id.imgAdd);
-        imgDisconnect = (ImageButton)findViewById(R.id.imgDisconnect);
+        imgSocial = (ImageButton)findViewById(R.id.imgList);
+        imgNew = (ImageButton)findViewById(R.id.imgAdd);
+        imgNotification = (ImageButton)findViewById(R.id.imgDisconnect);
+        imgAccount = (ImageButton)findViewById(R.id.imgAccount);
         txtHome = (TextView)findViewById(R.id.txtHome);
-        txtList = (TextView)findViewById(R.id.txtSpots);
-        txtAdd = (TextView)findViewById(R.id.txtAdd);
-        txtDisconnect = (TextView)findViewById(R.id.txtLogout);
+        txtSocial = (TextView)findViewById(R.id.txtSpots);
+        txtNew = (TextView)findViewById(R.id.txtAdd);
+        txtNotification = (TextView)findViewById(R.id.txtLogout);
+        txtAccount = (TextView)findViewById(R.id.txtAccount);
 
 
         fgAccueil = new MapsActivity();
         fgSpots = new ListeSpots();
+        fgAccount = new Account();
+        fgDetailspot = new DetailSpot();
 
         FragmentTransaction ft;
         dbAdapteur = new SpotsDBAdapteur(getApplicationContext());
@@ -109,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.container, fgAccueil, "ACCUEIL")
                 .commit();
-        menuactif = MENU_ACTIF_ACCUEIL;
+        menuactif = MENU_ACTIF_HOME;
 
         CheckEnableGPS();
 
@@ -117,17 +125,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             @Override
             public void onClick(View v) {
                 //changement des couleurs des widgets
-                imgHome.setBackground(getResources().getDrawable(R.drawable.icon_home_blanc));
-                imgAdd.setBackground(getResources().getDrawable(R.drawable.icon_add_gris));
-                imgList.setBackground(getResources().getDrawable(R.drawable.icon_list_gris));
-                imgDisconnect.setBackground(getResources().getDrawable(R.drawable.icon_deconnexion_gris));
-                txtHome.setTextColor(getResources().getColor(R.color.blanc));
-                txtList.setTextColor(getResources().getColor(R.color.fond_detail));
-                txtAdd.setTextColor(getResources().getColor(R.color.fond_detail));
-                txtDisconnect.setTextColor(getResources().getColor(R.color.fond_detail));
+                imgHome.setBackground(getResources().getDrawable(R.drawable.world_clicked));
+                imgSocial.setBackground(getResources().getDrawable(R.drawable.user));
+                imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
+                imgNotification.setBackground(getResources().getDrawable(R.drawable.bell));
+                imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
+                txtHome.setTextColor(getResources().getColor(R.color.mainblue));
+                txtSocial.setTextColor(getResources().getColor(R.color.noir));
+                txtNew.setTextColor(getResources().getColor(R.color.noir));
+                txtNotification.setTextColor(getResources().getColor(R.color.noir));
+                txtAccount.setTextColor(getResources().getColor(R.color.noir));
 
                 //traitement de l'action lors du click
-                if (menuactif != MENU_ACTIF_ACCUEIL) {
+                if (menuactif != MENU_ACTIF_HOME) {
                     try {
                         //remove all others fragments if there exists
                         getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
@@ -136,28 +146,30 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.container, fgAccueil, "ACCUEIL")
                                 .commit();
-                        menuactif = MENU_ACTIF_ACCUEIL;
+                        menuactif = MENU_ACTIF_HOME;
                     } catch (Exception e) {
                         Log.e("fragment", e.getMessage());
                     }
                 }
             }
         });
-        imgList.setOnClickListener(new View.OnClickListener() {
+        imgSocial.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //changement des couleurs des widgets
-                imgHome.setBackground(getResources().getDrawable(R.drawable.icon_home_gris));
-                imgAdd.setBackground(getResources().getDrawable(R.drawable.icon_add_gris));
-                imgList.setBackground(getResources().getDrawable(R.drawable.icon_list_blanc));
-                imgDisconnect.setBackground(getResources().getDrawable(R.drawable.icon_deconnexion_gris));
-                txtHome.setTextColor(getResources().getColor(R.color.fond_detail));
-                txtList.setTextColor(getResources().getColor(R.color.blanc));
-                txtAdd.setTextColor(getResources().getColor(R.color.fond_detail));
-                txtDisconnect.setTextColor(getResources().getColor(R.color.fond_detail));
+                imgHome.setBackground(getResources().getDrawable(R.drawable.world));
+                imgSocial.setBackground(getResources().getDrawable(R.drawable.user_clicked));
+                imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
+                imgNotification.setBackground(getResources().getDrawable(R.drawable.bell));
+                imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
+                txtHome.setTextColor(getResources().getColor(R.color.noir));
+                txtSocial.setTextColor(getResources().getColor(R.color.mainblue));
+                txtNew.setTextColor(getResources().getColor(R.color.noir));
+                txtNotification.setTextColor(getResources().getColor(R.color.noir));
+                txtAccount.setTextColor(getResources().getColor(R.color.noir));
 
                 //traitement de l'action lors du click
-                if (menuactif != MENU_ACTIF_LIST) {
+                if (menuactif != MENU_ACTIF_SOCIAL) {
                     try {
                         //remove all others fragments if there exists
                         getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
@@ -166,29 +178,31 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.container, fgSpots, "SPOTS")
                                 .commit();
-                        menuactif = MENU_ACTIF_LIST;
+                        menuactif = MENU_ACTIF_SOCIAL;
                     } catch (Exception e) {
                         Log.e("fragment", e.getMessage());
                     }
                 }
             }
         });
-        imgAdd.setOnClickListener(new View.OnClickListener() {
+        imgNew.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //changement des couleurs des widgets
-                imgHome.setBackground(getResources().getDrawable(R.drawable.icon_home_gris));
-                imgAdd.setBackground(getResources().getDrawable(R.drawable.icon_add_blanc));
-                imgList.setBackground(getResources().getDrawable(R.drawable.icon_list_gris));
-                imgDisconnect.setBackground(getResources().getDrawable(R.drawable.icon_deconnexion_gris));
-                txtHome.setTextColor(getResources().getColor(R.color.fond_detail));
-                txtList.setTextColor(getResources().getColor(R.color.fond_detail));
-                txtAdd.setTextColor(getResources().getColor(R.color.blanc));
-                txtDisconnect.setTextColor(getResources().getColor(R.color.fond_detail));
+                imgHome.setBackground(getResources().getDrawable(R.drawable.world));
+                imgSocial.setBackground(getResources().getDrawable(R.drawable.user));
+                imgNew.setBackground(getResources().getDrawable(R.drawable.spot_clicked));
+                imgNotification.setBackground(getResources().getDrawable(R.drawable.bell));
+                imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
+                txtHome.setTextColor(getResources().getColor(R.color.noir));
+                txtSocial.setTextColor(getResources().getColor(R.color.noir));
+                txtNew.setTextColor(getResources().getColor(R.color.mainblue));
+                txtNotification.setTextColor(getResources().getColor(R.color.noir));
+                txtAccount.setTextColor(getResources().getColor(R.color.noir));
 
                 //traitement de l'action lors du click
-                if (menuactif != MENU_ACTIF_ADD) {
-                    menuactif = MENU_ACTIF_ADD;
+                if (menuactif != MENU_ACTIF_NEW) {
+                    menuactif = MENU_ACTIF_NEW;
                     Bundle bundle = new Bundle();
                     //bundle.putString("image", selectedImagePath);
                     if (mLastLocation != null) {
@@ -208,21 +222,24 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 }
             }
         });
-        imgDisconnect.setOnClickListener(new View.OnClickListener() {
+        imgNotification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //changement des couleurs des widgets
-                imgHome.setBackground(getResources().getDrawable(R.drawable.icon_home_gris));
-                imgAdd.setBackground(getResources().getDrawable(R.drawable.icon_add_gris));
-                imgList.setBackground(getResources().getDrawable(R.drawable.icon_list_gris));
-                imgDisconnect.setBackground(getResources().getDrawable(R.drawable.icon_deconnexion_blanc));
-                txtHome.setTextColor(getResources().getColor(R.color.fond_detail));
-                txtList.setTextColor(getResources().getColor(R.color.fond_detail));
-                txtAdd.setTextColor(getResources().getColor(R.color.fond_detail));
-                txtDisconnect.setTextColor(getResources().getColor(R.color.blanc));
+                imgHome.setBackground(getResources().getDrawable(R.drawable.world));
+                imgSocial.setBackground(getResources().getDrawable(R.drawable.user));
+                imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
+                imgNotification.setBackground(getResources().getDrawable(R.drawable.bell_clicked));
+                imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
+                txtHome.setTextColor(getResources().getColor(R.color.noir));
+                txtSocial.setTextColor(getResources().getColor(R.color.noir));
+                txtNew.setTextColor(getResources().getColor(R.color.noir));
+                txtNotification.setTextColor(getResources().getColor(R.color.mainblue));
+                txtAccount.setTextColor(getResources().getColor(R.color.noir));
 
                 //traitement de l'action lors du click
-                if (menuactif != MENU_ACTIF_DECONNECT) {
+                if (menuactif != MENU_ACTIF_NOTIFICATION) {
+                    menuactif = MENU_ACTIF_NOTIFICATION;
                     session.logoutUser();
                     Intent itdeconnect = new Intent(getApplicationContext(), Connexion.class);
                     itdeconnect.putExtra("caller","Main");
@@ -230,6 +247,38 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     vidercache();
                     finish();
                     startActivity(itdeconnect);
+                }
+            }
+        });
+        imgAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //changement des couleurs des widgets
+                imgHome.setBackground(getResources().getDrawable(R.drawable.world));
+                imgSocial.setBackground(getResources().getDrawable(R.drawable.user));
+                imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
+                imgNotification.setBackground(getResources().getDrawable(R.drawable.bell));
+                imgAccount.setBackground(getResources().getDrawable(R.drawable.setting_clicked));
+                txtHome.setTextColor(getResources().getColor(R.color.noir));
+                txtSocial.setTextColor(getResources().getColor(R.color.noir));
+                txtNew.setTextColor(getResources().getColor(R.color.noir));
+                txtNotification.setTextColor(getResources().getColor(R.color.noir));
+                txtAccount.setTextColor(getResources().getColor(R.color.mainblue));
+
+                //traitement de l'action lors du click
+                if (menuactif != MENU_ACTIF_ACCOUNT) {
+                    try {
+                        //remove all others fragments if there exists
+                        getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+                        getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+                        // add the new fragment containing the main map
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.container, fgAccount, "ACCOUNT")
+                                .commit();
+                        menuactif = MENU_ACTIF_ACCOUNT;
+                    } catch (Exception e) {
+                        Log.e("fragment", e.getMessage());
+                    }
                 }
             }
         });
@@ -480,5 +529,50 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 Log.i("suppression", "file " + tmpf + " deleted");
             }
         }
+    }
+
+    @Override
+    public void onLoadSpot(){
+        try {
+            //remove all others fragments if there exists
+            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+            // add the new fragment containing the list of spots
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, fgSpots, "SPOTS")
+                    .commit();
+        } catch (Exception e) {
+            Log.e("fragment", e.getMessage());
+        }
+    }
+
+    @Override
+    public void onDetailSpot() {
+        try {
+            //remove all others fragments if there exists
+            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+            // add the new fragment containing the list of spots
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, fgDetailspot, "DETAIL")
+                    .commit();
+        } catch (Exception e) {
+            Log.e("fragment", e.getMessage());
+        }
+    }
+
+    @Override
+    public void onLetsGo() {
+
+    }
+
+    @Override
+    public void onRespot() {
+        Toast.makeText(getApplicationContext(),"Respot",Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPost(String comment) {
+        Toast.makeText(getApplicationContext(), comment, Toast.LENGTH_SHORT).show();
     }
 }

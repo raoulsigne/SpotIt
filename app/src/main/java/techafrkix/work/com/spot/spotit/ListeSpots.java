@@ -1,5 +1,6 @@
 package techafrkix.work.com.spot.spotit;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,8 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
@@ -29,7 +33,9 @@ import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
-public class ListeSpots extends Fragment {
+public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback {
+
+    private OnFragmentInteractionListener mListener;
 
     private ArrayList<Spot> spots;
     private HashMap<String, Bitmap> spotsimages;
@@ -100,8 +106,8 @@ public class ListeSpots extends Fragment {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 final int lastItem = firstVisibleItem + visibleItemCount;
-                if(lastItem == totalItemCount) {
-                    if(preLast!=lastItem){ //to avoid multiple calls for last item
+                if (lastItem == totalItemCount) {
+                    if (preLast != lastItem) { //to avoid multiple calls for last item
                         Log.i("Last", "Last");
                         preLast = lastItem;
                     }
@@ -164,7 +170,7 @@ public class ListeSpots extends Fragment {
                         if (barProgressDialog.getProgress() == spots.size()) {
                             barProgressDialog.dismiss();
                             // Create the adapter to convert the array to views
-                            adapter = new SpotAdapter(getActivity(), spots, spotsimages);
+                            adapter = new SpotAdapter(getActivity(), spots, spotsimages, this);
                             // Attach the adapter to a ListView
                             listView.setAdapter(adapter);
                         }
@@ -196,7 +202,7 @@ public class ListeSpots extends Fragment {
                                     int currentPosition = listView.getFirstVisiblePosition();
 
                                     // Create the adapter to convert the array to views
-                                    adapter = new SpotAdapter(getActivity(), spots, spotsimages);
+                                    adapter = new SpotAdapter(getActivity(), spots, spotsimages, ListeSpots.this);
                                     // Attach the adapter to a ListView
                                     listView.setAdapter(adapter);
 
@@ -231,5 +237,58 @@ public class ListeSpots extends Fragment {
         if(fragment!=null){
             fragManager.beginTransaction().remove(fragment).commit();
         }
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            mListener = (OnFragmentInteractionListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnHeadlineSelectedListener");
+        }
+
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    @Override
+    public void detail(int position) {
+        Toast.makeText(getActivity(),"Detail " + position, Toast.LENGTH_SHORT).show();
+        mListener.onDetailSpot();
+    }
+
+    @Override
+    public void share(int position) {
+        Toast.makeText(getActivity(),"Share " + position, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void letsgo(int position) {
+        Toast.makeText(getActivity(),"Let's go " + position, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onDetailSpot();
+        void onLetsGo();
     }
 }

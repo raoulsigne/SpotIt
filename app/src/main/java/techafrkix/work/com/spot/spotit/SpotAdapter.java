@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -25,39 +26,74 @@ import techafrkix.work.com.spot.bd.Spot;
 public class SpotAdapter extends ArrayAdapter<Spot> {
 
     HashMap<String, Bitmap> mapimages;
+    private AdapterCallback mAdapterCallback;
 
-    public SpotAdapter(Context context, ArrayList<Spot> spots) {
+    public SpotAdapter(Context context, ArrayList<Spot> spots, Fragment fg) {
         super(context, 0, spots);
+        try {
+            this.mAdapterCallback = ((AdapterCallback) fg);
+        } catch (ClassCastException e) {
+            throw new ClassCastException("Activity must implement AdapterCallback.");
+        }
     }
 
-    public SpotAdapter(Context context, ArrayList<Spot> spots, HashMap<String, Bitmap> spotsimages) {
+    public SpotAdapter(Context context, ArrayList<Spot> spots, HashMap<String, Bitmap> spotsimages, Fragment fg) {
         super(context, 0, spots);
         mapimages = new HashMap<String, Bitmap>();
         mapimages = spotsimages;
+        try {
+            this.mAdapterCallback = ((AdapterCallback) fg);
+        } catch (ClassCastException e) {
+            throw new ClassCastException("Activity must implement AdapterCallback.");
+        }
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        TextView spotDate;
-        TextView spotHash;
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        TextView spotDate, spotTag;
+        TextView txtshare, txtcomment, txtletsgo;
         ImageView spotPhoto;
+        ImageView photoprofile;
 
         // Get the data item for this position
         Spot spot = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.itemliste, parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_spot, parent, false);
         }
 
         // Lookup view for data population
         spotDate = (TextView)convertView.findViewById(R.id.txtDate);
-        spotHash = (TextView)convertView.findViewById(R.id.txtHash);
+        spotTag = (TextView)convertView.findViewById(R.id.txtTag);
         spotPhoto = (ImageView)convertView.findViewById(R.id.imgSpot);
+        photoprofile = (ImageView)convertView.findViewById(R.id.profile_image);
+
+        txtcomment = (TextView)convertView.findViewById(R.id.txtComments);
+        txtletsgo = (TextView)convertView.findViewById(R.id.txtLetsgo);
+        txtshare = (TextView)convertView.findViewById(R.id.txtShare);
+        txtcomment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAdapterCallback.detail(position);
+            }
+        });
+        txtletsgo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAdapterCallback.letsgo(position);
+            }
+        });
+        txtshare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAdapterCallback.share(position);
+            }
+        });
 
         // Populate the data into the template view using the data object
         try {
             spotDate.setText(spot.getDate());
-            spotHash.setText(spot.getGeohash());
+            spotTag.setText(spot.getGeohash());
             Bitmap bitmap = mapimages.get(spot.getPhotokey()); //BitmapFactory.decodeFile(spot.getPhotokey());
 
             // Get height or width of screen at runtime
@@ -75,6 +111,8 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
             spotPhoto.setImageBitmap(scaled);
         }catch (Exception e){
             Log.e("spot", e.getMessage());}
+
+
 
         // Return the completed view to render on screen
         return convertView;
@@ -100,5 +138,11 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
         float factor = height / (float) b.getHeight();
         return Bitmap.createScaledBitmap(b, (int) (b.getWidth() * factor), height, true);
 
+    }
+
+    public interface AdapterCallback{
+        public void detail(int position);
+        public void share(int position);
+        public void letsgo(int position);
     }
 }

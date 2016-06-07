@@ -1,6 +1,7 @@
 package techafrkix.work.com.spot.spotit;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,6 +9,7 @@ import android.content.res.TypedArray;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
@@ -20,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -54,6 +57,8 @@ import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
 public class MapsActivity extends Fragment implements OnMapReadyCallback {
 
+    private OnFragmentInteractionListener mListener;
+
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
     private static final int MARKER_DIALOG = 2;
     private GoogleMap mMap;
@@ -68,6 +73,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
     private HashMap<String, String> profile;
     private DBServer server;
 
+    private ImageButton locateme, myspot;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -75,6 +82,22 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         View view = inflater.inflate(R.layout.activity_maps, container, false);
         spots = new ArrayList<Spot>();
         mMarkersHashMap = new HashMap<Marker, MyMarker>();
+
+        locateme = (ImageButton) view.findViewById(R.id.imgLocateMe);
+        myspot = (ImageButton) view.findViewById(R.id.imgMySpots);
+
+        locateme.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        myspot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onLoadSpot();
+            }
+        });
 
         // Session class instance
         session = new SessionManager(getActivity());
@@ -364,6 +387,42 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
     public static boolean isNetworkAvailable(final Context context) {
         final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
         return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
+    }
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onLoadSpot();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            mListener = (OnFragmentInteractionListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnHeadlineSelectedListener");
+        }
+
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 }
 

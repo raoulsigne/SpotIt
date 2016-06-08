@@ -2,15 +2,19 @@ package techafrkix.work.com.spot.spotit;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -20,7 +24,9 @@ import android.hardware.Camera.Size;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -528,23 +534,6 @@ public class TakeSnap extends Activity implements View.OnClickListener{
             Matrix matrix = new Matrix();
             matrix.postRotate(90);
             rotatedBitmap = Bitmap.createBitmap(bmp, 0, 0, height, height, matrix, true);
-//
-//            double rapport_width = (double) height/screen_width;
-//            double rapport_height = (double) height/screen_height;
-//            rotatedBitmap = Bitmap.createBitmap(bmp, 0, 0, height, height, matrix, true);
-//            ImageView image = new ImageView(context);
-//            image.setImageBitmap(rotatedBitmap);
-//            AlertDialog.Builder builder =
-//                    new AlertDialog.Builder(context).
-//                            setMessage("Message above the image").
-//                            setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                                @Override
-//                                public void onClick(DialogInterface dialog, int which) {
-//                                    dialog.dismiss();
-//                                }
-//                            }).
-//                            setView(image);
-//            builder.create().show();
         }
 
         public String saveImage(int id){
@@ -579,7 +568,8 @@ public class TakeSnap extends Activity implements View.OnClickListener{
             }
             try {
                 FileOutputStream fos = new FileOutputStream(pictureFile);
-                boolean result = rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 50, fos);
+                Bitmap resized = Bitmap.createScaledBitmap(rotatedBitmap, 800, 800, true);
+                boolean result = resized.compress(Bitmap.CompressFormat.JPEG, 50, fos);
                 //fos.write(bytes);
                 fos.close();
                 if (result) {

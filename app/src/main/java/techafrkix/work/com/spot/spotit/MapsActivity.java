@@ -8,8 +8,12 @@ import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
@@ -18,10 +22,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -33,13 +39,16 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -74,6 +83,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
     private DBServer server;
 
     private ImageButton locateme, myspot;
+    private TextView txtmyspot;
+    private EditText findspot;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -85,11 +96,64 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
 
         locateme = (ImageButton) view.findViewById(R.id.imgLocateMe);
         myspot = (ImageButton) view.findViewById(R.id.imgMySpots);
+        txtmyspot = (TextView) view.findViewById(R.id.txtMySpot);
+        findspot = (EditText) view.findViewById(R.id.findspot);
+
+        findspot.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getActionMasked();
+                if (action == MotionEvent.ACTION_DOWN && action != MotionEvent.ACTION_CANCEL) {
+                    mListener.onSearchSpot();
+                }
+                return true;
+            }
+        });
 
         locateme.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+                Criteria criteria = new Criteria();
 
+                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                        ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+                    return;
+                }
+                else
+                {
+                    LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, new LocationListener() {
+                        @Override
+                        public void onLocationChanged(Location location) {
+
+                        }
+                    });
+                    Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+                    if (location != null)
+                    {
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                                new LatLng(location.getLatitude(), location.getLongitude()), 13));
+
+                        CameraPosition cameraPosition = new CameraPosition.Builder()
+                                .target(new LatLng(location.getLatitude(), location.getLongitude()))      // Sets the center of the map to location user
+                                .zoom(17)                   // Sets the zoom
+                                .bearing(90)                // Sets the orientation of the camera to east
+                                .tilt(40)                   // Sets the tilt of the camera to 30 degrees
+                                .build();                   // Creates a CameraPosition from the builder
+                        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+                    }else
+                        Log.i("test", "location null");
+                }
             }
         });
         myspot.setOnClickListener(new View.OnClickListener() {
@@ -135,7 +199,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         settings.setIndoorLevelPickerEnabled(true);
         settings.setMapToolbarEnabled(true);
         settings.setAllGesturesEnabled(true);
-        settings.setMyLocationButtonEnabled(true);
+        //settings.setMyLocationButtonEnabled(true);
 
         //try to position the location button in the sreen bottom
         //get the dimension of the screen
@@ -169,20 +233,18 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
             mMap.setMyLocationEnabled(true);
         }
 
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
-        {
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
-            public boolean onMarkerClick(final com.google.android.gms.maps.model.Marker marker)
-            {
+            public boolean onMarkerClick(final com.google.android.gms.maps.model.Marker marker) {
                 final MyMarker myMarker = mMarkersHashMap.get(marker);
-                String dossier = getActivity().getApplicationContext().getFilesDir().getPath()+DBServer.DOSSIER_IMAGE;
+                String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
                 final File file = new File(dossier + File.separator + myMarker.getmIcon() + ".jpg");
 
-                if(file.exists()){
+                if (file.exists()) {
                     // marker.showInfoWindow();
                     showdialogMarker(myMarker, file);
-                    Log.i("file","file exists");
-                }else {
+                    Log.i("file", "file exists");
+                } else {
                     if (isNetworkAvailable(MainActivity.getAppContext())) {
                         Log.i("file", "file not exists");
                         AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
@@ -223,13 +285,12 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
                             }
 
                         });
-                    }
-                    else {
+                    } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                         builder.setTitle("Spot It:Information")
                                 .setMessage("Vérifiez votre connexion Internet")
                                 .setCancelable(false)
-                                .setNegativeButton("Close",new DialogInterface.OnClickListener() {
+                                .setNegativeButton("Close", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         dialog.cancel();
                                     }
@@ -286,15 +347,21 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         try {
             t.join();
             LatLng coordonnees;
-            if (spots != null)
-                for (Spot s:
-                        spots) {
+            if (spots != null) {
+                //afficher le nombre de spots
+                int n = Integer.valueOf(profile.get(SessionManager.KEY_SPOT));
+                if (n < 1)
+                    txtmyspot.setText(n + " Spot");
+                else
+                    txtmyspot.setText(n + " Spots");
+                for (Spot s : spots) {
                     // Add a marker to spot position
                     coordonnees = new LatLng(Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude()));
                     //mMap.addMarker(new MarkerOptions().position(coordonnees).title("Spot "+ s.getId() + " : " +s.getGeohash()));
                     Log.i("map", "marker du spot " + s.getGeohash());
-                    mMyMarkersArray.add(new MyMarker(s.getDate(),s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude())));
+                    mMyMarkersArray.add(new MyMarker(s.getDate(), s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude())));
                 }
+            }
             plotMarkers(mMyMarkersArray);
         }catch (InterruptedException e) {
             e.printStackTrace();
@@ -402,6 +469,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onLoadSpot();
+        void onSearchSpot();
     }
 
     @Override

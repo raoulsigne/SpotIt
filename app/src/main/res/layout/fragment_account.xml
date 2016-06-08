@@ -56,21 +56,21 @@
                     android:textColor="@color/mainblue"
                     android:textSize="15sp"
                     android:textStyle="bold"
-                    android:id="@+id/textView6" />
+                    android:id="@+id/txtPseudo" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:text="28 spots | 15 respots"
-                    android:id="@+id/textView12" />
+                    android:id="@+id/txtSpots" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:text="26 Friends"
-                    android:id="@+id/textView11" />
+                    android:id="@+id/txtFriends" />
 
                 <TextView
                     android:layout_width="wrap_content"

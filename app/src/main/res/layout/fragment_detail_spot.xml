@@ -1,132 +1,145 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="techafrkix.work.com.spot.spotit.DetailSpot">
 
-        <LinearLayout android:layout_width="match_parent"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:background="@color/fond_detail">
+            android:background="@color/fond_detail"
+            android:orientation="vertical">
 
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:id="@+id/imgspot"
-                android:scaleType="centerCrop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="10dp"/>
+                android:layout_marginBottom="10dp"
+                android:scaleType="centerCrop" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Who can see this spot ?"
-                android:textColor="#494949"
-                android:textSize="16sp"
-                android:textAlignment="center"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="5dp"
                 android:layout_marginTop="35dp"
-                android:layout_marginBottom="5dp"/>
+                android:text="Who can see this spot ?"
+                android:textAlignment="center"
+                android:textColor="#494949"
+                android:textSize="14sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:orientation="horizontal"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="1"
                 android:divider="?android:dividerVertical"
+                android:orientation="horizontal"
                 android:showDividers="middle">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:layout_weight="1"
-                    android:background="@color/blanc">
+                    android:background="@color/blanc"
+                    android:orientation="vertical">
+
                     <ImageButton
-                        android:layout_marginTop="8dp"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_gravity="center_horizontal"
                         android:id="@+id/visibiliteMoi"
-                        android:background="@drawable/moi"/>
+                        android:layout_width="33dp"
+                        android:layout_height="33dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/moi" />
+
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Only me"
                         android:id="@+id/txtMoi"
-                        android:textSize="11sp"
-                        android:textAlignment="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="8dp"/>
+                        android:layout_marginTop="4dp"
+                        android:text="Only me"
+                        android:textAlignment="center"
+                        android:textSize="11sp" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:layout_weight="1"
-                    android:background="@color/blanc">
+                    android:background="@color/blanc"
+                    android:orientation="vertical">
+
                     <ImageButton
-                        android:layout_marginTop="8dp"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_gravity="center_horizontal"
                         android:id="@+id/visibiliteFriend"
-                        android:background="@drawable/friend"/>
+                        android:layout_width="33dp"
+                        android:layout_height="33dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/friend" />
+
                     <TextView
+                        android:id="@+id/txtAmis"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Friends"
-                        android:textSize="11sp"
-                        android:id="@+id/txtAmis"
-                        android:textAlignment="center"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="8dp"/>
+                        android:layout_marginTop="4dp"
+                        android:text="Friends"
+                        android:textAlignment="center"
+                        android:textSize="11sp" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:layout_weight="1"
-                    android:background="@color/blanc">
+                    android:background="@color/blanc"
+                    android:orientation="vertical">
+
                     <ImageButton
-                        android:layout_marginTop="8dp"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_gravity="center_horizontal"
                         android:id="@+id/visibilitePublic"
-                        android:background="@drawable/publics"/>
+                        android:layout_width="33dp"
+                        android:layout_height="33dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/publics" />
+
                     <TextView
+                        android:id="@+id/txtPublic"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Publics"
-                        android:textSize="11sp"
-                        android:textAlignment="center"
-                        android:id="@+id/txtPublic"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="8dp"/>
+                        android:layout_marginTop="4dp"
+                        android:text="Publics"
+                        android:textAlignment="center"
+                        android:textSize="11sp" />
                 </LinearLayout>
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnValider"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/button_blue"
+                android:text="Valider"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFF" />
 
         </LinearLayout>
 
-        <Button
-            android:layout_width="320dp"
-            android:layout_height="45dp"
-            android:text="Valider"
-            android:id="@+id/btnValider"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/button_blue"
-            android:layout_marginTop="220dp"
-            android:layout_marginBottom="20dp"
-            android:textColor="#FFFFFF"
-            android:textAllCaps="false"
-            style="?android:attr/borderlessButtonStyle"/>
-
-    </LinearLayout>
-
-</FrameLayout>
+    </ScrollView>
+</LinearLayout>

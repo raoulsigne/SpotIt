@@ -569,6 +569,83 @@ public class DBServer {
         }
     }
 
+    public int friends_count(int user_id){
+        ArrayList<Utilisateur> users = new ArrayList<Utilisateur>();
+        Utilisateur user = new Utilisateur();
+        try {
+            ContentValues values = new ContentValues();
+            values.put("apikey", API_KEY);
+            values.put("user_id", user_id);
+
+            url = new URL(BASE_URL+URL_LIST_FRIEND+"?"+getQuery(values));
+            client = (HttpURLConnection) url.openConnection();
+            client.setRequestMethod("GET");
+
+            StringBuilder builder = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                builder.append(line+"\n");
+            }
+            br.close();
+
+            try {
+                JSONObject json = new JSONObject(builder.toString());
+                int statut = Integer.valueOf(json.getString("statut"));
+                if (statut == 1){
+                    JSONArray jArr = json.getJSONArray("data");
+                    for (int i=0; i < jArr.length(); i++) {
+                        JSONObject json2 = jArr.getJSONObject(i);
+
+                        //user.setPassword(""); //user.setPassword((String) json2.get(MaBaseOpenHelper.COLONNE_PASSWORD));
+                        user.setEmail((String) json2.get(MaBaseOpenHelper.COLONNE_EMAIL));
+                        //user.setDate_naissance((String) json2.get(MaBaseOpenHelper.COLONNE_DATE_NAISSANCE));
+                        user.setId((int) json2.get(MaBaseOpenHelper.COLONNE_USER_ID));
+                        user.setPseudo((String) json2.get(MaBaseOpenHelper.COLONNE_PSEUDO));
+                        user.setPhoto((String) json2.get(MaBaseOpenHelper.COLONNE_PHOTO_PROFILE));
+                        //user.setCreated((String) json2.get(MaBaseOpenHelper.COLONNE_CREATED));
+                        //user.setNbrespot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_RESPOT));
+                        //user.setNbspot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_SPOT));
+                        //user.setTypeconnexion_id((int) json2.get(MaBaseOpenHelper.COLONNE_TYPECONNEXION_ID));
+
+                        users.add(user);
+                    }
+                    Log.i(TAG, "reponse = " + builder.toString());
+                    return users.size();
+                }
+                else
+                {
+                    builder.append("statut = "+json.getString("statut"));
+                    builder.append("errcode = "+json.getString("errcode"));
+                    builder.append("message = "+json.getString("message"));
+
+                    Log.i(TAG, "reponse = " + builder.toString());
+                    return 0;
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "JSONException " + e.getMessage());
+                return 0;
+            }
+        }
+        catch(MalformedURLException error) {
+            //Handles an incorrectly entered URL
+            Log.e(TAG,"MalformedURLException "+error.getMessage());
+            return 0;
+        }
+        catch(SocketTimeoutException error) {
+            //Handles URL access timeout.
+            Log.e(TAG,"SocketTimeoutException "+error.getMessage());
+            return 0;
+        }
+        catch (IOException error) {
+            //Handles input and output errors
+            Log.e(TAG,"IOException "+error.getMessage());
+            return 0;
+        }
+        finally {
+            client.disconnect();
+        }
+    }
     /**
      * fnoction qui permet d'enregistrer un spot
      * @param spot spot à enregistrer

@@ -22,6 +22,7 @@ import java.util.HashMap;
 
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
+import techafrkix.work.com.spot.bd.Utilisateur;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
@@ -36,6 +37,7 @@ public class Welcome extends AppCompatActivity {
     private SessionManager session;
     private HashMap<String, String> profile;
     private DBServer server;
+    private ArrayList<Utilisateur> friends;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,13 +54,63 @@ public class Welcome extends AppCompatActivity {
         bar.getProgressDrawable().setColorFilter(
                 Color.WHITE, android.graphics.PorterDuff.Mode.SRC_IN);
 
+        profile = session.getUserDetails();
+
         loadSpots();
+
+        loadAdditionnalUserInformation();
+    }
+
+    private void loadAdditionnalUserInformation(){
+        String dossier = getApplicationContext().getFilesDir().getPath()+DBServer.DOSSIER_IMAGE;
+        final File file = new File(dossier + File.separator + profile.get(SessionManager.KEY_PHOTO) + ".jpg");
+        Log.i("moi", profile.get(SessionManager.KEY_PHOTO));
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                friends = server.getAllFriends(Integer.valueOf(profile.get(SessionManager.KEY_ID)));
+                if (profile.get(SessionManager.KEY_PHOTO) != null & profile.get(SessionManager.KEY_PHOTO) != "") {
+                    AWS_Tools aws_tools = new AWS_Tools(getApplicationContext());
+                    int transfertId = aws_tools.download(file, profile.get(SessionManager.KEY_PHOTO));
+                    TransferUtility transferUtility = aws_tools.getTransferUtility();
+                    TransferObserver observer = transferUtility.getTransferById(transfertId);
+                    observer.setTransferListener(new TransferListener() {
+
+                        @Override
+                        public void onStateChanged(int id, TransferState state) {
+                            // do something
+                        }
+
+                        @Override
+                        public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                            int rapport = (int) (bytesCurrent * 100);
+                            rapport /= bytesTotal;
+                            if (rapport == 100) {
+
+                            }
+                        }
+
+                        @Override
+                        public void onError(int id, Exception ex) {
+                            // do something
+                            Log.e("error chargement", ex.getMessage());
+                        }
+                    });
+                }
+            }});
+
+        t.start(); // spawn thread
+        try{
+            t.join();
+            session.store_friend_number(friends.size());
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadSpots() {
 
         spots = new ArrayList<>();
-        profile = session.getUserDetails();
 
         Thread t = new Thread(new Runnable() {
             @Override

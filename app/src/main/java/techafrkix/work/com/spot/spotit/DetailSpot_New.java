@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,8 +29,8 @@ import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
 public class DetailSpot_New extends AppCompatActivity {
 
-    EditText edtLat, edtLong;
     TextView txtMoi, txtAmis, txtPublic;
+    ImageView imgspot;
 
     AWS_Tools aws_tools;
     private SessionManager session;
@@ -37,6 +38,7 @@ public class DetailSpot_New extends AppCompatActivity {
     private DBServer server;
     private  int cle;
     private String visibilite, imagepath;
+    private double longitude, latitude;
 
     public static final String V_MOI = "moi";
     public static final String V_FRIEND = "amis";
@@ -46,7 +48,6 @@ public class DetailSpot_New extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_detail_spot);
-        double longitude, latitude;
 
         // Session class instance
         session = new SessionManager(getApplicationContext());
@@ -62,8 +63,6 @@ public class DetailSpot_New extends AppCompatActivity {
 
         Log.i("Photo", imagepath);
 
-        edtLat = (EditText)findViewById(R.id.edtLatitude);
-        edtLong = (EditText)findViewById(R.id.edtLongitude);
         Button valider = (Button)findViewById(R.id.btnValider);
         final ImageButton vMoi = (ImageButton)findViewById(R.id.visibiliteMoi);
         final ImageButton vFriend = (ImageButton)findViewById(R.id.visibiliteFriend);
@@ -71,11 +70,9 @@ public class DetailSpot_New extends AppCompatActivity {
         txtMoi = (TextView)findViewById(R.id.txtMoi);
         txtAmis = (TextView)findViewById(R.id.txtAmis);
         txtPublic = (TextView)findViewById(R.id.txtPublic);
+        imgspot = (ImageView)findViewById(R.id.imgspot);
 
-        if (longitude != 0)
-            edtLong.setText(String.valueOf(longitude));
-        if (latitude != 0)
-            edtLat.setText(String.valueOf(latitude));
+        imgspot.setImageBitmap(BitmapFactory.decodeFile(imagepath));
 
         vMoi.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,16 +115,16 @@ public class DetailSpot_New extends AppCompatActivity {
         valider.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (visibilite != null & visibilite != "" & edtLong.getText().toString()!="" & edtLat.getText().toString()!="") {
+                if (visibilite != null & visibilite != "") {
                     GeoHash geoHash = new GeoHash();
-                    geoHash.setLatitude(Double.valueOf(edtLat.getText().toString()));
-                    geoHash.setLongitude(Double.valueOf(edtLong.getText().toString()));
+                    geoHash.setLatitude(latitude);
+                    geoHash.setLongitude(longitude);
                     geoHash.encoder();
                     String temps = String.valueOf(System.currentTimeMillis());
 
                     final Spot spot = new Spot();
-                    spot.setLongitude(edtLong.getText().toString());
-                    spot.setLatitude(edtLat.getText().toString());
+                    spot.setLongitude(String.valueOf(longitude));
+                    spot.setLatitude(String.valueOf(latitude));
                     spot.setVisibilite(visibilite);
                     spot.setGeohash(geoHash.getHash());
                     spot.setPhotokey(temps);
@@ -163,9 +160,6 @@ public class DetailSpot_New extends AppCompatActivity {
                                 Log.e("file", e.getMessage());
                             }
 
-
-                            edtLat.setText("");
-                            edtLong.setText("");
                             vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi));
                             vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend));
                             vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.publics));

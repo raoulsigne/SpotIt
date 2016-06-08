@@ -41,6 +41,18 @@ public class SessionManager {
     // <user Id (make variable public to access from outside)
     public static final String KEY_ID = "id";
 
+    // user number spot
+    public static final String KEY_SPOT = "nbspot";
+
+    // usern number respot
+    public static final String KEY_RESPOT = "nbrespot";
+
+    // user number of friends
+    public static final String KEY_FRIENDS = "nbfriends";
+
+    // user photo profile
+    public static final String KEY_PHOTO = "photo";
+
     // <user Id (make variable public to access from outside)
     public static final String KEY_OFFSET = "offset";
 
@@ -70,10 +82,80 @@ public class SessionManager {
         //storing offset in pref
         editor.putString(KEY_OFFSET, String.valueOf(0));
 
+        //storing spot number in pref
+        editor.putString(KEY_SPOT, String.valueOf(0));
+
+        //storing respot number in pref
+        editor.putString(KEY_RESPOT, String.valueOf(0));
+
+        //storing friend's number in pref
+        editor.putString(KEY_FRIENDS, String.valueOf(0));
+
+        //storing user profile
+        editor.putString(KEY_PHOTO, "");
+
         // commit changes
         editor.commit();
     }
 
+    /**
+     * Create login session
+     * */
+    public void createLoginSession(String name, String email, int id, int spot, int respot, int friends, String photo){
+        // Storing login value as TRUE
+        editor.putBoolean(IS_LOGIN, true);
+
+        // Storing name in pref
+        editor.putString(KEY_NAME, name);
+
+        // Storing email in pref
+        editor.putString(KEY_EMAIL, email);
+
+        //storing id in pref
+        editor.putString(KEY_ID, String.valueOf(id));
+
+        //storing spot number in pref
+        editor.putString(KEY_SPOT, String.valueOf(spot));
+
+        //storing respot number in pref
+        editor.putString(KEY_RESPOT, String.valueOf(respot));
+
+        //storing friend's number in pref
+        editor.putString(KEY_FRIENDS, String.valueOf(friends));
+
+        //storing user profile
+        editor.putString(KEY_PHOTO, photo);
+
+        //storing offset in pref
+        editor.putString(KEY_OFFSET, String.valueOf(0));
+
+        // commit changes
+        editor.commit();
+    }
+
+    /**
+     * storing photo profile
+     * @param photo represent the user's photo
+     */
+    public void store_photo_profile(String photo){
+        //storing user profile
+        editor.putString(KEY_PHOTO, photo);
+
+        // commit changes
+        editor.commit();
+    }
+
+    /**
+     * storing friend number
+     * @param number
+     */
+    public void store_friend_number(int number){
+        //storing friend's number in pref
+        editor.putString(KEY_FRIENDS, String.valueOf(number));
+
+        // commit changes
+        editor.commit();
+    }
     /**
      * Get stored session data
      * */
@@ -82,11 +164,23 @@ public class SessionManager {
         // user name
         user.put(KEY_NAME, pref.getString(KEY_NAME, null));
 
-        // user email id
+        // user email
         user.put(KEY_EMAIL, pref.getString(KEY_EMAIL, null));
 
         // user id
         user.put(KEY_ID, pref.getString(KEY_ID, null));
+
+        // user spot
+        user.put(KEY_SPOT, pref.getString(KEY_SPOT, null));
+
+        // user respot
+        user.put(KEY_RESPOT, pref.getString(KEY_RESPOT, null));
+
+        // user friends
+        user.put(KEY_FRIENDS, pref.getString(KEY_FRIENDS, null));
+
+        // user photo profile
+        user.put(KEY_PHOTO, pref.getString(KEY_PHOTO, null));
 
         // user offset to download spot
         user.put(KEY_OFFSET, pref.getString(KEY_OFFSET, null));
@@ -102,17 +196,6 @@ public class SessionManager {
     public boolean isLogin(){
         return pref.getBoolean(IS_LOGIN, false);
     }
-    /**
-     * set the value of the offset inside preferences
-     * @param offset value to be set represent the value to use in request to get spots
-     */
-    public void putOffset(int offset){
-        //storing offset in pref
-        editor.putString(KEY_OFFSET, String.valueOf(offset));
-
-        // commit changes
-        editor.commit();
-    }
 
     /**
      * Clear session details
@@ -121,16 +204,5 @@ public class SessionManager {
         // Clearing all data from Shared Preferences
         editor.clear();
         editor.commit();
-
-        // After logout redirect user to Loing Activity
-        // Intent i = new Intent(_context, Accueil.class);
-        // Closing all the Activities
-        // i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-        // Add new Flag to start new Activity
-        // i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        // Staring Login Activity
-        // _context.startActivity(i);
     }
 }

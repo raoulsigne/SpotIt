@@ -5,10 +5,14 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -33,10 +37,12 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 
 import java.io.File;
+import java.util.HashMap;
 
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.MyMarker;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
 
 /**
@@ -51,6 +57,8 @@ public class Account extends Fragment implements OnMapReadyCallback {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -62,14 +70,22 @@ public class Account extends Fragment implements OnMapReadyCallback {
     GoogleApiClient mGoogleApiClient;
     LocationRequest locationRequest;
 
-    TextView txtModify, txtLogout;
+    private SessionManager session;
+    private HashMap<String, String> profile;
+
+    TextView txtModify, txtLogout, txtPseudo, txtSpots, txtFriends, txtmySpots;
     private ImageButton myspot;
+    private de.hdodenhof.circleimageview.CircleImageView imageprofile;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_account, container, false);
+
+        // Session class instance
+        session = new SessionManager(getActivity());
+        profile = new HashMap<>();
 
         myspot = (ImageButton) view.findViewById(R.id.imgMySpots);
         myspot.setOnClickListener(new View.OnClickListener() {
@@ -81,6 +97,11 @@ public class Account extends Fragment implements OnMapReadyCallback {
 
         txtModify = (TextView) view.findViewById(R.id.txtmodify);
         txtLogout = (TextView) view.findViewById(R.id.txtlogout);
+        txtPseudo = (TextView) view.findViewById(R.id.txtPseudo);
+        txtSpots = (TextView) view.findViewById(R.id.txtSpots);
+        txtFriends = (TextView) view.findViewById(R.id.txtFriends);
+        txtmySpots = (TextView) view.findViewById(R.id.txtMySpot);
+        imageprofile = (de.hdodenhof.circleimageview.CircleImageView) view.findViewById(R.id.profile_image);
 
         buildGoogleApiClient();
         if (mGoogleApiClient != null) {
@@ -96,17 +117,84 @@ public class Account extends Fragment implements OnMapReadyCallback {
         txtModify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "Modification", Toast.LENGTH_SHORT).show();
+                mListener.onSetPhoto();
             }
         });
 
         txtLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "Deconnection", Toast.LENGTH_SHORT).show();
+                mListener.onDisconnect();
             }
         });
 
+        profile = session.getUserDetails();
+        txtPseudo.setText(profile.get(SessionManager.KEY_NAME));
+        txtSpots.setText(profile.get(SessionManager.KEY_SPOT) + " spots" + " | " + profile.get(SessionManager.KEY_RESPOT) + " respots");
+        txtFriends.setText(profile.get(SessionManager.KEY_FRIENDS) + " Friends");
+        txtmySpots.setText(profile.get(SessionManager.KEY_SPOT) + " Spots");
+        if (profile.get(SessionManager.KEY_PHOTO) != null & profile.get(SessionManager.KEY_PHOTO) != "") {
+            String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
+            final File file = new File(dossier + File.separator + profile.get(SessionManager.KEY_PHOTO) + ".jpg");
+
+            if (file.exists()) {
+                // marker.showInfoWindow();
+                imageprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                Log.i("file", "file exists");
+            } else {
+                if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
+                    Log.i("file", "file not exists");
+                    AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
+                    final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
+                    barProgressDialog.setTitle("Telechargement du spot ...");
+                    barProgressDialog.setMessage("Opération en progression ...");
+                    barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
+                    barProgressDialog.setProgress(0);
+                    barProgressDialog.setMax(100);
+                    barProgressDialog.show();
+                    int transfertId = aws_tools.download(file, profile.get(SessionManager.KEY_PHOTO));
+                    TransferUtility transferUtility = aws_tools.getTransferUtility();
+                    TransferObserver observer = transferUtility.getTransferById(transfertId);
+                    observer.setTransferListener(new TransferListener() {
+
+                        @Override
+                        public void onStateChanged(int id, TransferState state) {
+                            // do something
+                        }
+
+                        @Override
+                        public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                            int rapport = (int) (bytesCurrent * 100);
+                            rapport /= bytesTotal;
+                            barProgressDialog.setProgress(rapport);
+                            if (rapport == 100) {
+                                barProgressDialog.dismiss();
+                                imageprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                            }
+                        }
+
+                        @Override
+                        public void onError(int id, Exception ex) {
+                            // do something
+                            barProgressDialog.dismiss();
+                        }
+
+                    });
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Spot It:Information")
+                            .setMessage("Vérifiez votre connexion Internet")
+                            .setCancelable(false)
+                            .setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
+            }
+        }
         return view;
     }
 
@@ -149,7 +237,7 @@ public class Account extends Fragment implements OnMapReadyCallback {
         final float scale = getContext().getResources().getDisplayMetrics().density; // calcul du ratio entre les pixels de l'écran
         //get the size of tha actionbar which are at the bottom on the screen
         final TypedArray styledAttributes = getContext().getTheme().obtainStyledAttributes(
-                new int[] { android.R.attr.actionBarSize });
+                new int[]{android.R.attr.actionBarSize});
         int mActionBarSize = (int) styledAttributes.getDimension(0, 0);
         styledAttributes.recycle();
         int pixels = (int) ((mActionBarSize + 5) * scale + 0.5f);
@@ -167,9 +255,7 @@ public class Account extends Fragment implements OnMapReadyCallback {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_REQUEST_FINE_LOCATION);
             return;
-        }
-        else
-        {
+        } else {
             mMap.setMyLocationEnabled(true);
         }
     }
@@ -179,7 +265,7 @@ public class Account extends Fragment implements OnMapReadyCallback {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p>
+     * <p/>
      * See the Android Training lesson <a href=
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
@@ -187,6 +273,8 @@ public class Account extends Fragment implements OnMapReadyCallback {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onLoadSpot();
+        void onDisconnect();
+        void onSetPhoto();
     }
 
     protected synchronized void buildGoogleApiClient() {

@@ -1,6 +1,7 @@
 package techafrkix.work.com.spot.spotit;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.ContentValues;
@@ -10,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -31,16 +33,23 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.GeoHash;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, FragmentAccueil.OnFragmentInteractionListener, Account.OnFragmentInteractionListener,
-        MapsActivity.OnFragmentInteractionListener, ListeSpots.OnFragmentInteractionListener, DetailSpot.OnFragmentInteractionListener{
+        MapsActivity.OnFragmentInteractionListener, ListeSpots.OnFragmentInteractionListener, DetailSpot.OnFragmentInteractionListener,
+        Search.OnFragmentInteractionListener{
+
+    static final int REQUEST_IMAGE_CAPTURE = 10;
 
     private static Context context;
 
@@ -48,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     ListeSpots fgSpots;
     Account fgAccount;
     DetailSpot fgDetailspot;
+    Search fgSearch;
     FragmentTransaction ft;
 
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 3;
@@ -101,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         fgSpots = new ListeSpots();
         fgAccount = new Account();
         fgDetailspot = new DetailSpot();
+        fgSearch = new Search();
 
         FragmentTransaction ft;
         dbAdapteur = new SpotsDBAdapteur(getApplicationContext());
@@ -290,26 +301,50 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
-            // photo = (Bitmap) data.getExtras().get("data");
-            selectedImagePath = getRealPathFromURI(mCapturedImageURI);
-            Log.v("log", "filePath is : " + selectedImagePath);
+        if (resultCode == RESULT_OK){
+            switch (requestCode){
+                case CAMERA_REQUEST:
+                    // photo = (Bitmap) data.getExtras().get("data");
+                    selectedImagePath = getRealPathFromURI(mCapturedImageURI);
+                    Log.v("log", "filePath is : " + selectedImagePath);
 
-            Bundle bundle = new Bundle();
-            bundle.putString("image", selectedImagePath);
-            if (mLastLocation != null) {
-                Log.i("location", "location not null");
-                bundle.putDouble("longitude", mLastLocation.getLongitude());
-                bundle.putDouble("latitude", mLastLocation.getLatitude());
-            }else {
-                Log.i("location", "your location is null");
-                bundle.putDouble("longitude", 0);
-                bundle.putDouble("latitude", 0);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("image", selectedImagePath);
+                    if (mLastLocation != null) {
+                        Log.i("location", "location not null");
+                        bundle.putDouble("longitude", mLastLocation.getLongitude());
+                        bundle.putDouble("latitude", mLastLocation.getLatitude());
+                    }else {
+                        Log.i("location", "your location is null");
+                        bundle.putDouble("longitude", 0);
+                        bundle.putDouble("latitude", 0);
+                    }
+
+                    Intent itDetailSpot = new Intent(getApplicationContext(),DetailSpot_New.class);
+                    itDetailSpot.putExtras(bundle);
+                    startActivity(itDetailSpot);
+
+                    break;
+                case REQUEST_IMAGE_CAPTURE:
+                    Bundle extras = data.getExtras();
+                    Bitmap imageBitmap = (Bitmap) extras.get("data");
+                    String temps = String.valueOf(System.currentTimeMillis());
+                    File file = new File(getAppContext().getFilesDir().getPath()+"/SpotItPictures/"+temps+".jpg");
+                    try {
+                        OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
+                        Bitmap resized = Bitmap.createScaledBitmap(imageBitmap, 800, 800, true);
+                        resized.compress(Bitmap.CompressFormat.JPEG, 50, os);
+                        os.close();
+                        AWS_Tools aws_tools = new AWS_Tools(getApplicationContext());
+                        aws_tools.uploadPhoto(file, temps);
+                        session.store_photo_profile(file.getAbsolutePath());
+                    }catch (Exception e)
+                    {
+                        Log.e("file", e.getMessage());
+                    }
+
+                    break;
             }
-
-            Intent itDetailSpot = new Intent(getApplicationContext(),DetailSpot_New.class);
-            itDetailSpot.putExtras(bundle);
-            startActivity(itDetailSpot);
         }
         else {
             Log.i("camera", "retour d'un code d'erreur");
@@ -574,5 +609,39 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onPost(String comment) {
         Toast.makeText(getApplicationContext(), comment, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onSearchSpot() {
+        try {
+            //remove all others fragments if there exists
+            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+            // add the new fragment containing the list of spots
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, fgSearch, "SPOTS")
+                    .commit();
+        } catch (Exception e) {
+            Log.e("fragment", e.getMessage());
+        }
+    }
+
+    @Override
+    public void onSetPhoto() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    @Override
+    public void onDisconnect() {
+        session.logoutUser();
+        Intent itdeconnect = new Intent(getApplicationContext(), Connexion.class);
+        itdeconnect.putExtra("caller","Main");
+        itdeconnect.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK); //add flags to spot all others activities
+        vidercache();
+        finish();
+        startActivity(itdeconnect);
     }
 }

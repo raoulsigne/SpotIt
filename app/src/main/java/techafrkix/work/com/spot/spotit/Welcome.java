@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
@@ -56,9 +57,13 @@ public class Welcome extends AppCompatActivity {
 
         profile = session.getUserDetails();
 
-        loadSpots();
-
-        loadAdditionnalUserInformation();
+        if (MapsActivity.isNetworkAvailable(this)) {
+            loadSpots();  //chargement des spots
+            loadAdditionnalUserInformation(); // chargement  des infos additionnelles
+        }
+        else {
+            Toast.makeText(getApplicationContext(), "Check your internet connexion", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void loadAdditionnalUserInformation(){
@@ -121,57 +126,59 @@ public class Welcome extends AppCompatActivity {
         t.start(); // spawn thread
         try{
             t.join();
-            if(spots != null & spots.size() > 0 & MapsActivity.isNetworkAvailable(this)) {
-                bar.setVisibility(View.VISIBLE);
-                bar.setMax(spots.size());
-                String dossier = getApplicationContext().getFilesDir().getPath()+DBServer.DOSSIER_IMAGE;
-                Log.i("Photo", dossier);
-                File folder = new File(dossier);
-                if (!folder.exists())
-                    folder.mkdirs();
+            if (spots != null) {
+                if (spots.size() > 0) {
+                    bar.setVisibility(View.VISIBLE);
+                    bar.setMax(spots.size());
+                    String dossier = getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
+                    Log.i("Photo", dossier);
+                    File folder = new File(dossier);
+                    if (!folder.exists())
+                        folder.mkdirs();
 
 
-                for (final Spot s : spots) {
-                    final File file = new File(dossier + File.separator + s.getPhotokey() + ".jpg");
-                    Log.i("test", file.getAbsolutePath());
-                    AWS_Tools aws_tools = new AWS_Tools(getApplicationContext());
-                    int transfertId = aws_tools.download(file, s.getPhotokey());
-                    TransferUtility transferUtility = aws_tools.getTransferUtility();
-                    TransferObserver observer = transferUtility.getTransferById(transfertId);
-                    observer.setTransferListener(new TransferListener() {
+                    for (final Spot s : spots) {
+                        final File file = new File(dossier + File.separator + s.getPhotokey() + ".jpg");
+                        Log.i("test", file.getAbsolutePath());
+                        AWS_Tools aws_tools = new AWS_Tools(getApplicationContext());
+                        int transfertId = aws_tools.download(file, s.getPhotokey());
+                        TransferUtility transferUtility = aws_tools.getTransferUtility();
+                        TransferObserver observer = transferUtility.getTransferById(transfertId);
+                        observer.setTransferListener(new TransferListener() {
 
-                        @Override
-                        public void onStateChanged(int id, TransferState state) {
-                            // do something
-                        }
+                            @Override
+                            public void onStateChanged(int id, TransferState state) {
+                                // do something
+                            }
 
-                        @Override
-                        public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                            int rapport = (int) (bytesCurrent * 100);
-                            rapport /= bytesTotal;
-                            if (rapport == 100) {
+                            @Override
+                            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                                int rapport = (int) (bytesCurrent * 100);
+                                rapport /= bytesTotal;
+                                if (rapport == 100) {
+                                    mProgressStatus++;
+                                    bar.setProgress(mProgressStatus);
+                                }
+                                if (bar.getProgress() == spots.size()) {
+                                    if (RAPPORT_PROGRESSION == 0) {
+                                        RAPPORT_PROGRESSION = 1;
+                                        Intent itmain = new Intent(getApplicationContext(), MainActivity.class);
+                                        finish();
+                                        startActivity(itmain);
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onError(int id, Exception ex) {
+                                // do something
+                                Log.e("error chargement", ex.getMessage());
                                 mProgressStatus++;
                                 bar.setProgress(mProgressStatus);
                             }
-                            if (bar.getProgress() == spots.size()) {
-                                if (RAPPORT_PROGRESSION == 0) {
-                                    RAPPORT_PROGRESSION = 1;
-                                    Intent itmain = new Intent(getApplicationContext(), MainActivity.class);
-                                    finish();
-                                    startActivity(itmain);
-                                }
-                            }
-                        }
 
-                        @Override
-                        public void onError(int id, Exception ex) {
-                            // do something
-                            Log.e("error chargement", ex.getMessage());
-                            mProgressStatus++;
-                            bar.setProgress(mProgressStatus);
-                        }
-
-                    });
+                        });
+                    }
                 }
             }
             else{

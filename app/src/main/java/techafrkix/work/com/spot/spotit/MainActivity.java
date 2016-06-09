@@ -39,6 +39,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
+import techafrkix.work.com.spot.bd.Utilisateur;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.GeoHash;
@@ -47,7 +48,7 @@ import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, FragmentAccueil.OnFragmentInteractionListener, Account.OnFragmentInteractionListener,
         MapsActivity.OnFragmentInteractionListener, ListeSpots.OnFragmentInteractionListener, DetailSpot.OnFragmentInteractionListener,
-        Search.OnFragmentInteractionListener{
+        Search.OnFragmentInteractionListener, Add_Friend.OnFragmentInteractionListener, Account_Friend.OnFragmentInteractionListener{
 
     static final int REQUEST_IMAGE_CAPTURE = 10;
 
@@ -58,6 +59,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     Account fgAccount;
     DetailSpot fgDetailspot;
     Search fgSearch;
+    Add_Friend fgAddfrient;
+    Account_Friend fgFriendAcount;
     FragmentTransaction ft;
 
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 3;
@@ -112,6 +115,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         fgAccount = new Account();
         fgDetailspot = new DetailSpot();
         fgSearch = new Search();
+        fgAddfrient = new Add_Friend();
+        fgFriendAcount = new Account_Friend();
 
         FragmentTransaction ft;
         dbAdapteur = new SpotsDBAdapteur(getApplicationContext());
@@ -187,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
                         // add the new fragment containing the list of spots
                         getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.container, fgSpots, "SPOTS")
+                                .replace(R.id.container, fgAddfrient, "ADD_FRIEND")
                                 .commit();
                         menuactif = MENU_ACTIF_SOCIAL;
                     } catch (Exception e) {
@@ -329,15 +334,29 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     Bundle extras = data.getExtras();
                     Bitmap imageBitmap = (Bitmap) extras.get("data");
                     String temps = String.valueOf(System.currentTimeMillis());
-                    File file = new File(getAppContext().getFilesDir().getPath()+"/SpotItPictures/"+temps+".jpg");
+                    File file = new File(getApplicationContext().getFilesDir().getPath()+"/SpotItPictures/"+temps+".jpg");
                     try {
                         OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
                         Bitmap resized = Bitmap.createScaledBitmap(imageBitmap, 800, 800, true);
                         resized.compress(Bitmap.CompressFormat.JPEG, 50, os);
                         os.close();
-                        AWS_Tools aws_tools = new AWS_Tools(getApplicationContext());
+                        AWS_Tools aws_tools = new AWS_Tools(MainActivity.this);
                         aws_tools.uploadPhoto(file, temps);
-                        session.store_photo_profile(file.getAbsolutePath());
+                        session.store_photo_profile(temps);
+
+                        try {
+                            //remove all others fragments if there exists
+                            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+                            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+                            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
+                            // add the new fragment containing the main map
+                            getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.container, fgAccount, "ACCOUNT")
+                                    .commit();
+                            menuactif = MENU_ACTIF_ACCOUNT;
+                        } catch (Exception e) {
+                            Log.e("fragment", e.getMessage());
+                        }
                     }catch (Exception e)
                     {
                         Log.e("file", e.getMessage());
@@ -643,5 +662,24 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         vidercache();
         finish();
         startActivity(itdeconnect);
+    }
+
+    @Override
+    public void onLoadFriend(Utilisateur friend) {
+        try {
+            //remove all others fragments if there exists
+            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+            // add the new fragment containing the list of spots
+            Bundle args = new Bundle();
+            args.putSerializable("friend", friend);
+            fgFriendAcount.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, fgFriendAcount, "FRIEND_ACCOUNT")
+                    .commit();
+        } catch (Exception e) {
+            Log.e("fragment", e.getMessage());
+        }
     }
 }

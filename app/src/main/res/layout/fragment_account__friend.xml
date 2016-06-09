@@ -13,76 +13,51 @@
         <LinearLayout
             android:id="@+id/infos"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:gravity="center"
             android:background="@color/blanc">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginLeft="10dp">
-
-                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/profile_image"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:layout_marginTop="10dp"
-                    android:src="@drawable/profile"
-                    android:scaleType="centerCrop"
-                    app:civ_border_color="#FF000000"
-                    app:civ_border_width="2dp" />
-                <TextView
-                    android:id="@+id/txtmodify"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_gravity="center_horizontal"
-                    android:text="Modify"
-                    android:textStyle="bold"
-                    android:clickable="true"
-                    android:textColor="@color/mainblue"/>
-            </LinearLayout>
+            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/imgprofile_friend"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="center"
+                android:src="@drawable/profile"
+                app:civ_border_color="#FF000000"
+                app:civ_border_width="2dp" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="10dp"
-                android:layout_marginLeft="30dp">
+                android:layout_height="60dp"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="center"
+                android:orientation="vertical">
+
                 <TextView
+                    android:id="@+id/txtPseudo_friend"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:text="Stephen Curry"
                     android:textColor="@color/mainblue"
                     android:textSize="17sp"
-                    android:textStyle="bold"
-                    android:id="@+id/txtPseudo" />
+                    android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/txtSpots_friend"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="28 spots | 15 respots"
-                    android:id="@+id/txtSpots" />
+                    android:textSize="14sp"
+                    android:text="28 spots | 15 respots" />
 
                 <TextView
+                    android:id="@+id/txtFriends_friend"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="26 Friends"
-                    android:id="@+id/txtFriends" />
+                    android:textSize="14sp"
+                    android:text="26 Friends" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Log out"
-                    android:textColor="@color/mainblue"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:clickable="true"
-                    android:id="@+id/txtlogout" />
             </LinearLayout>
 
         </LinearLayout>
@@ -108,13 +83,13 @@
                     android:orientation="vertical">
 
                     <ImageButton
-                        android:id="@+id/imgMySpots"
+                        android:id="@+id/imgNbSpots"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/play_spot" />
 
                     <TextView
-                        android:id="@+id/txtMySpot"
+                        android:id="@+id/txtNbSpot"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="3 Spots"

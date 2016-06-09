@@ -518,7 +518,7 @@ public class DBServer {
                     JSONArray jArr = json.getJSONArray("data");
                     for (int i=0; i < jArr.length(); i++) {
                         JSONObject json2 = jArr.getJSONObject(i);
-
+                        user = new Utilisateur();
                         //user.setPassword(""); //user.setPassword((String) json2.get(MaBaseOpenHelper.COLONNE_PASSWORD));
                         user.setEmail((String) json2.get(MaBaseOpenHelper.COLONNE_EMAIL));
                         //user.setDate_naissance((String) json2.get(MaBaseOpenHelper.COLONNE_DATE_NAISSANCE));
@@ -594,24 +594,7 @@ public class DBServer {
                 int statut = Integer.valueOf(json.getString("statut"));
                 if (statut == 1){
                     JSONArray jArr = json.getJSONArray("data");
-                    for (int i=0; i < jArr.length(); i++) {
-                        JSONObject json2 = jArr.getJSONObject(i);
-
-                        //user.setPassword(""); //user.setPassword((String) json2.get(MaBaseOpenHelper.COLONNE_PASSWORD));
-                        user.setEmail((String) json2.get(MaBaseOpenHelper.COLONNE_EMAIL));
-                        //user.setDate_naissance((String) json2.get(MaBaseOpenHelper.COLONNE_DATE_NAISSANCE));
-                        user.setId((int) json2.get(MaBaseOpenHelper.COLONNE_USER_ID));
-                        user.setPseudo((String) json2.get(MaBaseOpenHelper.COLONNE_PSEUDO));
-                        user.setPhoto((String) json2.get(MaBaseOpenHelper.COLONNE_PHOTO_PROFILE));
-                        //user.setCreated((String) json2.get(MaBaseOpenHelper.COLONNE_CREATED));
-                        //user.setNbrespot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_RESPOT));
-                        //user.setNbspot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_SPOT));
-                        //user.setTypeconnexion_id((int) json2.get(MaBaseOpenHelper.COLONNE_TYPECONNEXION_ID));
-
-                        users.add(user);
-                    }
-                    Log.i(TAG, "reponse = " + builder.toString());
-                    return users.size();
+                    return jArr.length();
                 }
                 else
                 {

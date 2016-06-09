@@ -15,6 +15,7 @@ public class Utilisateur implements Serializable {
     private String pseudo;
     private int nbspot;
     private int nbrespot;
+    private int nbfriends;
     private int typeconnexion_id;
     private String photo;
     private String created;
@@ -119,6 +120,14 @@ public class Utilisateur implements Serializable {
         this.created = created;
     }
 
+    public int getNbfriends() {
+        return nbfriends;
+    }
+
+    public void setNbfriends(int nbfriends) {
+        this.nbfriends = nbfriends;
+    }
+
     @Override
     public String toString() {
         return "Utilisateur{" +
@@ -129,6 +138,7 @@ public class Utilisateur implements Serializable {
                 ", pseudo='" + pseudo + '\'' +
                 ", nbspot=" + nbspot +
                 ", nbrespot=" + nbrespot +
+                ", nbfriends=" + nbfriends +
                 ", typeconnexion_id=" + typeconnexion_id +
                 ", photo='" + photo + '\'' +
                 ", created='" + created + '\'' +

@@ -10,6 +10,8 @@ import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.location.LocationListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -31,10 +33,15 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.File;
 import java.util.HashMap;
@@ -51,7 +58,7 @@ import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
  * {@link Account.OnFragmentInteractionListener} interface
  * to handle interaction events.
  */
-public class Account extends Fragment implements OnMapReadyCallback {
+public class Account extends Fragment implements OnMapReadyCallback, LocationListener, GoogleApiClient.ConnectionCallbacks {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -195,6 +202,7 @@ public class Account extends Fragment implements OnMapReadyCallback {
                 }
             }
         }
+
         return view;
     }
 
@@ -284,6 +292,78 @@ public class Account extends Fragment implements OnMapReadyCallback {
         locationRequest.setFastestInterval(30000);
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
                 .build();
+    }
+
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mMap.clear();
+
+        MarkerOptions mp1 = new MarkerOptions();
+        mp1.position(new LatLng(location.getLatitude(),
+                location.getLongitude()));
+
+        mp1.draggable(true);
+        mp1.icon(BitmapDescriptorFactory
+                .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+        mMap.addMarker(mp1);
+
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                new LatLng(location.getLatitude(), location
+                        .getLongitude()), 20));
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        if (mGoogleApiClient.isConnected()){
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+            } else {
+                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, new com.google.android.gms.location.LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                    }
+                });
+                Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+                if (location != null) {
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude()))
+                            .icon(BitmapDescriptorFactory
+                                    .defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
+                }
+            }
+        }else
+            Log.i("map", "Not connected");
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
     }
 }

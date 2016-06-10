@@ -87,6 +87,13 @@ public class Account_Friend extends Fragment {
             txtNbFriend.setText(friend.getNbfriends() + " friends");
         }
 
+        play_spot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onListSpot_Friend(friend);
+            }
+        });
+
         return view;
     }
 
@@ -127,5 +134,6 @@ public class Account_Friend extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+        void onListSpot_Friend(Utilisateur friend);
     }
 }

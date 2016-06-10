@@ -77,30 +77,6 @@ public class Welcome extends AppCompatActivity {
                 if (profile.get(SessionManager.KEY_PHOTO) != null & profile.get(SessionManager.KEY_PHOTO) != "") {
                     AWS_Tools aws_tools = new AWS_Tools(getApplicationContext());
                     int transfertId = aws_tools.download(file, profile.get(SessionManager.KEY_PHOTO));
-                    TransferUtility transferUtility = aws_tools.getTransferUtility();
-                    TransferObserver observer = transferUtility.getTransferById(transfertId);
-                    observer.setTransferListener(new TransferListener() {
-
-                        @Override
-                        public void onStateChanged(int id, TransferState state) {
-                            // do something
-                        }
-
-                        @Override
-                        public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                            int rapport = (int) (bytesCurrent * 100);
-                            rapport /= bytesTotal;
-                            if (rapport == 100) {
-
-                            }
-                        }
-
-                        @Override
-                        public void onError(int id, Exception ex) {
-                            // do something
-                            Log.e("error chargement", ex.getMessage());
-                        }
-                    });
                 }
             }});
 

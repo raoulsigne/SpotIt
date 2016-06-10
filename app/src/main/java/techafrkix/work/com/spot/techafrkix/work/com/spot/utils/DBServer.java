@@ -987,6 +987,8 @@ public class DBServer {
                         comment.setUser_id((int) json2.get("user_id"));
                         comment.setCommentaire((String) json2.get("commentaire"));
                         comment.setCreated((String) json2.get("created"));
+                        comment.setPseudo((String) json2.get("pseudo"));
+                        comment.setPhotokey((String) json2.get("photokey"));
 
                         comments.add(comment);
                     }

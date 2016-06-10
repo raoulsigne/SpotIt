@@ -23,12 +23,24 @@
                 android:layout_marginBottom="10dp"
                 android:scaleType="centerCrop" />
 
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="20dp"
+                android:textSize="14sp"
+                android:hint="list tags here"
+                android:id="@+id/edtTags"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/custom_edittext"/>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="5dp"
-                android:layout_marginTop="35dp"
                 android:text="Who can see this spot ?"
                 android:textAlignment="center"
                 android:textColor="#494949"
@@ -38,8 +50,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:divider="?android:dividerVertical"
                 android:orientation="horizontal"
                 android:showDividers="middle">

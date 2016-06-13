@@ -93,7 +93,16 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
         // Populate the data into the template view using the data object
         try {
             spotDate.setText(spot.getDate());
-            spotTag.setText(spot.getGeohash());
+            StringBuilder chainetag = new StringBuilder();
+            if (spot.getTags().size() == 0)
+                spotTag.setText("No tag");
+            else {
+                for (String s :
+                        spot.getTags()) {
+                    chainetag.append("#" + s + " ");
+                }
+                spotTag.setText(chainetag.toString());
+            }
             Bitmap bitmap = mapimages.get(spot.getPhotokey()); //BitmapFactory.decodeFile(spot.getPhotokey());
 
             // Get height or width of screen at runtime

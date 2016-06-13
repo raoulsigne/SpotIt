@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         GoogleApiClient.OnConnectionFailedListener, FragmentAccueil.OnFragmentInteractionListener, Account.OnFragmentInteractionListener,
         MapsActivity.OnFragmentInteractionListener, ListeSpots.OnFragmentInteractionListener, DetailSpot.OnFragmentInteractionListener,
         Search.OnFragmentInteractionListener, Add_Friend.OnFragmentInteractionListener, Account_Friend.OnFragmentInteractionListener,
-        ListeSpots_Friend.OnFragmentInteractionListener{
+        ListeSpots_Friend.OnFragmentInteractionListener {
 
     static final int REQUEST_IMAGE_CAPTURE = 10;
 
@@ -101,16 +101,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         MainActivity.context = getApplicationContext();
 
-        imgHome = (ImageButton)findViewById(R.id.imgHome);
-        imgSocial = (ImageButton)findViewById(R.id.imgList);
-        imgNew = (ImageButton)findViewById(R.id.imgAdd);
-        imgNotification = (ImageButton)findViewById(R.id.imgDisconnect);
-        imgAccount = (ImageButton)findViewById(R.id.imgAccount);
-        txtHome = (TextView)findViewById(R.id.txtHome);
-        txtSocial = (TextView)findViewById(R.id.txtSpots);
-        txtNew = (TextView)findViewById(R.id.txtAdd);
-        txtNotification = (TextView)findViewById(R.id.txtLogout);
-        txtAccount = (TextView)findViewById(R.id.txtAccount);
+        imgHome = (ImageButton) findViewById(R.id.imgHome);
+        imgSocial = (ImageButton) findViewById(R.id.imgList);
+        imgNew = (ImageButton) findViewById(R.id.imgAdd);
+        imgNotification = (ImageButton) findViewById(R.id.imgDisconnect);
+        imgAccount = (ImageButton) findViewById(R.id.imgAccount);
+        txtHome = (TextView) findViewById(R.id.txtHome);
+        txtSocial = (TextView) findViewById(R.id.txtSpots);
+        txtNew = (TextView) findViewById(R.id.txtAdd);
+        txtNotification = (TextView) findViewById(R.id.txtLogout);
+        txtAccount = (TextView) findViewById(R.id.txtAccount);
 
 
         fgAccueil = new MapsActivity();
@@ -157,26 +157,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 txtAccount.setTextColor(getResources().getColor(R.color.noir));
 
                 //traitement de l'action lors du click
-                if (menuactif != MENU_ACTIF_HOME) {
-                    try {
-                        //remove all others fragments if there exists
-                        getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-                        getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-                        getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-                        getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-                        getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-                        getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-                        getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-                        getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
-                        // add the new fragment containing the main map
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.container, fgAccueil, "ACCUEIL")
-                                .commit();
-                        menuactif = MENU_ACTIF_HOME;
-                    } catch (Exception e) {
-                        Log.e("fragment", e.getMessage());
-                    }
+                try {
+                    //remove all others fragments if there exists
+                    getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+                    getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+                    getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
+                    getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+                    getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
+                    getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
+                    getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
+                    getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
+                    // add the new fragment containing the main map
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, fgAccueil, "ACCUEIL")
+                            .commit();
+                    menuactif = MENU_ACTIF_HOME;
+                } catch (Exception e) {
+                    Log.e("fragment", e.getMessage());
                 }
+
             }
         });
         imgSocial.setOnClickListener(new View.OnClickListener() {
@@ -195,27 +194,26 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 txtAccount.setTextColor(getResources().getColor(R.color.noir));
 
                 //traitement de l'action lors du click
-                if (menuactif != MENU_ACTIF_SOCIAL) {
-                    try {
-                        //remove all others fragments if there exists
-                        getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-                        getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-                        getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-                        getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-                        getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-                        getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-                        getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-                        getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
-                        // add the new fragment containing the list of spots
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.container, fgAddfrient, "ADD_FRIEND")
-                                .commit();
-                        menuactif = MENU_ACTIF_SOCIAL;
-                    } catch (Exception e) {
-                        Log.e("fragment", e.getMessage());
-                    }
+                try {
+                    //remove all others fragments if there exists
+                    getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+                    getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+                    getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
+                    getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+                    getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
+                    getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
+                    getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
+                    getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
+                    // add the new fragment containing the list of spots
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, fgAddfrient, "ADD_FRIEND")
+                            .commit();
+                    menuactif = MENU_ACTIF_SOCIAL;
+                } catch (Exception e) {
+                    Log.e("fragment", e.getMessage());
                 }
             }
+
         });
         imgNew.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -233,25 +231,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 txtAccount.setTextColor(getResources().getColor(R.color.noir));
 
                 //traitement de l'action lors du click
-                if (menuactif != MENU_ACTIF_NEW) {
-                    menuactif = MENU_ACTIF_NEW;
-                    Bundle bundle = new Bundle();
-                    //bundle.putString("image", selectedImagePath);
-                    if (mLastLocation != null) {
-                        Log.i("location", "location not null");
-                        bundle.putDouble("longitude", mLastLocation.getLongitude());
-                        bundle.putDouble("latitude", mLastLocation.getLatitude());
-                    }else {
-                        Log.i("location", "your location is null");
-                        bundle.putDouble("longitude", 0);
-                        bundle.putDouble("latitude", 0);
-                    }
-
-                    Intent imagepreview = new Intent(MainActivity.this,TakeSnap.class);
-                    imagepreview.putExtras(bundle);
-                    // finish();
-                    startActivity(imagepreview);
+                Bundle bundle = new Bundle();
+                //bundle.putString("image", selectedImagePath);
+                if (mLastLocation != null) {
+                    Log.i("location", "location not null");
+                    bundle.putDouble("longitude", mLastLocation.getLongitude());
+                    bundle.putDouble("latitude", mLastLocation.getLatitude());
+                } else {
+                    Log.i("location", "your location is null");
+                    bundle.putDouble("longitude", 0);
+                    bundle.putDouble("latitude", 0);
                 }
+
+                Intent imagepreview = new Intent(MainActivity.this, TakeSnap.class);
+                imagepreview.putExtras(bundle);
+                // finish();
+                startActivity(imagepreview);
             }
         });
         imgNotification.setOnClickListener(new View.OnClickListener() {
@@ -270,10 +265,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 txtAccount.setTextColor(getResources().getColor(R.color.noir));
 
                 //traitement de l'action lors du click
-                if (menuactif != MENU_ACTIF_NOTIFICATION) {
-                    menuactif = MENU_ACTIF_NOTIFICATION;
 
-                }
             }
         });
         imgAccount.setOnClickListener(new View.OnClickListener() {
@@ -292,27 +284,26 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 txtAccount.setTextColor(getResources().getColor(R.color.mainblue));
 
                 //traitement de l'action lors du click
-                if (menuactif != MENU_ACTIF_ACCOUNT) {
-                    try {
-                        //remove all others fragments if there exists
-                        getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-                        getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-                        getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-                        getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-                        getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-                        getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-                        getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-                        getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
-                        // add the new fragment containing the main map
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.container, fgAccount, "ACCOUNT")
-                                .commit();
-                        menuactif = MENU_ACTIF_ACCOUNT;
-                    } catch (Exception e) {
-                        Log.e("fragment", e.getMessage());
-                    }
+                try {
+                    //remove all others fragments if there exists
+                    getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+                    getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+                    getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
+                    getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+                    getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
+                    getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
+                    getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
+                    getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
+                    // add the new fragment containing the main map
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, fgAccount, "ACCOUNT")
+                            .commit();
+                    menuactif = MENU_ACTIF_ACCOUNT;
+                } catch (Exception e) {
+                    Log.e("fragment", e.getMessage());
                 }
             }
+
         });
     }
 
@@ -322,8 +313,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK){
-            switch (requestCode){
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
                 case CAMERA_REQUEST:
                     // photo = (Bitmap) data.getExtras().get("data");
                     selectedImagePath = getRealPathFromURI(mCapturedImageURI);
@@ -335,13 +326,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         Log.i("location", "location not null");
                         bundle.putDouble("longitude", mLastLocation.getLongitude());
                         bundle.putDouble("latitude", mLastLocation.getLatitude());
-                    }else {
+                    } else {
                         Log.i("location", "your location is null");
                         bundle.putDouble("longitude", 0);
                         bundle.putDouble("latitude", 0);
                     }
 
-                    Intent itDetailSpot = new Intent(getApplicationContext(),DetailSpot_New.class);
+                    Intent itDetailSpot = new Intent(getApplicationContext(), DetailSpot_New.class);
                     itDetailSpot.putExtras(bundle);
                     startActivity(itDetailSpot);
 
@@ -350,7 +341,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     Bundle extras = data.getExtras();
                     Bitmap imageBitmap = (Bitmap) extras.get("data");
                     String temps = String.valueOf(System.currentTimeMillis());
-                    File file = new File(getApplicationContext().getFilesDir().getPath()+"/SpotItPictures/"+temps+".jpg");
+                    File file = new File(getApplicationContext().getFilesDir().getPath() + "/SpotItPictures/" + temps + ".jpg");
                     try {
                         OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
                         Bitmap resized = Bitmap.createScaledBitmap(imageBitmap, 800, 800, true);
@@ -373,35 +364,29 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         } catch (Exception e) {
                             Log.e("fragment", e.getMessage());
                         }
-                    }catch (Exception e)
-                    {
+                    } catch (Exception e) {
                         Log.e("file", e.getMessage());
                     }
 
                     break;
             }
-        }
-        else {
+        } else {
             Log.i("camera", "retour d'un code d'erreur");
             //on relance l'activité principale
-            Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             finish();
             startActivity(intent);
         }
     }
 
-    public String getRealPathFromURI(Uri contentUri)
-    {
-        try
-        {
+    public String getRealPathFromURI(Uri contentUri) {
+        try {
             String[] proj = {MediaStore.Images.Media.DATA};
             Cursor cursor = managedQuery(contentUri, proj, null, null, null);
             int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             cursor.moveToFirst();
             return cursor.getString(column_index);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return contentUri.getPath();
         }
     }
@@ -480,19 +465,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 .build();
     }
 
-    public void onFragmentInteraction(Uri uri){
+    public void onFragmentInteraction(Uri uri) {
         //you can leave it empty
     }
 
     /**
      * methode qui vérifie si le gps and network est activé dans le cas contraire demande à l'utilisateur de l'activer
      */
-    private void CheckEnableGPS(){
+    private void CheckEnableGPS() {
         String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
-        if(!provider.equals("")){
+        if (!provider.equals("")) {
             //GPS Enabled
             Log.i("GPS", "GPS Enabled: ");
-        }else{
+        } else {
             new AlertDialog.Builder(this).setTitle("Notification").setMessage("Vous devez activé le GPS!")
                     .setPositiveButton("D'accord", new DialogInterface.OnClickListener() {
                         @Override
@@ -508,6 +493,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     /**
      * gestion des retours de l'activité demandant les permissions à l'utilisateur
+     *
      * @param requestCode
      * @param permissions
      * @param grantResults
@@ -580,21 +566,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-    private void vidercache(){
+    private void vidercache() {
         // Your directory with files to be deleted
-        String dossier = getApplicationContext().getFilesDir().getPath()+ DBServer.DOSSIER_IMAGE;
+        String dossier = getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
 
         // go to your directory
-        File fileList = new File( dossier );
+        File fileList = new File(dossier);
 
         //check if dir is not null
-        if (fileList != null){
+        if (fileList != null) {
 
             // so we can list all files
             File[] filenames = fileList.listFiles();
 
             // loop through each file and delete
-            for (File tmpf : filenames){
+            for (File tmpf : filenames) {
                 tmpf.delete();
                 Log.i("suppression", "file " + tmpf + " deleted");
             }
@@ -602,7 +588,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     @Override
-    public void onLoadSpot(){
+    public void onLoadSpot() {
         try {
             //remove all others fragments if there exists
             getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
@@ -654,12 +640,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onRespot() {
-        Toast.makeText(getApplicationContext(),"Respot",Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onPost(String comment) {
-        Toast.makeText(getApplicationContext(), comment, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Respot", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -695,7 +676,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onDisconnect() {
         session.logoutUser();
         Intent itdeconnect = new Intent(getApplicationContext(), Connexion.class);
-        itdeconnect.putExtra("caller","Main");
+        itdeconnect.putExtra("caller", "Main");
         itdeconnect.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK); //add flags to spot all others activities
         vidercache();
         finish();

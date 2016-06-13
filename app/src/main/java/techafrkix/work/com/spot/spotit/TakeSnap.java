@@ -2,19 +2,15 @@ package techafrkix.work.com.spot.spotit;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -24,9 +20,7 @@ import android.hardware.Camera.Size;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,7 +40,6 @@ public class TakeSnap extends Activity implements View.OnClickListener{
     int numberOfCameras;
     int cameraCurrentlyLocked;
     public double longitude, latitude;
-    SurfaceView surfaceView;
     Button button;
 
     // The first rear facing camera
@@ -108,8 +101,18 @@ public class TakeSnap extends Activity implements View.OnClickListener{
     protected void onResume() {
         super.onResume();
 
+
+        try {
+            releaseCameraAndPreview();
+            mCamera = Camera.open();
+        } catch (Exception e) {
+            Log.e(getString(R.string.app_name), "failed to open Camera");
+            e.printStackTrace();
+        }
+
+
         // Open the default i.e. the first rear facing camera.
-        mCamera = Camera.open();
+
         cameraCurrentlyLocked = defaultCameraId;
         mPreview.setCamera(mCamera);
     }
@@ -122,6 +125,14 @@ public class TakeSnap extends Activity implements View.OnClickListener{
         // important to release it when the activity is paused.
         if (mCamera != null) {
             mPreview.setCamera(null);
+            mCamera.release();
+            mCamera = null;
+        }
+    }
+
+    private void releaseCameraAndPreview() {
+        mPreview.setCamera(null);
+        if (mCamera != null) {
             mCamera.release();
             mCamera = null;
         }
@@ -302,10 +313,10 @@ public class TakeSnap extends Activity implements View.OnClickListener{
                             parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
                         }
                         if (currentCameraId == Camera.CameraInfo.CAMERA_FACING_BACK) {
-                            List<String> flashModes = parameters.getSupportedFlashModes();
-                            if (flashModes.contains(android.hardware.Camera.Parameters.FLASH_MODE_AUTO)) {
-                                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-                            }
+//                            List<String> flashModes = parameters.getSupportedFlashModes();
+//                            if (flashModes.contains(android.hardware.Camera.Parameters.FLASH_MODE_AUTO)) {
+//                                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+//                            }
                         }
                         mCamera.setParameters(parameters);
                         mCamera.setDisplayOrientation(90);
@@ -329,11 +340,11 @@ public class TakeSnap extends Activity implements View.OnClickListener{
                 if (parameters.getSupportedFocusModes().contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
                     parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
                 }
-                List<String> flashModes = parameters.getSupportedFlashModes();
-                if (flashModes.contains(android.hardware.Camera.Parameters.FLASH_MODE_AUTO))
-                {
-                    parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-                }
+//                List<String> flashModes = parameters.getSupportedFlashModes();
+//                if (flashModes.contains(android.hardware.Camera.Parameters.FLASH_MODE_AUTO))
+//                {
+//                    parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+//                }
                 requestLayout();
                 try {
                     mCamera.setPreviewDisplay(mHolder);

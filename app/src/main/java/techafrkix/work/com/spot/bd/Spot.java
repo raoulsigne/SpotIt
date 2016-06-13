@@ -2,6 +2,7 @@ package techafrkix.work.com.spot.bd;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import techafrkix.work.com.spot.spotit.DetailSpot_New;
@@ -13,11 +14,13 @@ public class Spot implements Serializable{
 	private String latitude;
     private String visibilite;
 	private String photokey;
+    private String photouser;
 	private String geohash;
 	private String date;
 	private int respot;
 	private int user_id;
     private int visibilite_id;
+	private ArrayList<String> tags;
 
     public Spot(String longitude, String latitude, String visibilite, String photokey,
 			String geohash, String date) {
@@ -29,10 +32,11 @@ public class Spot implements Serializable{
 		this.geohash = geohash;
 		this.date = date;
 		this.respot = 0;
+        this.tags = new ArrayList<>();
 	}
 
     public Spot(String longitude, String latitude, String visibilite, String photokey, String geohash,
-                String date, int respot, int user_id) {
+                String date, int respot, int user_id, String photouser, ArrayList<String> tags) {
         this.longitude = longitude;
         this.latitude = latitude;
         this.visibilite = visibilite;
@@ -41,6 +45,8 @@ public class Spot implements Serializable{
         this.date = date;
         this.respot = respot;
         this.user_id = user_id;
+        this.tags = tags;
+        this.photouser = photouser;
     }
 
     public int getId() {
@@ -112,6 +118,22 @@ public class Spot implements Serializable{
         this.visibilite_id = visibilite_id;
     }
 
+    public ArrayList<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(ArrayList<String> tags) {
+        this.tags = tags;
+    }
+
+    public String getPhotouser() {
+        return photouser;
+    }
+
+    public void setPhotouser(String photouser) {
+        this.photouser = photouser;
+    }
+
     public Spot() {
 		super();
 		this.longitude = "";
@@ -124,6 +146,8 @@ public class Spot implements Serializable{
 		this.date = sdf.format(c.getTime());
 		this.respot = 0;
         this.user_id = 0;
+        this.photouser = "";
+        this.tags = new ArrayList<>();
 	}
 
 	public int getvisibiliteId(){
@@ -142,12 +166,13 @@ public class Spot implements Serializable{
                 ", longitude='" + longitude + '\'' +
                 ", latitude='" + latitude + '\'' +
                 ", visibilite='" + visibilite + '\'' +
-                ", visibilite_id='" + visibilite_id + '\'' +
                 ", photokey='" + photokey + '\'' +
                 ", geohash='" + geohash + '\'' +
                 ", date='" + date + '\'' +
                 ", respot=" + respot +
                 ", user_id=" + user_id +
+                ", visibilite_id=" + visibilite_id +
+                ", tags=" + tags +
                 '}';
     }
 }

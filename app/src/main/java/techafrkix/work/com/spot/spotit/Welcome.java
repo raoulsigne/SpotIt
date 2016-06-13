@@ -38,7 +38,7 @@ public class Welcome extends AppCompatActivity {
     private SessionManager session;
     private HashMap<String, String> profile;
     private DBServer server;
-    private ArrayList<Utilisateur> friends;
+    private int friends;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,17 +73,17 @@ public class Welcome extends AppCompatActivity {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                friends = server.getAllFriends(Integer.valueOf(profile.get(SessionManager.KEY_ID)));
+                friends = server.friends_count(Integer.valueOf(profile.get(SessionManager.KEY_ID)));
                 if (profile.get(SessionManager.KEY_PHOTO) != null & profile.get(SessionManager.KEY_PHOTO) != "") {
                     AWS_Tools aws_tools = new AWS_Tools(getApplicationContext());
-                    int transfertId = aws_tools.download(file, profile.get(SessionManager.KEY_PHOTO));
+                    aws_tools.download(file, profile.get(SessionManager.KEY_PHOTO));
                 }
             }});
 
         t.start(); // spawn thread
         try{
             t.join();
-            session.store_friend_number(friends.size());
+            session.store_friend_number(friends);
         }catch (InterruptedException e) {
             e.printStackTrace();
         }

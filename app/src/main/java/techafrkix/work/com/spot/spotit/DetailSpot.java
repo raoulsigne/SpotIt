@@ -17,6 +17,7 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,6 +25,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -33,6 +35,7 @@ import techafrkix.work.com.spot.bd.Commentaire;
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.Utilisateur;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
 
 /**
@@ -59,9 +62,13 @@ public class DetailSpot extends Fragment {
     EditText edtComment;
     ImageView imgspot, imgprofile;
     ListView listView;
-    TextView txttag, txtdate;
+    TextView txttag, txtdate, txtNbcomments;
+    int resultat;
 
     Spot spot;
+    SessionManager session;
+    private HashMap<String, String> profile;
+
     private ArrayList<Commentaire> commentaires;
     private DBServer server;
     private CommentAdapter adapter;
@@ -70,6 +77,10 @@ public class DetailSpot extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         spot = new Spot();
+        // Session class instance
+        session = new SessionManager(getActivity());
+        profile = new HashMap<>();
+        profile = session.getUserDetails();
         if (getArguments() != null) {
             spot = (Spot) getArguments().getSerializable(ARG_PARAM3);
             mParam1 = getArguments().getString(ARG_PARAM1);
@@ -88,6 +99,7 @@ public class DetailSpot extends Fragment {
 
         txtdate = (TextView)view.findViewById(R.id.txtDate);
         txttag = (TextView)view.findViewById(R.id.txtTag);
+        txtNbcomments = (TextView)view.findViewById(R.id.txtSpots);
         imgprofile = (ImageView)view.findViewById(R.id.profile_image);
         imgspot = (ImageView) view.findViewById(R.id.imgSpot);
         imgrespot = (ImageButton) view.findViewById(R.id.imgRespot);
@@ -107,14 +119,49 @@ public class DetailSpot extends Fragment {
         btnpost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onPost(edtComment.getText().toString());
+                if (!edtComment.getText().toString().matches("")) {
+                    Thread t = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            resultat = server.add_comment(spot.getId(), Integer.valueOf(profile.get(SessionManager.KEY_ID)), edtComment.getText().toString());
+                        }
+                    });
+
+                    t.start(); // spawn thread
+                    try {
+                        t.join();
+                        edtComment.setText("");
+                        View view = getActivity().getCurrentFocus();
+                        if (view != null) {
+                            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        }
+                        if (resultat > 0) {
+                            loadComment();
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                else
+                    Toast.makeText(getActivity(), "Specify the comment please!", Toast.LENGTH_SHORT).show();
             }
         });
 
         // Populate the data into the template view using the data object
         try {
             txtdate.setText(spot.getDate());
-            txttag.setText("tag1 tag2 tag3");
+            StringBuilder chainetag = new StringBuilder();
+            if (spot.getTags().size() == 0)
+                txttag.setText("No tag");
+            else {
+                for (String s :
+                        spot.getTags()) {
+                    chainetag.append("#" + s + " ");
+                }
+                txttag.setText(chainetag.toString());
+            };
             String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
             final File file = new File(dossier + File.separator + spot.getPhotokey() + ".jpg");
             Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
@@ -133,7 +180,7 @@ public class DetailSpot extends Fragment {
             Log.e("spot", e.getMessage());}
 
         loadComment();
-        
+
         return view;
     }
 
@@ -167,7 +214,6 @@ public class DetailSpot extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onRespot();
-        void onPost(String comment);
     }
 
     private void loadComment(){
@@ -179,12 +225,6 @@ public class DetailSpot extends Fragment {
             @Override
             public void run() {
                 commentaires = server.commentaires_spot(spot.getId());
-                commentaires.add(new Commentaire(1, 1, "raoul signe", "fqfefqefqef", "je quiff trop la plate de miami", " 3 day ago"));
-                commentaires.add(new Commentaire(1, 1, "raoul signe", "fqfefqefqef", "je quiff trop la plate de miami", " 3 day ago"));
-                commentaires.add(new Commentaire(1, 1, "raoul signe", "fqfefqefqef", "Lorem ipsum dolor sit amet, consec tetur adipiscing elit, sed magnaliqua", " 3 day ago"));
-                commentaires.add(new Commentaire(1, 1, "raoul signe", "fqfefqefqef", "Lorem ipsum dolor sit amet, consec tetur adipiscing elit, sed magnaliqua", " 3 day ago"));
-                commentaires.add(new Commentaire(1, 1, "raoul signe", "fqfefqefqef", "Lorem ipsum dolor sit amet, consec tetur adipiscing elit, sed magnaliqua", " 3 day ago"));
-                commentaires.add(new Commentaire(1, 1, "raoul signe", "fqfefqefqef", "Lorem ipsum dolor sit amet, consec tetur adipiscing elit, sed magnaliqua", " 3 day ago"));
             }});
 
         t.start(); // spawn thread
@@ -194,6 +234,10 @@ public class DetailSpot extends Fragment {
                 Log.i("comments", commentaires.toString());
                 adapter = new CommentAdapter(getActivity(), commentaires);
                 listView.setAdapter(adapter);
+                if (commentaires.size() > 1)
+                    txtNbcomments.setText(commentaires.size() + " comments");
+                else
+                    txtNbcomments.setText(commentaires.size() + " comment");
             }else {
                 // Setting new scroll position
                 listView.setSelectionFromTop(0, 0);

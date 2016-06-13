@@ -88,9 +88,9 @@
             android:name=".TakeSnap"
             android:label="@string/title_activity_add_from_camera"
             android:screenOrientation="portrait"
-            android:theme="@style/Base.Theme.AppCompat">
-        </activity>
+            android:theme="@style/Base.Theme.AppCompat"></activity>
         <activity android:name=".Welcome" />
+        <activity android:name=".Test"></activity>
     </application>
 
 </manifest>

@@ -805,6 +805,7 @@ public class DBServer {
         values.put("interval", interval);
         try {
             url = new URL(BASE_URL+URL_FIND_SPOT_USER+"?"+getQuery(values));
+            Log.i("url", url.toString());
             client = (HttpURLConnection) url.openConnection();
             client.setRequestMethod("GET");
 
@@ -818,6 +819,7 @@ public class DBServer {
             Log.i(TAG, "reponse = " + builder.toString());
             try {
                 JSONObject json = new JSONObject(builder.toString());
+                ArrayList<String> tags = new ArrayList<>();
                 int statut = Integer.valueOf(json.getString("statut"));
                 if (statut == 1){
                     JSONArray jArr = json.getJSONArray("data");
@@ -831,7 +833,15 @@ public class DBServer {
                         spot.setLongitude(json2.getDouble("gpslong") + "");
                         spot.setLatitude(json2.getDouble("gpslat") + "");
                         spot.setPhotokey((String) json2.get("photo"));
-                        //spot.setUser_id((int) json2.get(SpotsDBAdapteur.COLONNE_USER_ID));
+                        spot.setPhotouser((String) json2.get("photouser"));
+                        spot.setUser_id((int) json2.get(SpotsDBAdapteur.COLONNE_USER_ID));
+                        JSONArray jArrtag = json2.getJSONArray("tags");
+                        tags = new ArrayList<>();
+                        for (int j=0; j < jArrtag.length(); j++) {
+                            JSONObject json3 = jArrtag.getJSONObject(j);
+                            tags.add((String) json3.get("tag"));
+                        }
+                        spot.setTags(tags);
                         spots.add(spot);
                     }
                     return spots;
@@ -914,6 +924,8 @@ public class DBServer {
                 if (statut == 1){
                     builder.append("statut = "+json.getString("statut"));
                     builder.append("insertId = "+json.getString("insertId"));
+                    int insertId = Integer.valueOf(json.getInt("insertId"));
+                    return insertId;
                 }
                 else
                 {
@@ -930,17 +942,17 @@ public class DBServer {
         catch(MalformedURLException error) {
             //Handles an incorrectly entered URL
             Log.e(TAG,"MalformedURLException "+error.getMessage());
-            return 1;
+            return 0;
         }
         catch(SocketTimeoutException error) {
             //Handles URL access timeout.
             Log.e(TAG,"SocketTimeoutException "+error.getMessage());
-            return 1;
+            return 0;
         }
         catch (IOException error) {
             //Handles input and output errors
             Log.e(TAG,"IOException "+error.toString());
-            return 1;
+            return 0;
         }
         finally {
             client.disconnect();
@@ -988,7 +1000,7 @@ public class DBServer {
                         comment.setCommentaire((String) json2.get("commentaire"));
                         comment.setCreated((String) json2.get("created"));
                         comment.setPseudo((String) json2.get("pseudo"));
-                        comment.setPhotokey((String) json2.get("photokey"));
+                        //comment.setPhotokey((String) json2.get("photokey"));
 
                         comments.add(comment);
                     }

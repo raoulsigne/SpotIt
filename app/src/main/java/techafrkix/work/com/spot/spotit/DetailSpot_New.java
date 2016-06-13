@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -30,6 +32,7 @@ import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 public class DetailSpot_New extends AppCompatActivity {
 
     TextView txtMoi, txtAmis, txtPublic;
+    EditText edtTags;
     ImageView imgspot;
 
     AWS_Tools aws_tools;
@@ -71,8 +74,26 @@ public class DetailSpot_New extends AppCompatActivity {
         txtAmis = (TextView)findViewById(R.id.txtAmis);
         txtPublic = (TextView)findViewById(R.id.txtPublic);
         imgspot = (ImageView)findViewById(R.id.imgspot);
+        edtTags = (EditText)findViewById(R.id.edtTags);
 
         imgspot.setImageBitmap(BitmapFactory.decodeFile(imagepath));
+
+        edtTags.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         vMoi.setOnClickListener(new View.OnClickListener() {
             @Override

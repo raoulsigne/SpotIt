@@ -3,12 +3,14 @@ package techafrkix.work.com.spot.spotit;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -129,6 +131,71 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
             txtpseudo.setText(friend.getPseudo());
             txtspots.setText(friend.getNbspot() + " spots | " + friend.getNbrespot() + " respots");
             txtfriend.setText(friend.getNbfriends() + " friends");
+            if (friend.getPhoto() != "") {
+                String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
+                final File file = new File(dossier + File.separator + friend.getPhoto() + ".jpg");
+
+                if (file.exists()) {
+                    imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                    Log.i("file", "file exists");
+                } else {
+                    if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
+                        Log.i("file", "file not exists");
+                        AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
+                        final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
+                        barProgressDialog.setTitle("Download from server ...");
+                        barProgressDialog.setMessage("In progress ...");
+                        barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
+                        barProgressDialog.setProgress(0);
+                        barProgressDialog.setMax(100);
+                        barProgressDialog.show();
+                        int transfertId = aws_tools.download(file, friend.getPhoto());
+                        TransferUtility transferUtility = aws_tools.getTransferUtility();
+                        TransferObserver observer = transferUtility.getTransferById(transfertId);
+                        observer.setTransferListener(new TransferListener() {
+
+                            @Override
+                            public void onStateChanged(int id, TransferState state) {
+                                // do something
+                            }
+
+                            @Override
+                            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                                try {
+                                    int rapport = (int) (bytesCurrent * 100);
+                                    rapport /= bytesTotal;
+                                    barProgressDialog.setProgress(rapport);
+                                    if (rapport == 100) {
+                                        barProgressDialog.dismiss();
+                                        imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                                    }
+                                }catch (Exception e){
+                                    Log.e("erreur", e.getMessage());
+                                }
+                            }
+
+                            @Override
+                            public void onError(int id, Exception ex) {
+                                // do something
+                                barProgressDialog.dismiss();
+                            }
+
+                        });
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("Spot It:Information")
+                                .setMessage("Vérifiez votre connexion Internet")
+                                .setCancelable(false)
+                                .setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        AlertDialog alert = builder.create();
+                        alert.show();
+                    }
+                }
+            }
         }
 
         // Creating a button - Load More
@@ -388,7 +455,16 @@ class SpotFriendAdapter extends ArrayAdapter<Spot> {
         // Populate the data into the template view using the data object
         try {
             spotDate.setText(spot.getDate());
-            spotTag.setText(spot.getGeohash());
+            StringBuilder chainetag = new StringBuilder();
+            if (spot.getTags().size() == 0)
+                spotTag.setText("No tag");
+            else {
+                for (String s :
+                        spot.getTags()) {
+                    chainetag.append("#" + s + " ");
+                }
+                spotTag.setText(chainetag.toString());
+            }
             Bitmap bitmap = mapimages.get(spot.getPhotokey()); //BitmapFactory.decodeFile(spot.getPhotokey());
 
             // Get height or width of screen at runtime

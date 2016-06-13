@@ -74,8 +74,8 @@ public class AWS_Tools {
     public void uploadPhoto(File photo, String OBJECT_KEY){
         ObjectMetadata myObjectMetadata = new ObjectMetadata();
         final ProgressDialog barProgressDialog = new ProgressDialog(context);
-        barProgressDialog.setTitle("Transfert du spot ...");
-        barProgressDialog.setMessage("Opération en progression ...");
+        barProgressDialog.setTitle("Upload on server ...");
+        barProgressDialog.setMessage("In progress ...");
         barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
         barProgressDialog.setProgress(0);
         barProgressDialog.setMax(MAX_VALUE);

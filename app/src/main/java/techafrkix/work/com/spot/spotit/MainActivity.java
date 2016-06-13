@@ -37,6 +37,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
@@ -81,15 +82,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     String selectedImagePath;
     Uri mCapturedImageURI;
     private GeoHash geoHash;
-    private SpotsDBAdapteur dbAdapteur;
-    SQLiteDatabase db;
 
     private SessionManager session;
+    private HashMap<String, String> profile;
+    private DBServer server;
 
     ImageButton imgHome, imgSocial, imgNew, imgNotification, imgAccount;
     TextView txtHome, txtSocial, txtNew, txtNotification, txtAccount;
 
     int menuactif;
+    int resultat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +102,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         session = new SessionManager(getApplicationContext());
 
         MainActivity.context = getApplicationContext();
+        // Session class instance
+        session = new SessionManager(getApplicationContext());
+        profile = new HashMap<>();
+        server = new DBServer(getApplicationContext());
+        profile = session.getUserDetails();
 
         imgHome = (ImageButton) findViewById(R.id.imgHome);
         imgSocial = (ImageButton) findViewById(R.id.imgList);
@@ -123,7 +130,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         fgSpots_friend = new ListeSpots_Friend();
 
         FragmentTransaction ft;
-        dbAdapteur = new SpotsDBAdapteur(getApplicationContext());
         geoHash = new GeoHash();
 
         buildGoogleApiClient();
@@ -340,27 +346,45 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 case REQUEST_IMAGE_CAPTURE:
                     Bundle extras = data.getExtras();
                     Bitmap imageBitmap = (Bitmap) extras.get("data");
-                    String temps = String.valueOf(System.currentTimeMillis());
+                    final String temps = String.valueOf(System.currentTimeMillis());
                     File file = new File(getApplicationContext().getFilesDir().getPath() + "/SpotItPictures/" + temps + ".jpg");
                     try {
                         OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
-                        Bitmap resized = Bitmap.createScaledBitmap(imageBitmap, 800, 800, true);
-                        resized.compress(Bitmap.CompressFormat.JPEG, 50, os);
+                        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
                         os.close();
-                        AWS_Tools aws_tools = new AWS_Tools(MainActivity.this);
-                        aws_tools.uploadPhoto(file, temps);
-                        session.store_photo_profile(temps);
+
+                        Thread t = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                resultat = server.set_profile_picture(Integer.valueOf(profile.get(SessionManager.KEY_ID)), temps);
+                            }});
+
+                        t.start(); // spawn thread
+                        try{
+                            t.join();
+                            if (resultat > -1) {
+                                AWS_Tools aws_tools = new AWS_Tools(MainActivity.this);
+                                aws_tools.uploadPhoto(file, temps);
+                                session.store_photo_profile(temps);
+                            }
+                        }catch (Exception e){
+
+                        }
 
                         try {
                             //remove all others fragments if there exists
                             getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
                             getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
                             getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
+                            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+                            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
+                            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
+                            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
+                            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
                             // add the new fragment containing the main map
                             getSupportFragmentManager().beginTransaction()
                                     .replace(R.id.container, fgAccount, "ACCOUNT")
                                     .commit();
-                            menuactif = MENU_ACTIF_ACCOUNT;
                         } catch (Exception e) {
                             Log.e("fragment", e.getMessage());
                         }

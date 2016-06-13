@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -60,6 +61,7 @@ public class Add_Friend extends Fragment {
 
     private ListView lvfriends;
     private EditText edtFindspot;
+    private Button btnLaunch;
 
     private DBServer server;
     private Utilisateur[] friends;
@@ -107,6 +109,7 @@ public class Add_Friend extends Fragment {
         View view = inflater.inflate(R.layout.fragment_add__friend, container, false);
         edtFindspot = (EditText) view.findViewById(R.id.edtFindspot);
         lvfriends = (ListView) view.findViewById(R.id.friends);
+        btnLaunch = (Button)view.findViewById(R.id.btnLaunch);
 
         // Session class instance
         session = new SessionManager(getActivity());
@@ -136,44 +139,33 @@ public class Add_Friend extends Fragment {
             e.printStackTrace();
         }
 
-//        edtFindspot.setOnTouchListener(new View.OnTouchListener() {
-//            public boolean onTouch(View v, MotionEvent event) {
-//                int action = event.getActionMasked();
-//                if (action == MotionEvent.ACTION_UP && action!=MotionEvent.ACTION_CANCEL) {
-//                    String cle = edtFindspot.getText().toString();
-//                    if (!TextUtils.isEmpty(cle)) {
-//                        String[] items = {"raoul", "nelson", "boris", "severin"};
-//                        CustomList_Search adapter = new CustomList_Search(getActivity(), items, cle);
-//                        lvfriends.invalidate();
-//                        lvfriends.setAdapter(adapter);
-//                    }
-//                }
-//                edtFindspot.requestFocus();  // request focus
-//                //open keyboard inside edittext pseudo
-//                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-//                imm.showSoftInput(edtFindspot, InputMethodManager.SHOW_IMPLICIT);
-//                return true;
-//            }
-//        });
-        edtFindspot.addTextChangedListener(new TextWatcher() {
+        btnLaunch.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                String cle = edtFindspot.getText().toString();
+            public void onClick(View v) {
+                final String cle = edtFindspot.getText().toString();
                 if (!TextUtils.isEmpty(cle)) {
-                    String[] items = {"raoul", "nelson", "boris", "severin"};
-                    CustomList_Search adapter = new CustomList_Search(getActivity(), items, cle);
-                    lvfriends.invalidate();
-                    lvfriends.setAdapter(adapter);
+                    Thread t = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            users = server.getUsers_by_pseudo(cle);
+                        }
+                    });
+
+                    t.start(); // spawn thread
+                    try {
+                        t.join();
+                        if (users != null & users.size() > 0) {
+                            String[] items = new String[users.size()];
+                            for (int i = 0; i < users.size(); i++)
+                                items[i] = users.get(i).getPseudo();
+                            Log.i("test", items.toString());
+                            CustomList_Search adapter = new CustomList_Search(getActivity(), items, cle);
+                            lvfriends.invalidate();
+                            lvfriends.setAdapter(adapter);
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -249,68 +241,73 @@ public class Add_Friend extends Fragment {
             TextView txtSpot = (TextView) rowView.findViewById(R.id.txtSpots_friend);
             TextView txtFriend = (TextView) rowView.findViewById(R.id.txtFriends_friend);
 
-//            if (utilisateurs[position].getPhoto() != null & utilisateurs[position].getPhoto() != "") {
-//                String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
-//                final File file = new File(dossier + File.separator + utilisateurs[position].getPhoto() + ".jpg");
-//
-//                if (file.exists()) {
-//                    // marker.showInfoWindow();
-//                    imgProfile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
-//                    Log.i("file", "file exists");
-//                } else {
-//                    if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
-//                        Log.i("file", "file not exists");
-//                        AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
-//                        final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
-//                        barProgressDialog.setTitle("Telechargement du spot ...");
-//                        barProgressDialog.setMessage("Opération en progression ...");
-//                        barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
-//                        barProgressDialog.setProgress(0);
-//                        barProgressDialog.setMax(100);
-//                        barProgressDialog.show();
-//                        int transfertId = aws_tools.download(file, utilisateurs[position].getPhoto());
-//                        TransferUtility transferUtility = aws_tools.getTransferUtility();
-//                        TransferObserver observer = transferUtility.getTransferById(transfertId);
-//                        observer.setTransferListener(new TransferListener() {
-//
-//                            @Override
-//                            public void onStateChanged(int id, TransferState state) {
-//                                // do something
-//                            }
-//
-//                            @Override
-//                            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-//                                int rapport = (int) (bytesCurrent * 100);
-//                                rapport /= bytesTotal;
-//                                barProgressDialog.setProgress(rapport);
-//                                if (rapport == 100) {
-//                                    barProgressDialog.dismiss();
-//                                    imgProfile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
-//                                }
-//                            }
-//
-//                            @Override
-//                            public void onError(int id, Exception ex) {
-//                                // do something
-//                                barProgressDialog.dismiss();
-//                            }
-//
-//                        });
-//                    } else {
-//                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//                        builder.setTitle("Spot It:Information")
-//                                .setMessage("Vérifiez votre connexion Internet")
-//                                .setCancelable(false)
-//                                .setNegativeButton("Close", new DialogInterface.OnClickListener() {
-//                                    public void onClick(DialogInterface dialog, int id) {
-//                                        dialog.cancel();
-//                                    }
-//                                });
-//                        AlertDialog alert = builder.create();
-//                        alert.show();
-//                    }
-//                }
-//            }
+            if (utilisateurs[position].getPhoto() != "") {
+                String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
+                final File file = new File(dossier + File.separator + utilisateurs[position].getPhoto() + ".jpg");
+
+                if (file.exists()) {
+                    // marker.showInfoWindow();
+                    imgProfile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                    Log.i("file", "file exists");
+                } else {
+                    if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
+                        Log.i("file", "file not exists");
+                        AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
+                        final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
+                        barProgressDialog.setTitle("Chargement des profiles ...");
+                        barProgressDialog.setMessage("Opération en progression ...");
+                        barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
+                        barProgressDialog.setProgress(0);
+                        barProgressDialog.setMax(100);
+                        barProgressDialog.show();
+                        int transfertId = aws_tools.download(file, utilisateurs[position].getPhoto());
+                        TransferUtility transferUtility = aws_tools.getTransferUtility();
+                        TransferObserver observer = transferUtility.getTransferById(transfertId);
+                        observer.setTransferListener(new TransferListener() {
+
+                            @Override
+                            public void onStateChanged(int id, TransferState state) {
+                                // do something
+                            }
+
+                            @Override
+                            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                                int rapport = (int) (bytesCurrent * 100);
+                                try {
+                                    Log.i("test", bytesCurrent + " " + bytesTotal);
+                                    rapport /= bytesTotal;
+                                    barProgressDialog.setProgress(rapport);
+                                    if (rapport == 100) {
+                                        barProgressDialog.dismiss();
+                                        imgProfile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                                    }
+                                }catch (Exception e){
+                                    Log.e("chargement", e.getMessage());
+                                }
+                            }
+
+                            @Override
+                            public void onError(int id, Exception ex) {
+                                // do something
+                                barProgressDialog.dismiss();
+                            }
+
+                        });
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("Spot It:Information")
+                                .setMessage("Vérifiez votre connexion Internet")
+                                .setCancelable(false)
+                                .setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        AlertDialog alert = builder.create();
+                        alert.show();
+                    }
+                }
+            }
 
             txtPseudo.setText(utilisateurs[position].getPseudo());
             txtSpot.setText(utilisateurs[position].getNbspot() + " spots | " + utilisateurs[position].getNbrespot() + " respots");

@@ -1,16 +1,31 @@
 package techafrkix.work.com.spot.spotit;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+
+import java.io.File;
+
 import techafrkix.work.com.spot.bd.Utilisateur;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
 
 /**
@@ -73,7 +88,7 @@ public class Account_Friend extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_account__friend, container, false);
-        ImageView item_profile = (ImageView) view.findViewById(R.id.imgprofile_friend);
+        final ImageView item_profile = (ImageView) view.findViewById(R.id.imgprofile_friend);
         ImageView play_spot = (ImageView) view.findViewById(R.id.imgNbSpots);
         TextView txtPseudo = (TextView) view.findViewById(R.id.txtPseudo_friend);
         TextView txtSpot = (TextView) view.findViewById(R.id.txtSpots_friend);
@@ -93,6 +108,73 @@ public class Account_Friend extends Fragment {
                 mListener.onListSpot_Friend(friend);
             }
         });
+
+        if (friend.getPhoto() != "") {
+            String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
+            final File file = new File(dossier + File.separator + friend.getPhoto() + ".jpg");
+
+            if (file.exists()) {
+                // marker.showInfoWindow();
+                item_profile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                Log.i("file", "file exists");
+            } else {
+                if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
+                    Log.i("file", "file not exists");
+                    AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
+                    final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
+                    barProgressDialog.setTitle("Telechargement du spot ...");
+                    barProgressDialog.setMessage("Opération en progression ...");
+                    barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
+                    barProgressDialog.setProgress(0);
+                    barProgressDialog.setMax(100);
+                    barProgressDialog.show();
+                    int transfertId = aws_tools.download(file, friend.getPhoto());
+                    TransferUtility transferUtility = aws_tools.getTransferUtility();
+                    TransferObserver observer = transferUtility.getTransferById(transfertId);
+                    observer.setTransferListener(new TransferListener() {
+
+                        @Override
+                        public void onStateChanged(int id, TransferState state) {
+                            // do something
+                        }
+
+                        @Override
+                        public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                            try {
+                                int rapport = (int) (bytesCurrent * 100);
+                                rapport /= bytesTotal;
+                                barProgressDialog.setProgress(rapport);
+                                if (rapport == 100) {
+                                    barProgressDialog.dismiss();
+                                    item_profile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                                }
+                            }catch (Exception e){
+                                Log.e("erreur", e.getMessage());
+                            }
+                        }
+
+                        @Override
+                        public void onError(int id, Exception ex) {
+                            // do something
+                            barProgressDialog.dismiss();
+                        }
+
+                    });
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Spot It:Information")
+                            .setMessage("Vérifiez votre connexion Internet")
+                            .setCancelable(false)
+                            .setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
+            }
+        }
 
         return view;
     }

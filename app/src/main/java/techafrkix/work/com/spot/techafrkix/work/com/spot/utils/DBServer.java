@@ -45,6 +45,7 @@ public class DBServer {
     private static final String BASE_URL = "https://spotitproject.herokuapp.com";
     private static final String API_KEY = "012YEYQS5653278GHQSD234671QSDF26";
     private static final String URL_USER = "/api/users";
+    private static final String URL_USER_PHOTO = "/api/setphotoprofile";
     private static final String URL_CHECK = "/api/userwithpseudo";
     private static final String URL_LOGIN = "/api/login";
     private static final String URL_SPOT = "/api/spots";
@@ -127,6 +128,82 @@ public class DBServer {
                     builder.append("statut = "+json.getString("statut"));
                     builder.append("insertId = "+json.getString("insertId"));
                     return json.getInt("insertId");
+                }
+                else
+                {
+                    builder.append("statut = "+json.getString("statut"));
+                    builder.append("errcode = "+json.getString("errcode"));
+                    builder.append("message = " + json.getString("message"));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+        catch(MalformedURLException error) {
+            //Handles an incorrectly entered URL
+            Log.e(TAG,"MalformedURLException "+error.getMessage());
+            return -1;
+        }
+        catch(SocketTimeoutException error) {
+            //Handles URL access timeout.
+            Log.e(TAG,"SocketTimeoutException "+error.getMessage());
+            return -1;
+        }
+        catch (IOException error) {
+            //Handles input and output errors
+            Log.e(TAG,"IOException "+error.toString());
+            return -1;
+        }
+        finally {
+            client.disconnect();
+        }
+
+        return -1;
+    }
+
+    /**
+     * fonction qui étant donné un utilisateur lui associe une photo de profile
+     * @param userid l'ide de l'utilisateur
+     * @param photokey la clé de la photo
+     * @return retourne un entier pour spéficier si tout c'est bien passé
+     */
+    public int set_profile_picture(int userid, String photokey){
+        try {
+            url = new URL(BASE_URL+URL_USER_PHOTO);
+            client = (HttpURLConnection) url.openConnection();
+            client.setRequestMethod("POST");
+            client.setDoOutput(true);
+
+            OutputStream outputPost = new BufferedOutputStream(client.getOutputStream());
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputPost, "UTF-8"));
+
+            ContentValues values = new ContentValues();
+            values.put("apikey", API_KEY);
+            values.put("user_id", userid);
+            values.put("photo", photokey);
+
+            writer.write(getQuery(values));
+            writer.flush();
+            writer.close();
+            outputPost.close();
+            Log.i(TAG, url.toString());
+
+            StringBuilder builder = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                builder.append(line+"\n");
+            }
+            br.close();
+            Log.i(TAG, "reponse = " + builder.toString());
+
+            try {
+                JSONObject json = new JSONObject(builder.toString());
+                int statut = Integer.valueOf(json.getString("statut"));
+                if (statut == 1){
+                    builder.append("statut = "+json.getString("statut"));
+                    return 1;
                 }
                 else
                 {
@@ -519,16 +596,13 @@ public class DBServer {
                     for (int i=0; i < jArr.length(); i++) {
                         JSONObject json2 = jArr.getJSONObject(i);
                         user = new Utilisateur();
-                        //user.setPassword(""); //user.setPassword((String) json2.get(MaBaseOpenHelper.COLONNE_PASSWORD));
                         user.setEmail((String) json2.get(MaBaseOpenHelper.COLONNE_EMAIL));
-                        //user.setDate_naissance((String) json2.get(MaBaseOpenHelper.COLONNE_DATE_NAISSANCE));
                         user.setId((int) json2.get(MaBaseOpenHelper.COLONNE_USER_ID));
                         user.setPseudo((String) json2.get(MaBaseOpenHelper.COLONNE_PSEUDO));
                         user.setPhoto((String) json2.get(MaBaseOpenHelper.COLONNE_PHOTO_PROFILE));
-                        //user.setCreated((String) json2.get(MaBaseOpenHelper.COLONNE_CREATED));
-                        //user.setNbrespot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_RESPOT));
-                        //user.setNbspot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_SPOT));
-                        //user.setTypeconnexion_id((int) json2.get(MaBaseOpenHelper.COLONNE_TYPECONNEXION_ID));
+                        user.setNbrespot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_RESPOT));
+                        user.setNbspot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_SPOT));
+                        user.setNbfriends((int) json2.get("nbfriend"));
 
                         users.add(user);
                     }
@@ -835,6 +909,7 @@ public class DBServer {
                         spot.setPhotokey((String) json2.get("photo"));
                         spot.setPhotouser((String) json2.get("photouser"));
                         spot.setUser_id((int) json2.get(SpotsDBAdapteur.COLONNE_USER_ID));
+                        spot.setDate((String) json2.get("created"));
                         JSONArray jArrtag = json2.getJSONArray("tags");
                         tags = new ArrayList<>();
                         for (int j=0; j < jArrtag.length(); j++) {
@@ -1000,7 +1075,7 @@ public class DBServer {
                         comment.setCommentaire((String) json2.get("commentaire"));
                         comment.setCreated((String) json2.get("created"));
                         comment.setPseudo((String) json2.get("pseudo"));
-                        //comment.setPhotokey((String) json2.get("photokey"));
+                        comment.setPhotokey((String) json2.get("photo"));
 
                         comments.add(comment);
                     }

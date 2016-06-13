@@ -1,11 +1,14 @@
 package techafrkix.work.com.spot.spotit;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -15,10 +18,19 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import techafrkix.work.com.spot.bd.Spot;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
 /**
  * Created by techafrkix0 on 25/04/2016.
@@ -27,9 +39,11 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
 
     HashMap<String, Bitmap> mapimages;
     private AdapterCallback mAdapterCallback;
+    private Context context;
 
     public SpotAdapter(Context context, ArrayList<Spot> spots, Fragment fg) {
         super(context, 0, spots);
+        this.context = context;
         try {
             this.mAdapterCallback = ((AdapterCallback) fg);
         } catch (ClassCastException e) {
@@ -41,6 +55,7 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
         super(context, 0, spots);
         mapimages = new HashMap<String, Bitmap>();
         mapimages = spotsimages;
+        this.context = context;
         try {
             this.mAdapterCallback = ((AdapterCallback) fg);
         } catch (ClassCastException e) {
@@ -50,10 +65,10 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        TextView spotDate, spotTag;
-        TextView txtshare, txtcomment, txtletsgo;
-        ImageView spotPhoto;
-        ImageView photoprofile;
+        final TextView spotDate, spotTag;
+        final TextView txtshare, txtcomment, txtletsgo;
+        final ImageView spotPhoto;
+        final ImageView photoprofile;
 
         // Get the data item for this position
         Spot spot = getItem(position);
@@ -110,7 +125,6 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
             Point size = new Point();
             display.getSize(size);
             int width = size.x;
-            int height = size.y;
 
             //reduce the photo dimension keeping the ratio so that it'll fit in the imageview
             int nh = (int) ( bitmap.getHeight() * (Double.valueOf(width) / bitmap.getWidth()) );
@@ -121,7 +135,71 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
         }catch (Exception e){
             Log.e("spot", e.getMessage());}
 
+        SessionManager session = new SessionManager(context);
+        HashMap<String, String> profile = session.getUserDetails();
 
+        if (profile.get(SessionManager.KEY_PHOTO) != null & profile.get(SessionManager.KEY_PHOTO) != "") {
+            String dossier = context.getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
+            final File file = new File(dossier + File.separator + profile.get(SessionManager.KEY_PHOTO) + ".jpg");
+
+            if (file.exists()) {
+                // marker.showInfoWindow();
+                photoprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                Log.i("file", "file exists");
+            } else {
+                if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
+                    Log.i("file", "file not exists");
+                    AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
+                    final ProgressDialog barProgressDialog = new ProgressDialog(context);
+                    barProgressDialog.setTitle("Telechargement du spot ...");
+                    barProgressDialog.setMessage("Opération en progression ...");
+                    barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
+                    barProgressDialog.setProgress(0);
+                    barProgressDialog.setMax(100);
+                    barProgressDialog.show();
+                    int transfertId = aws_tools.download(file, profile.get(SessionManager.KEY_PHOTO));
+                    TransferUtility transferUtility = aws_tools.getTransferUtility();
+                    TransferObserver observer = transferUtility.getTransferById(transfertId);
+                    observer.setTransferListener(new TransferListener() {
+
+                        @Override
+                        public void onStateChanged(int id, TransferState state) {
+                            // do something
+                        }
+
+                        @Override
+                        public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                            int rapport = (int) (bytesCurrent * 100);
+                            rapport /= bytesTotal;
+                            barProgressDialog.setProgress(rapport);
+                            if (rapport == 100) {
+                                barProgressDialog.dismiss();
+                                photoprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                            }
+                        }
+
+                        @Override
+                        public void onError(int id, Exception ex) {
+                            // do something
+                            barProgressDialog.dismiss();
+                        }
+
+                    });
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setTitle("Spot It:Information")
+                            .setMessage("Vérifiez votre connexion Internet")
+                            .setCancelable(false)
+                            .setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
+            }
+        }
 
         // Return the completed view to render on screen
         return convertView;

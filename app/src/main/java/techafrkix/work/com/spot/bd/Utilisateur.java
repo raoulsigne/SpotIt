@@ -24,6 +24,7 @@ public class Utilisateur implements Serializable {
         this.email = email;
         this.password = password;
         this.date_naissance = date_naissance;
+        this.photo = "";
     }
 
     public Utilisateur(String email, String password, String date_naissance, String pseudo) {
@@ -31,6 +32,7 @@ public class Utilisateur implements Serializable {
         this.password = password;
         this.date_naissance = date_naissance;
         this.pseudo = pseudo;
+        this.photo = "";
     }
 
     public Utilisateur(int id) {

@@ -3,12 +3,14 @@ package techafrkix.work.com.spot.spotit;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -27,6 +29,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +41,7 @@ import java.util.HashMap;
 import techafrkix.work.com.spot.bd.Commentaire;
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.Utilisateur;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
@@ -179,6 +187,69 @@ public class DetailSpot extends Fragment {
         }catch (Exception e){
             Log.e("spot", e.getMessage());}
 
+        if (profile.get(SessionManager.KEY_PHOTO) != null & profile.get(SessionManager.KEY_PHOTO) != "") {
+            String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
+            final File file = new File(dossier + File.separator + profile.get(SessionManager.KEY_PHOTO) + ".jpg");
+
+            if (file.exists()) {
+                // marker.showInfoWindow();
+                imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                Log.i("file", "file exists");
+            } else {
+                if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
+                    Log.i("file", "file not exists");
+                    AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
+                    final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
+                    barProgressDialog.setTitle("Telechargement du spot ...");
+                    barProgressDialog.setMessage("Opération en progression ...");
+                    barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
+                    barProgressDialog.setProgress(0);
+                    barProgressDialog.setMax(100);
+                    barProgressDialog.show();
+                    int transfertId = aws_tools.download(file, profile.get(SessionManager.KEY_PHOTO));
+                    TransferUtility transferUtility = aws_tools.getTransferUtility();
+                    TransferObserver observer = transferUtility.getTransferById(transfertId);
+                    observer.setTransferListener(new TransferListener() {
+
+                        @Override
+                        public void onStateChanged(int id, TransferState state) {
+                            // do something
+                        }
+
+                        @Override
+                        public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                            int rapport = (int) (bytesCurrent * 100);
+                            rapport /= bytesTotal;
+                            barProgressDialog.setProgress(rapport);
+                            if (rapport == 100) {
+                                barProgressDialog.dismiss();
+                                imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                            }
+                        }
+
+                        @Override
+                        public void onError(int id, Exception ex) {
+                            // do something
+                            barProgressDialog.dismiss();
+                        }
+
+                    });
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Spot It:Information")
+                            .setMessage("Vérifiez votre connexion Internet")
+                            .setCancelable(false)
+                            .setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
+            }
+        }
+
         loadComment();
 
         return view;
@@ -264,8 +335,8 @@ class CommentAdapter extends ArrayAdapter<Commentaire> {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        TextView txtnom, txtcomment, txttemps;
-        ImageView photoprofile;
+        final TextView txtnom, txtcomment, txttemps;
+        final ImageView photoprofile;
 
         // Get the data item for this position
         Commentaire commentaire = getItem(position);
@@ -284,22 +355,67 @@ class CommentAdapter extends ArrayAdapter<Commentaire> {
         txtcomment.setText(commentaire.getCommentaire());
         txtnom.setText(commentaire.getPseudo());
         txttemps.setText(commentaire.getCreated());
-//        try {
-//            String dossier = context.getApplicationContext().getFilesDir().getPath()+ DBServer.DOSSIER_IMAGE;
-//            final File file = new File(dossier+ File.separator  + commentaire.getPhotokey() + ".jpg");
-//            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-//
-//            // Get height or width of screen at runtime
-//            Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
-//            Point size = new Point();
-//            display.getSize(size);
-//            int width = size.x;
-//            //reduce the photo dimension keeping the ratio so that it'll fit in the imageview
-//            int nh = (int) ( bitmap.getHeight() * (Double.valueOf(width) / bitmap.getWidth()) );
-//            Bitmap scaled = Bitmap.createScaledBitmap(bitmap, width, nh, true);
-//            photoprofile.setImageBitmap(scaled);
-//        }catch (Exception e){
-//            Log.e("spot", e.getMessage());}
+        if (commentaire.getPhotokey() != "") {
+            String dossier = context.getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
+            final File file = new File(dossier + File.separator + commentaire.getPhotokey() + ".jpg");
+
+            if (file.exists()) {
+                photoprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                Log.i("file", "file exists");
+            } else {
+                if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
+                    Log.i("file", "file not exists");
+                    AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
+                    final ProgressDialog barProgressDialog = new ProgressDialog(context);
+                    barProgressDialog.setTitle("Telechargement du spot ...");
+                    barProgressDialog.setMessage("Opération en progression ...");
+                    barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
+                    barProgressDialog.setProgress(0);
+                    barProgressDialog.setMax(100);
+                    barProgressDialog.show();
+                    int transfertId = aws_tools.download(file, commentaire.getPhotokey());
+                    TransferUtility transferUtility = aws_tools.getTransferUtility();
+                    TransferObserver observer = transferUtility.getTransferById(transfertId);
+                    observer.setTransferListener(new TransferListener() {
+
+                        @Override
+                        public void onStateChanged(int id, TransferState state) {
+                            // do something
+                        }
+
+                        @Override
+                        public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                            int rapport = (int) (bytesCurrent * 100);
+                            rapport /= bytesTotal;
+                            barProgressDialog.setProgress(rapport);
+                            if (rapport == 100) {
+                                barProgressDialog.dismiss();
+                                photoprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                            }
+                        }
+
+                        @Override
+                        public void onError(int id, Exception ex) {
+                            // do something
+                            barProgressDialog.dismiss();
+                        }
+
+                    });
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setTitle("Spot It:Information")
+                            .setMessage("Vérifiez votre connexion Internet")
+                            .setCancelable(false)
+                            .setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
+            }
+        }
 
         // Return the completed view to render on screen
         return convertView;

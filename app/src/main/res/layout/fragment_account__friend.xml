@@ -63,11 +63,12 @@
         </LinearLayout>
 
         <fragment
-            android:id="@+id/mymap"
+            android:id="@+id/friendmap"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/background_new"
-            android:name="com.google.android.gms.maps.SupportMapFragment">
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            tools:context="techafrkix.work.com.spot.spotit.Account_Friend">
 
             <RelativeLayout
                 android:layout_width="match_parent"

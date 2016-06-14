@@ -92,7 +92,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/background_new"
-            android:name="com.google.android.gms.maps.SupportMapFragment">
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            tools:context="techafrkix.work.com.spot.spotit.Account">
 
             <RelativeLayout
                 android:layout_width="match_parent"

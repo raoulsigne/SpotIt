@@ -64,7 +64,7 @@ public class Add_Friend extends Fragment {
     private Button btnLaunch;
 
     private DBServer server;
-    private Utilisateur[] friends;
+    private ArrayList<String> friends;
     private ArrayList<Utilisateur> users;
     private SessionManager session;
     private HashMap<String, String> profile;
@@ -117,6 +117,7 @@ public class Add_Friend extends Fragment {
         server = new DBServer(getActivity());
         profile = session.getUserDetails();
         users = new ArrayList<>();
+        friends = new ArrayList<>();
 
         Thread t = new Thread(new Runnable() {
             @Override
@@ -127,12 +128,15 @@ public class Add_Friend extends Fragment {
         t.start(); // spawn thread
         try{
             t.join();
-            if (users != null & users.size()>0){
-                friends = new Utilisateur[users.size()];
-                for (int i = 0; i < users.size(); i++)
-                    friends[i] = users.get(i);
+            if (users != null){
+                friends = new ArrayList<>();
+                Utilisateur[] tampons = new Utilisateur[users.size()];
+                for (int i = 0; i < users.size(); i++) {
+                    tampons[i] = users.get(i);
+                    friends.add(users.get(i).getPseudo());
+                }
                 Log.i("friend", users.toString());
-                CustomList adapter = new CustomList(getActivity(), friends);
+                CustomList adapter = new CustomList(getActivity(), tampons);
                 lvfriends.setAdapter(adapter);
             }
         }catch (InterruptedException e) {
@@ -143,6 +147,11 @@ public class Add_Friend extends Fragment {
             @Override
             public void onClick(View v) {
                 final String cle = edtFindspot.getText().toString();
+                View view = getActivity().getCurrentFocus();
+                if (view != null) {
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
                 if (!TextUtils.isEmpty(cle)) {
                     Thread t = new Thread(new Runnable() {
                         @Override
@@ -154,7 +163,7 @@ public class Add_Friend extends Fragment {
                     t.start(); // spawn thread
                     try {
                         t.join();
-                        if (users != null & users.size() > 0) {
+                        if (users != null) {
                             String[] items = new String[users.size()];
                             for (int i = 0; i < users.size(); i++)
                                 items[i] = users.get(i).getPseudo();
@@ -283,6 +292,7 @@ public class Add_Friend extends Fragment {
                                     }
                                 }catch (Exception e){
                                     Log.e("chargement", e.getMessage());
+                                    barProgressDialog.dismiss();
                                 }
                             }
 
@@ -340,7 +350,12 @@ public class Add_Friend extends Fragment {
 
             txtPseudo.setText(items[position]);
             txtcle.setText(cle);
-            imgaction.setBackground(getResources().getDrawable(R.drawable.group_button));
+            if (friends != null){
+                if (friends.contains(items[position]))
+                    imgaction.setBackground(getResources().getDrawable(R.drawable.group_button));
+                else
+                    imgaction.setBackground(getResources().getDrawable(R.drawable.plus));
+            }
 
             return rowView;
         }

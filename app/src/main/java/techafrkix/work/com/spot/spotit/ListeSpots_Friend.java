@@ -259,6 +259,7 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+        void onDetailSpot(Spot spot, Utilisateur utilisateur);
     }
 
     private void loadSpots() {
@@ -373,7 +374,7 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
 
     @Override
     public void detail(int position) {
-        Toast.makeText(getActivity(), "Detail " + position, Toast.LENGTH_SHORT).show();
+        mListener.onDetailSpot(spots.get(position), friend);
     }
 
     @Override

@@ -193,44 +193,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-//        UiSettings settings = mMap.getUiSettings();
-//        settings.setCompassEnabled(true);
-//        settings.setIndoorLevelPickerEnabled(true);
-//        settings.setMapToolbarEnabled(true);
-//        settings.setAllGesturesEnabled(true);
-//        //settings.setMyLocationButtonEnabled(true);
-
-        //try to position the location button in the sreen bottom
-        //get the dimension of the screen
-//        int width = this.getResources().getDisplayMetrics().widthPixels;
-//        int height = this.getResources().getDisplayMetrics().heightPixels;
-//
-//        final float scale = getContext().getResources().getDisplayMetrics().density; // calcul du ratio entre les pixels de l'écran
-//        //get the size of tha actionbar which are at the bottom on the screen
-//        final TypedArray styledAttributes = getContext().getTheme().obtainStyledAttributes(
-//                new int[] { android.R.attr.actionBarSize });
-//        int mActionBarSize = (int) styledAttributes.getDimension(0, 0);
-//        styledAttributes.recycle();
-//        int pixels = (int) ((mActionBarSize + 5) * scale + 0.5f);
-//        mMap.setPadding(0, height - pixels, 0, 0); // position the pading of the map which will help to set the location button at the bottom
-
-//        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-//                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            // TODO: Consider calling
-//            //    ActivityCompat#requestPermissions
-//            // here to request the missing permissions, and then overriding
-//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//            //                                          int[] grantResults)
-//            // to handle the case where the user grants the permission. See the documentation
-//            // for ActivityCompat#requestPermissions for more details.
-//            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-//                    MY_PERMISSIONS_REQUEST_FINE_LOCATION);
-//            return;
-//        }
-//        else
-//        {
-//            mMap.setMyLocationEnabled(true);
-//        }
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -302,7 +264,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
             }
         });
 
-        //displaySpotOnMap();
+        displaySpotOnMap();
     }
 
     @Override
@@ -335,6 +297,9 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
      * afficher les spots sur la carte en utilisant leur coordonnées
      */
     private void displaySpotOnMap(){
+        //clear other markers on map and inside the list before adding new one
+        mMap.clear();
+        mMyMarkersArray.clear();
         profile = session.getUserDetails();
 
         Thread t = new Thread(new Runnable() {
@@ -346,7 +311,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
         t.start(); // spawn thread
         try {
             t.join();
-            LatLng coordonnees;
             if (spots != null) {
                 //afficher le nombre de spots
                 int n = Integer.valueOf(profile.get(SessionManager.KEY_SPOT));
@@ -355,10 +319,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
                 else
                     txtmyspot.setText(n + " Spots");
                 for (Spot s : spots) {
-                    // Add a marker to spot position
-                    coordonnees = new LatLng(Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude()));
-                    //mMap.addMarker(new MarkerOptions().position(coordonnees).title("Spot "+ s.getId() + " : " +s.getGeohash()));
-                    Log.i("map", "marker du spot " + s.getGeohash());
                     mMyMarkersArray.add(new MyMarker(s.getDate(), s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude())));
                 }
             }
@@ -377,7 +337,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
 
                 // Create user marker with custom icon and other options
                 MarkerOptions markerOption = new MarkerOptions().position(new LatLng(myMarker.getmLatitude(), myMarker.getmLongitude()));
-                markerOption.icon(BitmapDescriptorFactory.fromResource(R.drawable.currentlocation_icon));
+                markerOption.icon(BitmapDescriptorFactory
+                        .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
 
                 Marker currentMarker = mMap.addMarker(markerOption);
                 mMarkersHashMap.put(currentMarker, myMarker);
@@ -495,34 +456,34 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
 
     @Override
     public void onConnected(Bundle bundle) {
-        if (mGoogleApiClient.isConnected()){
-            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_FINE_LOCATION);
-            } else {
-                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, new com.google.android.gms.location.LocationListener() {
-                    @Override
-                    public void onLocationChanged(Location location) {
-                    }
-                });
-                Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-
-                if (location != null) {
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude()))
-                            .icon(BitmapDescriptorFactory
-                                    .defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
-                }
-            }
-        }else
-            Log.i("map", "Not connected");
+//        if (mGoogleApiClient.isConnected()){
+//            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+//                    ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                // TODO: Consider calling
+//                //    ActivityCompat#requestPermissions
+//                // here to request the missing permissions, and then overriding
+//                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//                //                                          int[] grantResults)
+//                // to handle the case where the user grants the permission. See the documentation
+//                // for ActivityCompat#requestPermissions for more details.
+//                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+//                        MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+//            } else {
+//                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, new com.google.android.gms.location.LocationListener() {
+//                    @Override
+//                    public void onLocationChanged(Location location) {
+//                    }
+//                });
+//                Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+//
+//                if (location != null) {
+//                    mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude()))
+//                            .icon(BitmapDescriptorFactory
+//                                    .defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
+//                }
+//            }
+//        }else
+//            Log.i("map", "Not connected");
     }
 
     @Override

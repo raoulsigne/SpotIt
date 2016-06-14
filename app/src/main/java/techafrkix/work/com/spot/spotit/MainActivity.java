@@ -663,11 +663,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     @Override
-    public void onRespot() {
-        Toast.makeText(getApplicationContext(), "Respot", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
     public void onSearchSpot() {
         try {
             //remove all others fragments if there exists
@@ -751,6 +746,32 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container, fgSpots_friend, "FRIEND_LIST_SPOT")
+                    .commit();
+        } catch (Exception e) {
+            Log.e("fragment", e.getMessage());
+        }
+    }
+
+    @Override
+    public void onDetailSpot(Spot spot, Utilisateur utilisateur) {
+        try {
+            //remove all others fragments if there exists
+            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
+            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
+            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
+            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
+            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
+            // add the new fragment containing the list of spots
+
+            Bundle args = new Bundle();
+            args.putSerializable("spot", spot);
+            args.putSerializable("friend", utilisateur);
+            fgDetailspot.setArguments(args);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, fgDetailspot, "DETAIL")
                     .commit();
         } catch (Exception e) {
             Log.e("fragment", e.getMessage());

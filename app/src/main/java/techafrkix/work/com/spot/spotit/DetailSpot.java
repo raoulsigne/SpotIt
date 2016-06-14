@@ -37,6 +37,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
 import techafrkix.work.com.spot.bd.Commentaire;
 import techafrkix.work.com.spot.bd.Spot;
@@ -56,8 +57,11 @@ public class DetailSpot extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_PARAM2 = "friend";
     private static final String ARG_PARAM3 = "spot";
+
+    private static final int TYPE_USER = 1;
+    private static final int TYPE_FRIEND = 11;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -76,6 +80,8 @@ public class DetailSpot extends Fragment {
     Spot spot;
     SessionManager session;
     private HashMap<String, String> profile;
+    private int type;
+    private Utilisateur friend;
 
     private ArrayList<Commentaire> commentaires;
     private DBServer server;
@@ -91,8 +97,12 @@ public class DetailSpot extends Fragment {
         profile = session.getUserDetails();
         if (getArguments() != null) {
             spot = (Spot) getArguments().getSerializable(ARG_PARAM3);
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            try{
+                friend = (Utilisateur) getArguments().getSerializable(ARG_PARAM2);
+                type = TYPE_FRIEND;
+            }catch (Exception e){
+                type = TYPE_USER;
+            }
         }
     }
 
@@ -121,7 +131,10 @@ public class DetailSpot extends Fragment {
         imgrespot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onRespot();
+                if (type == TYPE_FRIEND) {
+
+                }else
+                    Toast.makeText(getActivity(), "You cannot comment your own spot!", Toast.LENGTH_SHORT).show();
             }
         });
         btnpost.setOnClickListener(new View.OnClickListener() {
@@ -284,7 +297,7 @@ public class DetailSpot extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onRespot();
+
     }
 
     private void loadComment(){

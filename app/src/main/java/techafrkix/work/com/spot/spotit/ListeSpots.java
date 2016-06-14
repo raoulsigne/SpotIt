@@ -224,6 +224,10 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                         }
                     }
                 }
+                else {
+                    // Setting new scroll position
+                    listView.setSelectionFromTop(0, 0);
+                }
             }else {
                 // Setting new scroll position
                 listView.setSelectionFromTop(0, 0);

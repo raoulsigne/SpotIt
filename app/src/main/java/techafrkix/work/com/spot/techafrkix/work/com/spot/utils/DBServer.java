@@ -24,7 +24,9 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.spec.ECField;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -74,23 +76,24 @@ public class DBServer {
     private OutputStream outputPost;
     private Context context;
 
-    public DBServer(Context ctx){
+    public DBServer(Context ctx) {
         context = ctx;
     }
 
     /**
      * fonction qui permet d'enregistrer un nouvel utilisateur dans l'application
-     * @param email son email
-     * @param pseudo son pseudo qui represente son nom dans l'application
-     * @param password son mot de passe
+     *
+     * @param email            son email
+     * @param pseudo           son pseudo qui represente son nom dans l'application
+     * @param password         son mot de passe
      * @param typeconnexion_id ceci renseigne s'il s'est connecté avec facebook ou non
-     * @param birth date de naissance au format yyyy-mm-dd
+     * @param birth            date de naissance au format yyyy-mm-dd
      * @return retourne un entier qui represente le code de retour
      */
-    public int register(String email, String pseudo, String password, int typeconnexion_id, String birth){
+    public int register(String email, String pseudo, String password, int typeconnexion_id, String birth) {
 
         try {
-            url = new URL(BASE_URL+URL_USER);
+            url = new URL(BASE_URL + URL_USER);
             client = (HttpURLConnection) url.openConnection();
             client.setRequestMethod("POST");
             client.setDoOutput(true);
@@ -116,7 +119,7 @@ public class DBServer {
             BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
             String line;
             while ((line = br.readLine()) != null) {
-                builder.append(line+"\n");
+                builder.append(line + "\n");
             }
             br.close();
             Log.i(TAG, "reponse = " + builder.toString());
@@ -124,38 +127,32 @@ public class DBServer {
             try {
                 JSONObject json = new JSONObject(builder.toString());
                 int statut = Integer.valueOf(json.getString("statut"));
-                if (statut == 1){
-                    builder.append("statut = "+json.getString("statut"));
-                    builder.append("insertId = "+json.getString("insertId"));
+                if (statut == 1) {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("insertId = " + json.getString("insertId"));
                     return json.getInt("insertId");
-                }
-                else
-                {
-                    builder.append("statut = "+json.getString("statut"));
-                    builder.append("errcode = "+json.getString("errcode"));
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
                     builder.append("message = " + json.getString("message"));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
-        }
-        catch(MalformedURLException error) {
+        } catch (MalformedURLException error) {
             //Handles an incorrectly entered URL
-            Log.e(TAG,"MalformedURLException "+error.getMessage());
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
             return -1;
-        }
-        catch(SocketTimeoutException error) {
+        } catch (SocketTimeoutException error) {
             //Handles URL access timeout.
-            Log.e(TAG,"SocketTimeoutException "+error.getMessage());
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
             return -1;
-        }
-        catch (IOException error) {
+        } catch (IOException error) {
             //Handles input and output errors
-            Log.e(TAG,"IOException "+error.toString());
+            Log.e(TAG, "IOException " + error.toString());
             return -1;
-        }
-        finally {
+        } finally {
             client.disconnect();
         }
 
@@ -164,13 +161,14 @@ public class DBServer {
 
     /**
      * fonction qui étant donné un utilisateur lui associe une photo de profile
-     * @param userid l'ide de l'utilisateur
+     *
+     * @param userid   l'ide de l'utilisateur
      * @param photokey la clé de la photo
      * @return retourne un entier pour spéficier si tout c'est bien passé
      */
-    public int set_profile_picture(int userid, String photokey){
+    public int set_profile_picture(int userid, String photokey) {
         try {
-            url = new URL(BASE_URL+URL_USER_PHOTO);
+            url = new URL(BASE_URL + URL_USER_PHOTO);
             client = (HttpURLConnection) url.openConnection();
             client.setRequestMethod("POST");
             client.setDoOutput(true);
@@ -193,7 +191,7 @@ public class DBServer {
             BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
             String line;
             while ((line = br.readLine()) != null) {
-                builder.append(line+"\n");
+                builder.append(line + "\n");
             }
             br.close();
             Log.i(TAG, "reponse = " + builder.toString());
@@ -201,37 +199,31 @@ public class DBServer {
             try {
                 JSONObject json = new JSONObject(builder.toString());
                 int statut = Integer.valueOf(json.getString("statut"));
-                if (statut == 1){
-                    builder.append("statut = "+json.getString("statut"));
+                if (statut == 1) {
+                    builder.append("statut = " + json.getString("statut"));
                     return 1;
-                }
-                else
-                {
-                    builder.append("statut = "+json.getString("statut"));
-                    builder.append("errcode = "+json.getString("errcode"));
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
                     builder.append("message = " + json.getString("message"));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
-        }
-        catch(MalformedURLException error) {
+        } catch (MalformedURLException error) {
             //Handles an incorrectly entered URL
-            Log.e(TAG,"MalformedURLException "+error.getMessage());
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
             return -1;
-        }
-        catch(SocketTimeoutException error) {
+        } catch (SocketTimeoutException error) {
             //Handles URL access timeout.
-            Log.e(TAG,"SocketTimeoutException "+error.getMessage());
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
             return -1;
-        }
-        catch (IOException error) {
+        } catch (IOException error) {
             //Handles input and output errors
-            Log.e(TAG,"IOException "+error.toString());
+            Log.e(TAG, "IOException " + error.toString());
             return -1;
-        }
-        finally {
+        } finally {
             client.disconnect();
         }
 
@@ -240,13 +232,14 @@ public class DBServer {
 
     /**
      * fonction qui retourne la liste des amis d'un utilisateurs
+     *
      * @param user_one id du premier utilisateur
      * @param user_two id de l'utilisateur ami
      * @return retourne le code de retour
      */
-    public int add_friend(int user_one, int user_two){
+    public int add_friend(int user_one, int user_two) {
         try {
-            url = new URL(BASE_URL+URL_ADD_FRIEND);
+            url = new URL(BASE_URL + URL_ADD_FRIEND);
             client = (HttpURLConnection) url.openConnection();
             client.setRequestMethod("POST");
             client.setDoOutput(true);
@@ -269,45 +262,39 @@ public class DBServer {
             BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
             String line;
             while ((line = br.readLine()) != null) {
-                builder.append(line+"\n");
+                builder.append(line + "\n");
             }
             br.close();
 
             try {
                 JSONObject json = new JSONObject(builder.toString());
                 int statut = Integer.valueOf(json.getString("statut"));
-                if (statut == 1){
-                    builder.append("statut = "+json.getString("statut"));
-                    builder.append("insertId = "+json.getString("insertId"));
-                }
-                else
-                {
-                    builder.append("statut = "+json.getString("statut"));
-                    builder.append("errcode = "+json.getString("errcode"));
+                if (statut == 1) {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("insertId = " + json.getString("insertId"));
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
                     builder.append("message = " + json.getString("message"));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            Log.i(TAG, "reponse = "+builder.toString());
+            Log.i(TAG, "reponse = " + builder.toString());
 
-        }
-        catch(MalformedURLException error) {
+        } catch (MalformedURLException error) {
             //Handles an incorrectly entered URL
-            Log.e(TAG,"MalformedURLException "+error.getMessage());
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
             return 1;
-        }
-        catch(SocketTimeoutException error) {
+        } catch (SocketTimeoutException error) {
             //Handles URL access timeout.
-            Log.e(TAG,"SocketTimeoutException "+error.getMessage());
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
             return 1;
-        }
-        catch (IOException error) {
+        } catch (IOException error) {
             //Handles input and output errors
-            Log.e(TAG,"IOException "+error.toString());
+            Log.e(TAG, "IOException " + error.toString());
             return 1;
-        }
-        finally {
+        } finally {
             client.disconnect();
         }
 
@@ -316,12 +303,13 @@ public class DBServer {
 
     /**
      * fonction qui permet de loguer un utilisateur
-     * @param email email de l'utilisateur
+     *
+     * @param email            email de l'utilisateur
      * @param typeconnexion_id variable représentant le type de connexion qu'il a utilisé pour créer son compte
-     * @param password son mot de passe qui est aléatoire s'il a utilisé facebook
+     * @param password         son mot de passe qui est aléatoire s'il a utilisé facebook
      * @return retourne un utilisateur si ok ou null dans le cas contraire
      */
-    public Utilisateur login(String email, int typeconnexion_id, String password){
+    public Utilisateur login(String email, int typeconnexion_id, String password) {
 
         Utilisateur user = new Utilisateur();
         ContentValues values = new ContentValues();
@@ -330,7 +318,7 @@ public class DBServer {
         values.put("password", password);
         values.put("typeconnexion_id", typeconnexion_id);
         try {
-            url = new URL(BASE_URL+URL_LOGIN+"?"+getQuery(values));
+            url = new URL(BASE_URL + URL_LOGIN + "?" + getQuery(values));
             client = (HttpURLConnection) url.openConnection();
             client.setRequestMethod("GET");
             //client.setDoOutput(true);
@@ -339,7 +327,7 @@ public class DBServer {
             BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
             String line;
             while ((line = br.readLine()) != null) {
-                builder.append(line+"\n");
+                builder.append(line + "\n");
             }
             br.close();
 
@@ -347,7 +335,7 @@ public class DBServer {
             try {
                 JSONObject json = new JSONObject(builder.toString());
                 int statut = Integer.valueOf(json.getString("statut"));
-                if (statut == 1){
+                if (statut == 1) {
                     JSONObject json2 = json.getJSONObject("data");
 
                     user.setPassword((String) json2.get(MaBaseOpenHelper.COLONNE_PASSWORD));
@@ -362,12 +350,10 @@ public class DBServer {
                     user.setTypeconnexion_id((int) json2.get(MaBaseOpenHelper.COLONNE_TYPECONNEXION_ID));
 
                     return user;
-                }
-                else
-                {
-                    builder.append("statut = "+json.getString("statut"));
-                    builder.append("errcode = "+json.getString("errcode"));
-                    builder.append("message = "+json.getString("message"));
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
+                    builder.append("message = " + json.getString("message"));
 
                     Log.i(TAG, "reponse = " + builder.toString());
                     return null;
@@ -376,33 +362,30 @@ public class DBServer {
                 Log.e(TAG, "JSONException " + e.getMessage());
                 return null;
             }
-        }
-        catch(MalformedURLException error) {
+        } catch (MalformedURLException error) {
             //Handles an incorrectly entered URL
-            Log.e(TAG,"MalformedURLException "+error.getMessage());
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
             return null;
-        }
-        catch(SocketTimeoutException error) {
+        } catch (SocketTimeoutException error) {
             //Handles URL access timeout.
-            Log.e(TAG,"SocketTimeoutException "+error.getMessage());
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
             return null;
-        }
-        catch (IOException error) {
+        } catch (IOException error) {
             //Handles input and output errors
-            Log.e(TAG,"IOException "+error.toString());
+            Log.e(TAG, "IOException " + error.toString());
             return null;
-        }
-        finally {
+        } finally {
             client.disconnect();
         }
     }
 
     /**
      * fonction qui retourne la liste des utilisateurs qui ont pour pseudo qui contient une chaine
+     *
      * @param pseudo variable représentant le pseudo donné
      * @return retourne une liste d'utilisateurs ou null dans le cas contraire
      */
-    public ArrayList<Utilisateur> getUsers_by_pseudo(String pseudo){
+    public ArrayList<Utilisateur> getUsers_by_pseudo(String pseudo) {
 
         ArrayList<Utilisateur> users = new ArrayList<Utilisateur>();
         Utilisateur user = new Utilisateur();
@@ -411,7 +394,7 @@ public class DBServer {
             values.put("apikey", API_KEY);
             values.put(MaBaseOpenHelper.COLONNE_PSEUDO, pseudo);
 
-            url = new URL(BASE_URL+URL_FIND_USER+"?"+getQuery(values));
+            url = new URL(BASE_URL + URL_FIND_USER + "?" + getQuery(values));
             client = (HttpURLConnection) url.openConnection();
             //client.setDoOutput(true); this method put automatically the method to POST
             client.setRequestMethod("GET");
@@ -420,17 +403,19 @@ public class DBServer {
             BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
             String line;
             while ((line = br.readLine()) != null) {
-                builder.append(line+"\n");
+                builder.append(line + "\n");
             }
             br.close();
+            Log.i(TAG, "reponse = " + builder.toString());
 
             try {
                 JSONObject json = new JSONObject(builder.toString());
                 int statut = Integer.valueOf(json.getString("statut"));
-                if (statut == 1){
+                if (statut == 1) {
                     JSONArray jArr = json.getJSONArray("data");
-                    for (int i=0; i < jArr.length(); i++) {
+                    for (int i = 0; i < jArr.length(); i++) {
                         JSONObject json2 = jArr.getJSONObject(i);
+                        user = new Utilisateur();
 
                         user.setPassword((String) json2.get(MaBaseOpenHelper.COLONNE_PASSWORD));
                         user.setEmail((String) json2.get(MaBaseOpenHelper.COLONNE_EMAIL));
@@ -441,18 +426,16 @@ public class DBServer {
                         user.setCreated((String) json2.get(MaBaseOpenHelper.COLONNE_CREATED));
                         user.setNbrespot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_RESPOT));
                         user.setNbspot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_SPOT));
+                        user.setNbfriends((int) json2.get("nbfriend"));
                         user.setTypeconnexion_id((int) json2.get(MaBaseOpenHelper.COLONNE_TYPECONNEXION_ID));
 
                         users.add(user);
                     }
-                    Log.i(TAG, "reponse = " + builder.toString());
                     return users;
-                }
-                else
-                {
-                    builder.append("statut = "+json.getString("statut"));
-                    builder.append("errcode = "+json.getString("errcode"));
-                    builder.append("message = "+json.getString("message"));
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
+                    builder.append("message = " + json.getString("message"));
 
                     Log.i(TAG, "reponse = " + builder.toString());
                     return null;
@@ -461,23 +444,19 @@ public class DBServer {
                 Log.e(TAG, "JSONException " + e.getMessage());
                 return null;
             }
-        }
-        catch(MalformedURLException error) {
+        } catch (MalformedURLException error) {
             //Handles an incorrectly entered URL
-            Log.e(TAG,"MalformedURLException "+error.getMessage());
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
             return null;
-        }
-        catch(SocketTimeoutException error) {
+        } catch (SocketTimeoutException error) {
             //Handles URL access timeout.
-            Log.e(TAG,"SocketTimeoutException "+error.getMessage());
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
             return null;
-        }
-        catch (IOException error) {
+        } catch (IOException error) {
             //Handles input and output errors
-            Log.e(TAG,"IOException "+error.getMessage());
+            Log.e(TAG, "IOException " + error.getMessage());
             return null;
-        }
-        finally {
+        } finally {
             client.disconnect();
         }
     }
@@ -485,10 +464,11 @@ public class DBServer {
 
     /**
      * fonction qui teste si un utilisateur avec un pseudo donné existe
+     *
      * @param pseudo pseudo à tester
      * @return retourne un utilisateur s'il existe ou null dans le cas contraire
      */
-    public Utilisateur getUser_by_pseudo(String pseudo){
+    public Utilisateur getUser_by_pseudo(String pseudo) {
 
         Utilisateur user = new Utilisateur();
         try {
@@ -496,7 +476,7 @@ public class DBServer {
             values.put("apikey", API_KEY);
             values.put(MaBaseOpenHelper.COLONNE_PSEUDO, pseudo);
 
-            url = new URL(BASE_URL+URL_CHECK+"?"+getQuery(values));
+            url = new URL(BASE_URL + URL_CHECK + "?" + getQuery(values));
             client = (HttpURLConnection) url.openConnection();
             //client.setDoOutput(true); this method put automatically the method to POST
             client.setRequestMethod("GET");
@@ -505,7 +485,7 @@ public class DBServer {
             BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
             String line;
             while ((line = br.readLine()) != null) {
-                builder.append(line+"\n");
+                builder.append(line + "\n");
             }
             br.close();
             Log.i(TAG, "reponse = " + builder.toString());
@@ -513,7 +493,7 @@ public class DBServer {
             try {
                 JSONObject json = new JSONObject(builder.toString());
                 int statut = Integer.valueOf(json.getString("statut"));
-                if (statut == 1){
+                if (statut == 1) {
                     JSONObject json2 = json.getJSONObject("data");
 
                     user.setPassword((String) json2.get(MaBaseOpenHelper.COLONNE_PASSWORD));
@@ -528,12 +508,10 @@ public class DBServer {
                     user.setTypeconnexion_id((int) json2.get(MaBaseOpenHelper.COLONNE_TYPECONNEXION_ID));
 
                     return user;
-                }
-                else
-                {
-                    builder.append("statut = "+json.getString("statut"));
-                    builder.append("errcode = "+json.getString("errcode"));
-                    builder.append("message = "+json.getString("message"));
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
+                    builder.append("message = " + json.getString("message"));
 
                     Log.i(TAG, "reponse = " + builder.toString());
                     return null;
@@ -542,33 +520,30 @@ public class DBServer {
                 Log.e(TAG, "JSONException " + e.getMessage());
                 return null;
             }
-        }
-        catch(MalformedURLException error) {
+        } catch (MalformedURLException error) {
             //Handles an incorrectly entered URL
-            Log.e(TAG,"MalformedURLException "+error.getMessage());
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
             return null;
-        }
-        catch(SocketTimeoutException error) {
+        } catch (SocketTimeoutException error) {
             //Handles URL access timeout.
-            Log.e(TAG,"SocketTimeoutException "+error.getMessage());
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
             return null;
-        }
-        catch (IOException error) {
+        } catch (IOException error) {
             //Handles input and output errors
-            Log.e(TAG,"IOException "+error.getMessage());
+            Log.e(TAG, "IOException " + error.getMessage());
             return null;
-        }
-        finally {
+        } finally {
             client.disconnect();
         }
     }
 
     /**
      * fonction qui retourne la liste des amis d'un utilisateur
+     *
      * @param user_id represente l'id de l'utilisateur concerné
      * @return retourne une liste d'utilisateur
      */
-    public ArrayList<Utilisateur> getAllFriends(int user_id){
+    public ArrayList<Utilisateur> getAllFriends(int user_id) {
         ArrayList<Utilisateur> users = new ArrayList<Utilisateur>();
         Utilisateur user = new Utilisateur();
         try {
@@ -576,7 +551,7 @@ public class DBServer {
             values.put("apikey", API_KEY);
             values.put("user_id", user_id);
 
-            url = new URL(BASE_URL+URL_LIST_FRIEND+"?"+getQuery(values));
+            url = new URL(BASE_URL + URL_LIST_FRIEND + "?" + getQuery(values));
             client = (HttpURLConnection) url.openConnection();
             client.setRequestMethod("GET");
 
@@ -584,16 +559,16 @@ public class DBServer {
             BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
             String line;
             while ((line = br.readLine()) != null) {
-                builder.append(line+"\n");
+                builder.append(line + "\n");
             }
             br.close();
 
             try {
                 JSONObject json = new JSONObject(builder.toString());
                 int statut = Integer.valueOf(json.getString("statut"));
-                if (statut == 1){
+                if (statut == 1) {
                     JSONArray jArr = json.getJSONArray("data");
-                    for (int i=0; i < jArr.length(); i++) {
+                    for (int i = 0; i < jArr.length(); i++) {
                         JSONObject json2 = jArr.getJSONObject(i);
                         user = new Utilisateur();
                         user.setEmail((String) json2.get(MaBaseOpenHelper.COLONNE_EMAIL));
@@ -608,12 +583,10 @@ public class DBServer {
                     }
                     Log.i(TAG, "reponse = " + builder.toString());
                     return users;
-                }
-                else
-                {
-                    builder.append("statut = "+json.getString("statut"));
-                    builder.append("errcode = "+json.getString("errcode"));
-                    builder.append("message = "+json.getString("message"));
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
+                    builder.append("message = " + json.getString("message"));
 
                     Log.i(TAG, "reponse = " + builder.toString());
                     return null;
@@ -622,28 +595,24 @@ public class DBServer {
                 Log.e(TAG, "JSONException " + e.getMessage());
                 return null;
             }
-        }
-        catch(MalformedURLException error) {
+        } catch (MalformedURLException error) {
             //Handles an incorrectly entered URL
-            Log.e(TAG,"MalformedURLException "+error.getMessage());
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
             return null;
-        }
-        catch(SocketTimeoutException error) {
+        } catch (SocketTimeoutException error) {
             //Handles URL access timeout.
-            Log.e(TAG,"SocketTimeoutException "+error.getMessage());
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
             return null;
-        }
-        catch (IOException error) {
+        } catch (IOException error) {
             //Handles input and output errors
-            Log.e(TAG,"IOException "+error.getMessage());
+            Log.e(TAG, "IOException " + error.getMessage());
             return null;
-        }
-        finally {
+        } finally {
             client.disconnect();
         }
     }
 
-    public int friends_count(int user_id){
+    public int friends_count(int user_id) {
         ArrayList<Utilisateur> users = new ArrayList<Utilisateur>();
         Utilisateur user = new Utilisateur();
         try {
@@ -651,7 +620,7 @@ public class DBServer {
             values.put("apikey", API_KEY);
             values.put("user_id", user_id);
 
-            url = new URL(BASE_URL+URL_LIST_FRIEND+"?"+getQuery(values));
+            url = new URL(BASE_URL + URL_LIST_FRIEND + "?" + getQuery(values));
             client = (HttpURLConnection) url.openConnection();
             client.setRequestMethod("GET");
 
@@ -659,22 +628,20 @@ public class DBServer {
             BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
             String line;
             while ((line = br.readLine()) != null) {
-                builder.append(line+"\n");
+                builder.append(line + "\n");
             }
             br.close();
 
             try {
                 JSONObject json = new JSONObject(builder.toString());
                 int statut = Integer.valueOf(json.getString("statut"));
-                if (statut == 1){
+                if (statut == 1) {
                     JSONArray jArr = json.getJSONArray("data");
                     return jArr.length();
-                }
-                else
-                {
-                    builder.append("statut = "+json.getString("statut"));
-                    builder.append("errcode = "+json.getString("errcode"));
-                    builder.append("message = "+json.getString("message"));
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
+                    builder.append("message = " + json.getString("message"));
 
                     Log.i(TAG, "reponse = " + builder.toString());
                     return 0;
@@ -683,35 +650,33 @@ public class DBServer {
                 Log.e(TAG, "JSONException " + e.getMessage());
                 return 0;
             }
-        }
-        catch(MalformedURLException error) {
+        } catch (MalformedURLException error) {
             //Handles an incorrectly entered URL
-            Log.e(TAG,"MalformedURLException "+error.getMessage());
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
             return 0;
-        }
-        catch(SocketTimeoutException error) {
+        } catch (SocketTimeoutException error) {
             //Handles URL access timeout.
-            Log.e(TAG,"SocketTimeoutException "+error.getMessage());
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
             return 0;
-        }
-        catch (IOException error) {
+        } catch (IOException error) {
             //Handles input and output errors
-            Log.e(TAG,"IOException "+error.getMessage());
+            Log.e(TAG, "IOException " + error.getMessage());
             return 0;
-        }
-        finally {
+        } finally {
             client.disconnect();
         }
     }
+
     /**
      * fnoction qui permet d'enregistrer un spot
+     *
      * @param spot spot à enregistrer
      * @return retourne un code qui représente la réponse du serveur
      */
-    public int enregistre_spot(Spot spot){
+    public int enregistre_spot(Spot spot) {
 
         try {
-            url = new URL(BASE_URL+URL_SPOT);
+            url = new URL(BASE_URL + URL_SPOT);
             client = (HttpURLConnection) url.openConnection();
             client.setRequestMethod("POST");
             client.setDoOutput(true);
@@ -739,45 +704,39 @@ public class DBServer {
             BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
             String line;
             while ((line = br.readLine()) != null) {
-                builder.append(line+"\n");
+                builder.append(line + "\n");
             }
             br.close();
 
             try {
                 JSONObject json = new JSONObject(builder.toString());
                 int statut = Integer.valueOf(json.getString("statut"));
-                if (statut == 1){
-                    builder.append("statut = "+json.getString("statut"));
-                    builder.append("insertId = "+json.getString("insertId"));
-                }
-                else
-                {
-                    builder.append("statut = "+json.getString("statut")+"\n");
-                    builder.append("errcode = "+json.getString("errcode")+"\n");
-                    builder.append("message = "+json.getString("message")+"\n");
+                if (statut == 1) {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("insertId = " + json.getString("insertId"));
+                } else {
+                    builder.append("statut = " + json.getString("statut") + "\n");
+                    builder.append("errcode = " + json.getString("errcode") + "\n");
+                    builder.append("message = " + json.getString("message") + "\n");
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            Log.i(TAG, "reponse = "+builder.toString());
+            Log.i(TAG, "reponse = " + builder.toString());
 
-        }
-        catch(MalformedURLException error) {
+        } catch (MalformedURLException error) {
             //Handles an incorrectly entered URL
-            Log.e(TAG,"MalformedURLException "+error.getMessage());
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
             return 1;
-        }
-        catch(SocketTimeoutException error) {
+        } catch (SocketTimeoutException error) {
             //Handles URL access timeout.
-            Log.e(TAG,"SocketTimeoutException "+error.getMessage());
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
             return 1;
-        }
-        catch (IOException error) {
+        } catch (IOException error) {
             //Handles input and output errors
-            Log.e(TAG,"IOException "+error.toString());
+            Log.e(TAG, "IOException " + error.toString());
             return 1;
-        }
-        finally {
+        } finally {
             client.disconnect();
         }
 
@@ -786,17 +745,18 @@ public class DBServer {
 
     /**
      * fonction qui recherche un spot en se basant sur son hash
+     *
      * @param hash geohash du spot à rechercher
      * @return retourne une liste de spot qui ont comme geohash celui passé en paramètre
      */
-    public ArrayList<Spot> find_spot(String hash){
+    public ArrayList<Spot> find_spot(String hash) {
         ArrayList<Spot> spots = new ArrayList<>();
         Spot spot = new Spot();
         ContentValues values = new ContentValues();
         values.put("apikey", API_KEY);
         values.put("hash", hash);
         try {
-            url = new URL(BASE_URL+URL_FIND_SPOT+"?"+getQuery(values));
+            url = new URL(BASE_URL + URL_FIND_SPOT + "?" + getQuery(values));
             client = (HttpURLConnection) url.openConnection();
             client.setRequestMethod("GET");
 
@@ -804,7 +764,7 @@ public class DBServer {
             BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
             String line;
             while ((line = br.readLine()) != null) {
-                builder.append(line+"\n");
+                builder.append(line + "\n");
             }
             br.close();
 
@@ -812,10 +772,12 @@ public class DBServer {
             try {
                 JSONObject json = new JSONObject(builder.toString());
                 int statut = Integer.valueOf(json.getString("statut"));
-                if (statut == 1){
+                if (statut == 1) {
                     JSONArray jArr = json.getJSONArray("data");
-                    for (int i=0; i < jArr.length(); i++) {
+                    for (int i = 0; i < jArr.length(); i++) {
                         JSONObject json2 = jArr.getJSONObject(i);
+                        spot = new Spot();
+
                         spot.setRespot((int) json2.get(SpotsDBAdapteur.COLONNE_RESPOT));
                         spot.setVisibilite_id((int) json2.get("visibilite_id"));
                         spot.setGeohash((String) json2.get(SpotsDBAdapteur.COLONNE_GEOHASH));
@@ -824,15 +786,15 @@ public class DBServer {
                         spot.setLatitude((String) json2.get(SpotsDBAdapteur.COLONNE_LATITUDE));
                         spot.setPhotokey((String) json2.get(SpotsDBAdapteur.COLONNE_PHOTO));
                         spot.setUser_id((int) json2.get(SpotsDBAdapteur.COLONNE_USER_ID));
+                        spot.setDate(convert_date((String) json2.get("created")));
+
                         spots.add(spot);
                     }
                     return spots;
-                }
-                else
-                {
-                    builder.append("statut = "+json.getString("statut"));
-                    builder.append("errcode = "+json.getString("errcode"));
-                    builder.append("message = "+json.getString("message"));
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
+                    builder.append("message = " + json.getString("message"));
 
                     Log.i(TAG, "reponse = " + builder.toString());
                     return null;
@@ -841,35 +803,32 @@ public class DBServer {
                 Log.e(TAG, "JSONException " + e.getMessage());
                 return null;
             }
-        }
-        catch(MalformedURLException error) {
+        } catch (MalformedURLException error) {
             //Handles an incorrectly entered URL
-            Log.e(TAG,"MalformedURLException "+error.getMessage());
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
             return null;
-        }
-        catch(SocketTimeoutException error) {
+        } catch (SocketTimeoutException error) {
             //Handles URL access timeout.
-            Log.e(TAG,"SocketTimeoutException "+error.getMessage());
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
             return null;
-        }
-        catch (IOException error) {
+        } catch (IOException error) {
             //Handles input and output errors
-            Log.e(TAG,"IOException "+error.toString());
+            Log.e(TAG, "IOException " + error.toString());
             return null;
-        }
-        finally {
+        } finally {
             client.disconnect();
         }
     }
 
     /**
      * fonction qui retourne les spots d'un utilisateur
-     * @param user_id id dudit utilisateur
-     * @param offset reprsente l'indice du premier élément
+     *
+     * @param user_id  id dudit utilisateur
+     * @param offset   reprsente l'indice du premier élément
      * @param interval représente le nombre d'éléments à recuperer
      * @return retourne une liste de spots
      */
-    public ArrayList<Spot> find_spot_user(int user_id, int offset, int interval){
+    public ArrayList<Spot> find_spot_user(int user_id, int offset, int interval) {
         ArrayList<Spot> spots = new ArrayList<>();
         Spot spot = new Spot();
         ContentValues values = new ContentValues();
@@ -878,7 +837,7 @@ public class DBServer {
         values.put("offset", offset);
         values.put("interval", interval);
         try {
-            url = new URL(BASE_URL+URL_FIND_SPOT_USER+"?"+getQuery(values));
+            url = new URL(BASE_URL + URL_FIND_SPOT_USER + "?" + getQuery(values));
             Log.i("url", url.toString());
             client = (HttpURLConnection) url.openConnection();
             client.setRequestMethod("GET");
@@ -887,7 +846,7 @@ public class DBServer {
             BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
             String line;
             while ((line = br.readLine()) != null) {
-                builder.append(line+"\n");
+                builder.append(line + "\n");
             }
             br.close();
             Log.i(TAG, "reponse = " + builder.toString());
@@ -895,9 +854,9 @@ public class DBServer {
                 JSONObject json = new JSONObject(builder.toString());
                 ArrayList<String> tags = new ArrayList<>();
                 int statut = Integer.valueOf(json.getString("statut"));
-                if (statut == 1){
+                if (statut == 1) {
                     JSONArray jArr = json.getJSONArray("data");
-                    for (int i=0; i < jArr.length(); i++) {
+                    for (int i = 0; i < jArr.length(); i++) {
                         JSONObject json2 = jArr.getJSONObject(i);
                         spot = new Spot();
                         spot.setRespot((int) json2.get("respot"));
@@ -909,10 +868,10 @@ public class DBServer {
                         spot.setPhotokey((String) json2.get("photo"));
                         spot.setPhotouser((String) json2.get("photouser"));
                         spot.setUser_id((int) json2.get(SpotsDBAdapteur.COLONNE_USER_ID));
-                        spot.setDate((String) json2.get("created"));
+                        spot.setDate(convert_date((String) json2.get("created")));
                         JSONArray jArrtag = json2.getJSONArray("tags");
                         tags = new ArrayList<>();
-                        for (int j=0; j < jArrtag.length(); j++) {
+                        for (int j = 0; j < jArrtag.length(); j++) {
                             JSONObject json3 = jArrtag.getJSONObject(j);
                             tags.add((String) json3.get("tag"));
                         }
@@ -920,12 +879,10 @@ public class DBServer {
                         spots.add(spot);
                     }
                     return spots;
-                }
-                else
-                {
-                    builder.append("statut = "+json.getString("statut"));
-                    builder.append("errcode = "+json.getString("errcode"));
-                    builder.append("message = "+json.getString("message"));
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
+                    builder.append("message = " + json.getString("message"));
 
                     Log.i(TAG, "reponse = " + builder.toString());
                     return null;
@@ -934,23 +891,19 @@ public class DBServer {
                 Log.e(TAG, "JSONException " + e.getMessage());
                 return null;
             }
-        }
-        catch(MalformedURLException error) {
+        } catch (MalformedURLException error) {
             //Handles an incorrectly entered URL
-            Log.e(TAG,"MalformedURLException "+error.getMessage());
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
             return null;
-        }
-        catch(SocketTimeoutException error) {
+        } catch (SocketTimeoutException error) {
             //Handles URL access timeout.
-            Log.e(TAG,"SocketTimeoutException "+error.getMessage());
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
             return null;
-        }
-        catch (IOException error) {
+        } catch (IOException error) {
             //Handles input and output errors
-            Log.e(TAG,"IOException "+error.toString());
+            Log.e(TAG, "IOException " + error.toString());
             return null;
-        }
-        finally {
+        } finally {
             client.disconnect();
         }
     }
@@ -958,14 +911,15 @@ public class DBServer {
 
     /**
      * fonction qui ajoute un commentaire à un spot
-     * @param spot_id id dudit spot
-     * @param user_id id de l'user qui fait le commentaire
+     *
+     * @param spot_id     id dudit spot
+     * @param user_id     id de l'user qui fait le commentaire
      * @param commentaire chaine de caractère correspondant au commentaire
      * @return retourne un entier représentant la valeur de retour du serveur
      */
-    public int add_comment(int spot_id, int user_id, String commentaire){
+    public int add_comment(int spot_id, int user_id, String commentaire) {
         try {
-            url = new URL(BASE_URL+URL_COMMENTAIRE);
+            url = new URL(BASE_URL + URL_COMMENTAIRE);
             client = (HttpURLConnection) url.openConnection();
             client.setRequestMethod("POST");
             client.setDoOutput(true);
@@ -989,47 +943,41 @@ public class DBServer {
             BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
             String line;
             while ((line = br.readLine()) != null) {
-                builder.append(line+"\n");
+                builder.append(line + "\n");
             }
             br.close();
 
             try {
                 JSONObject json = new JSONObject(builder.toString());
                 int statut = Integer.valueOf(json.getString("statut"));
-                if (statut == 1){
-                    builder.append("statut = "+json.getString("statut"));
-                    builder.append("insertId = "+json.getString("insertId"));
+                if (statut == 1) {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("insertId = " + json.getString("insertId"));
                     int insertId = Integer.valueOf(json.getInt("insertId"));
                     return insertId;
-                }
-                else
-                {
-                    builder.append("statut = "+json.getString("statut")+"\n");
-                    builder.append("errcode = "+json.getString("errcode")+"\n");
-                    builder.append("message = "+json.getString("message")+"\n");
+                } else {
+                    builder.append("statut = " + json.getString("statut") + "\n");
+                    builder.append("errcode = " + json.getString("errcode") + "\n");
+                    builder.append("message = " + json.getString("message") + "\n");
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            Log.i(TAG, "reponse = "+builder.toString());
+            Log.i(TAG, "reponse = " + builder.toString());
 
-        }
-        catch(MalformedURLException error) {
+        } catch (MalformedURLException error) {
             //Handles an incorrectly entered URL
-            Log.e(TAG,"MalformedURLException "+error.getMessage());
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
             return 0;
-        }
-        catch(SocketTimeoutException error) {
+        } catch (SocketTimeoutException error) {
             //Handles URL access timeout.
-            Log.e(TAG,"SocketTimeoutException "+error.getMessage());
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
             return 0;
-        }
-        catch (IOException error) {
+        } catch (IOException error) {
             //Handles input and output errors
-            Log.e(TAG,"IOException "+error.toString());
+            Log.e(TAG, "IOException " + error.toString());
             return 0;
-        }
-        finally {
+        } finally {
             client.disconnect();
         }
 
@@ -1038,10 +986,11 @@ public class DBServer {
 
     /**
      * fonction qui retourne la liste des commentaires d'un spot
+     *
      * @param spot_id représente l'id du spot concerné
      * @return
      */
-    public ArrayList<Commentaire> commentaires_spot(int spot_id){
+    public ArrayList<Commentaire> commentaires_spot(int spot_id) {
         ArrayList<Commentaire> comments = new ArrayList<Commentaire>();
         Commentaire comment = new Commentaire();
         try {
@@ -1049,7 +998,7 @@ public class DBServer {
             values.put("apikey", API_KEY);
             values.put("spot_id", spot_id);
 
-            url = new URL(BASE_URL+URL_LIST_COMMENTAIRE+"?"+getQuery(values));
+            url = new URL(BASE_URL + URL_LIST_COMMENTAIRE + "?" + getQuery(values));
             client = (HttpURLConnection) url.openConnection();
             client.setRequestMethod("GET");
 
@@ -1057,7 +1006,7 @@ public class DBServer {
             BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
             String line;
             while ((line = br.readLine()) != null) {
-                builder.append(line+"\n");
+                builder.append(line + "\n");
             }
             br.close();
             Log.i(TAG, "reponse = " + builder.toString() + "  " + client.getResponseCode());
@@ -1065,27 +1014,26 @@ public class DBServer {
             try {
                 JSONObject json = new JSONObject(builder.toString());
                 int statut = Integer.valueOf(json.getString("statut"));
-                if (statut == 1){
+                if (statut == 1) {
                     JSONArray jArr = json.getJSONArray("data");
-                    for (int i=0; i < jArr.length(); i++) {
+                    for (int i = 0; i < jArr.length(); i++) {
                         JSONObject json2 = jArr.getJSONObject(i);
 
+                        comment = new Commentaire();
                         comment.setSpot_id((int) json2.get("spot_id"));
                         comment.setUser_id((int) json2.get("user_id"));
                         comment.setCommentaire((String) json2.get("commentaire"));
-                        comment.setCreated((String) json2.get("created"));
+                        comment.setCreated(convert_date((String) json2.get("created")));
                         comment.setPseudo((String) json2.get("pseudo"));
                         comment.setPhotokey((String) json2.get("photo"));
 
                         comments.add(comment);
                     }
                     return comments;
-                }
-                else
-                {
-                    builder.append("statut = "+json.getString("statut"));
-                    builder.append("errcode = "+json.getString("errcode"));
-                    builder.append("message = "+json.getString("message"));
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
+                    builder.append("message = " + json.getString("message"));
 
                     Log.i(TAG, "reponse = " + builder.toString());
                     return null;
@@ -1094,35 +1042,32 @@ public class DBServer {
                 Log.e(TAG, "JSONException " + e.getMessage());
                 return null;
             }
-        }
-        catch(MalformedURLException error) {
+        } catch (MalformedURLException error) {
             //Handles an incorrectly entered URL
-            Log.e(TAG,"MalformedURLException "+error.getMessage());
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
             return null;
-        }
-        catch(SocketTimeoutException error) {
+        } catch (SocketTimeoutException error) {
             //Handles URL access timeout.
-            Log.e(TAG,"SocketTimeoutException "+error.getMessage());
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
             return null;
-        }
-        catch (IOException error) {
+        } catch (IOException error) {
             //Handles input and output errors
-            Log.e(TAG,"IOException "+error.getMessage());
+            Log.e(TAG, "IOException " + error.getMessage());
             return null;
-        }
-        finally {
+        } finally {
             client.disconnect();
         }
     }
 
     /**
      * fonction qui ajoute des tags à un spot
+     *
      * @param tags contient la liste des chaines représentant les tag
      * @return retourne un entier correspondant au code de retour venant du serveur
      */
-    public int add_tag(String[] tags, int spot_id){
+    public int add_tag(String[] tags, int spot_id) {
         try {
-            url = new URL(BASE_URL+URL_ADD_TAG);
+            url = new URL(BASE_URL + URL_ADD_TAG);
             client = (HttpURLConnection) url.openConnection();
             client.setRequestMethod("POST");
             client.setDoOutput(true);
@@ -1131,8 +1076,8 @@ public class DBServer {
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputPost, "UTF-8"));
             StringBuilder liste_tag = new StringBuilder();
             liste_tag.append("[");
-            for (int i=0; i<tags.length; i++){
-                if (i<tags.length - 1)
+            for (int i = 0; i < tags.length; i++) {
+                if (i < tags.length - 1)
                     liste_tag.append("\"" + tags[i] + "\",");
                 else
                     liste_tag.append("\"" + tags[i] + "\"");
@@ -1154,45 +1099,39 @@ public class DBServer {
             BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
             String line;
             while ((line = br.readLine()) != null) {
-                builder.append(line+"\n");
+                builder.append(line + "\n");
             }
             br.close();
 
             try {
                 JSONObject json = new JSONObject(builder.toString());
                 int statut = Integer.valueOf(json.getString("statut"));
-                if (statut == 1){
-                    builder.append("statut = "+json.getString("statut"));
-                    builder.append("spot_id = "+json.getString("spot_id"));
-                }
-                else
-                {
-                    builder.append("statut = "+json.getString("statut")+"\n");
-                    builder.append("errcode = "+json.getString("errcode")+"\n");
-                    builder.append("message = "+json.getString("message")+"\n");
+                if (statut == 1) {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("spot_id = " + json.getString("spot_id"));
+                } else {
+                    builder.append("statut = " + json.getString("statut") + "\n");
+                    builder.append("errcode = " + json.getString("errcode") + "\n");
+                    builder.append("message = " + json.getString("message") + "\n");
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            Log.i(TAG, "reponse = "+builder.toString());
+            Log.i(TAG, "reponse = " + builder.toString());
 
-        }
-        catch(MalformedURLException error) {
+        } catch (MalformedURLException error) {
             //Handles an incorrectly entered URL
-            Log.e(TAG,"MalformedURLException "+error.getMessage());
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
             return 1;
-        }
-        catch(SocketTimeoutException error) {
+        } catch (SocketTimeoutException error) {
             //Handles URL access timeout.
-            Log.e(TAG,"SocketTimeoutException "+error.getMessage());
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
             return 1;
-        }
-        catch (IOException error) {
+        } catch (IOException error) {
             //Handles input and output errors
-            Log.e(TAG,"IOException "+error.toString());
+            Log.e(TAG, "IOException " + error.toString());
             return 1;
-        }
-        finally {
+        } finally {
             client.disconnect();
         }
 
@@ -1202,10 +1141,11 @@ public class DBServer {
 
     /**
      * fonction qui retourne les tags d'un spot
+     *
      * @param spot_id id du dit spot
      * @return retourne une liste d'objets Tag
      */
-    public ArrayList<Tag> tags_spot(int spot_id){
+    public ArrayList<Tag> tags_spot(int spot_id) {
         ArrayList<Tag> tags = new ArrayList<Tag>();
         Tag tag = new Tag();
         try {
@@ -1213,7 +1153,7 @@ public class DBServer {
             values.put("apikey", API_KEY);
             values.put("spot_id", spot_id);
 
-            url = new URL(BASE_URL+URL_TAG+"?"+getQuery(values));
+            url = new URL(BASE_URL + URL_TAG + "?" + getQuery(values));
             client = (HttpURLConnection) url.openConnection();
             client.setRequestMethod("GET");
 
@@ -1221,32 +1161,31 @@ public class DBServer {
             BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
             String line;
             while ((line = br.readLine()) != null) {
-                builder.append(line+"\n");
+                builder.append(line + "\n");
             }
             br.close();
 
             try {
                 JSONObject json = new JSONObject(builder.toString());
                 int statut = Integer.valueOf(json.getString("statut"));
-                if (statut == 1){
+                if (statut == 1) {
                     JSONArray jArr = json.getJSONArray("data");
-                    for (int i=0; i < jArr.length(); i++) {
+                    for (int i = 0; i < jArr.length(); i++) {
                         JSONObject json2 = jArr.getJSONObject(i);
+                        tag = new Tag();
 
                         tag.setSpot_id((int) json2.get("spot_id"));
                         tag.setId((int) json2.get("id"));
                         tag.setTag((String) json2.get("tag"));
-                        tag.setCreated((String) json2.get("created"));
+                        tag.setCreated(convert_date((String) json2.get("created")));
 
                         tags.add(tag);
                     }
                     return tags;
-                }
-                else
-                {
-                    builder.append("statut = "+json.getString("statut"));
-                    builder.append("errcode = "+json.getString("errcode"));
-                    builder.append("message = "+json.getString("message"));
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
+                    builder.append("message = " + json.getString("message"));
 
                     Log.i(TAG, "reponse = " + builder.toString());
                     return null;
@@ -1255,33 +1194,30 @@ public class DBServer {
                 Log.e(TAG, "JSONException " + e.getMessage());
                 return null;
             }
-        }
-        catch(MalformedURLException error) {
+        } catch (MalformedURLException error) {
             //Handles an incorrectly entered URL
-            Log.e(TAG,"MalformedURLException "+error.getMessage());
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
             return null;
-        }
-        catch(SocketTimeoutException error) {
+        } catch (SocketTimeoutException error) {
             //Handles URL access timeout.
-            Log.e(TAG,"SocketTimeoutException "+error.getMessage());
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
             return null;
-        }
-        catch (IOException error) {
+        } catch (IOException error) {
             //Handles input and output errors
-            Log.e(TAG,"IOException "+error.getMessage());
+            Log.e(TAG, "IOException " + error.getMessage());
             return null;
-        }
-        finally {
+        } finally {
             client.disconnect();
         }
     }
 
     /**
      * fonction qui liste les notifications d'un utilisateur
+     *
      * @param user_id id dudit utilisateur
      * @return retoune une liste d'objet de type notification ou null en cas d'echec
      */
-    public ArrayList<Notification> notifications_user(int user_id){
+    public ArrayList<Notification> notifications_user(int user_id) {
         ArrayList<Notification> notifications = new ArrayList<>();
         Notification notification = new Notification();
 
@@ -1290,7 +1226,7 @@ public class DBServer {
             values.put("apikey", API_KEY);
             values.put("user_id", user_id);
 
-            url = new URL(BASE_URL+URL_LIST_NOTIFICATION+"?"+getQuery(values));
+            url = new URL(BASE_URL + URL_LIST_NOTIFICATION + "?" + getQuery(values));
             client = (HttpURLConnection) url.openConnection();
             client.setRequestMethod("GET");
 
@@ -1298,34 +1234,33 @@ public class DBServer {
             BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
             String line;
             while ((line = br.readLine()) != null) {
-                builder.append(line+"\n");
+                builder.append(line + "\n");
             }
             br.close();
 
             try {
                 JSONObject json = new JSONObject(builder.toString());
                 int statut = Integer.valueOf(json.getString("statut"));
-                if (statut == 1){
+                if (statut == 1) {
                     JSONArray jArr = json.getJSONArray("data");
-                    for (int i=0; i < jArr.length(); i++) {
+                    for (int i = 0; i < jArr.length(); i++) {
                         JSONObject json2 = jArr.getJSONObject(i);
+                        notification = new Notification();
 
                         notification.setId((int) json2.get("id"));
                         notification.setUser_id((int) json2.get("user_id"));
                         notification.setMessage((String) json2.get("message"));
-                        notification.setCreated((String) json2.get("created"));
+                        notification.setCreated(convert_date((String) json2.get("created")));
                         notification.setTypenotification_id((int) json2.get("typenotification_id"));
 
                         notifications.add(notification);
                     }
                     Log.i(TAG, "reponse = " + builder.toString());
                     return notifications;
-                }
-                else
-                {
-                    builder.append("statut = "+json.getString("statut"));
-                    builder.append("errcode = "+json.getString("errcode"));
-                    builder.append("message = "+json.getString("message"));
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
+                    builder.append("message = " + json.getString("message"));
 
                     Log.i(TAG, "reponse = " + builder.toString());
                     return null;
@@ -1334,29 +1269,25 @@ public class DBServer {
                 Log.e(TAG, "JSONException " + e.getMessage());
                 return null;
             }
-        }
-        catch(MalformedURLException error) {
+        } catch (MalformedURLException error) {
             //Handles an incorrectly entered URL
-            Log.e(TAG,"MalformedURLException "+error.getMessage());
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
             return null;
-        }
-        catch(SocketTimeoutException error) {
+        } catch (SocketTimeoutException error) {
             //Handles URL access timeout.
-            Log.e(TAG,"SocketTimeoutException "+error.getMessage());
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
             return null;
-        }
-        catch (IOException error) {
+        } catch (IOException error) {
             //Handles input and output errors
-            Log.e(TAG,"IOException "+error.getMessage());
+            Log.e(TAG, "IOException " + error.getMessage());
             return null;
-        }
-        finally {
+        } finally {
             client.disconnect();
         }
     }
 
 
-    public ArrayList<Spot> find_spot_tag(String tag, String hash){
+    public ArrayList<Spot> find_spot_tag(String tag, String hash) {
         ArrayList<Spot> spots = new ArrayList<>();
         Spot spot = new Spot();
         ContentValues values = new ContentValues();
@@ -1364,7 +1295,7 @@ public class DBServer {
         values.put("hash", hash);
         values.put("tags", tag);
         try {
-            url = new URL(BASE_URL+URL_FIND_SPOT_2+"?"+getQuery(values));
+            url = new URL(BASE_URL + URL_FIND_SPOT_2 + "?" + getQuery(values));
             client = (HttpURLConnection) url.openConnection();
             client.setRequestMethod("GET");
 
@@ -1372,7 +1303,7 @@ public class DBServer {
             BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
             String line;
             while ((line = br.readLine()) != null) {
-                builder.append(line+"\n");
+                builder.append(line + "\n");
             }
             br.close();
             Log.i(TAG, url.toString());
@@ -1380,10 +1311,12 @@ public class DBServer {
             try {
                 JSONObject json = new JSONObject(builder.toString());
                 int statut = Integer.valueOf(json.getString("statut"));
-                if (statut == 1){
+                if (statut == 1) {
                     JSONArray jArr = json.getJSONArray("data");
-                    for (int i=0; i < jArr.length(); i++) {
+                    for (int i = 0; i < jArr.length(); i++) {
                         JSONObject json2 = jArr.getJSONObject(i);
+                        spot = new Spot();
+
                         spot.setRespot((int) json2.get("respot"));
                         spot.setVisibilite_id((int) json2.get("visibilite_id"));
                         spot.setGeohash((String) json2.get("hash"));
@@ -1395,12 +1328,10 @@ public class DBServer {
                         spots.add(spot);
                     }
                     return spots;
-                }
-                else
-                {
-                    builder.append("statut = "+json.getString("statut"));
-                    builder.append("errcode = "+json.getString("errcode"));
-                    builder.append("message = "+json.getString("message"));
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
+                    builder.append("message = " + json.getString("message"));
 
                     Log.i(TAG, "reponse = " + builder.toString());
                     return null;
@@ -1409,40 +1340,35 @@ public class DBServer {
                 Log.e(TAG, "JSONException " + e.getMessage());
                 return null;
             }
-        }
-        catch(MalformedURLException error) {
+        } catch (MalformedURLException error) {
             //Handles an incorrectly entered URL
-            Log.e(TAG,"MalformedURLException "+error.getMessage());
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
             return null;
-        }
-        catch(SocketTimeoutException error) {
+        } catch (SocketTimeoutException error) {
             //Handles URL access timeout.
-            Log.e(TAG,"SocketTimeoutException "+error.getMessage());
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
             return null;
-        }
-        catch (IOException error) {
+        } catch (IOException error) {
             //Handles input and output errors
-            Log.e(TAG,"IOException "+error.toString());
+            Log.e(TAG, "IOException " + error.toString());
             return null;
-        }
-        finally {
+        } finally {
             client.disconnect();
         }
     }
 
     /**
      * fonction qui construit la chaine devant être passée à une requête de type GET
+     *
      * @param params un ensemble de couple clé-valeur de string
      * @return retourne une chaine de caractère pour être passé à la requète
      * @throws UnsupportedEncodingException
      */
-    private String getQuery(ContentValues params) throws UnsupportedEncodingException
-    {
+    private String getQuery(ContentValues params) throws UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
         boolean first = true;
 
-        for (Map.Entry<String, Object> entry : params.valueSet())
-        {
+        for (Map.Entry<String, Object> entry : params.valueSet()) {
             if (first)
                 first = false;
             else
@@ -1458,11 +1384,12 @@ public class DBServer {
 
     /**
      * fonction qui en fonction du code d'erreur retourne un string
+     *
      * @param errorcode code d'erreur
      * @return retourne une chaine correspondant à la chaine d'erreur
      */
-    private String obtenirErreur(int errorcode){
-        switch (errorcode){
+    private String obtenirErreur(int errorcode) {
+        switch (errorcode) {
             case -1:
                 return "Requête!non!autorisée!";
             case -2:
@@ -1481,5 +1408,29 @@ public class DBServer {
                 return "Evènement!inhabituel!–!erreur!ponctuelle!";
         }
         return " ";
+    }
+
+    /**
+     * fonction qui prend une date du serveur et converti en format pour l'afficher
+     *
+     * @param date date from server
+     * @return string représentant la date au format à aficher
+     */
+    public String convert_date(String date) {
+        String resultat = "";
+        String[] tableau = date.split("T");
+        String[] tab1 = tableau[1].split("\\.");
+        String[] tab2 = tableau[0].split("-");
+        String[] tab3 = tab1[0].split(":");
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy");
+        Calendar datec = Calendar.getInstance();
+        datec.set(Calendar.YEAR, Integer.valueOf(tab2[0]));
+        datec.set(Calendar.MONTH, Integer.valueOf(tab2[1]) - 1);
+        datec.set(Calendar.DAY_OF_MONTH, Integer.valueOf(tab2[2]));
+        Log.i("date", tab2[0] + " " + tab2[1] + " " + tab2[2]);
+        resultat = sdf.format(datec.getTime()) + " - " + tab3[0] + "h" + tab3[1];
+
+        return resultat;
     }
 }

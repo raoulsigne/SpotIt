@@ -68,11 +68,7 @@
         <activity
             android:name=".Accueil"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".Inscription" />
         <activity android:name=".DetailSpot_New" />
@@ -90,7 +86,13 @@
             android:screenOrientation="portrait"
             android:theme="@style/Base.Theme.AppCompat"></activity>
         <activity android:name=".Welcome" />
-        <activity android:name=".Test"></activity>
+        <activity android:name=".Test">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

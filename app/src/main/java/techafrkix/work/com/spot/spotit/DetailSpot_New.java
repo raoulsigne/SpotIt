@@ -6,7 +6,12 @@ import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -78,22 +83,7 @@ public class DetailSpot_New extends AppCompatActivity {
 
         imgspot.setImageBitmap(BitmapFactory.decodeFile(imagepath));
 
-        edtTags.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
+        edtTags.addTextChangedListener(new MyTextWatcher(edtTags));
 
         vMoi.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,6 +132,9 @@ public class DetailSpot_New extends AppCompatActivity {
                     geoHash.setLongitude(longitude);
                     geoHash.encoder();
                     String temps = String.valueOf(System.currentTimeMillis());
+
+                    String chaine = edtTags.getText().toString();
+                    String[] tags = chaine.split(" ");
 
                     final Spot spot = new Spot();
                     spot.setLongitude(String.valueOf(longitude));
@@ -197,5 +190,66 @@ public class DetailSpot_New extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Formulaire non conforme", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+
+    public class MyTextWatcher implements TextWatcher {
+        private EditText et;
+        private char lastchar;
+        private CharSequence chaine;
+
+        // Pass the EditText instance to TextWatcher by constructor
+        public MyTextWatcher(EditText et) {
+            this.et = et;
+            this.lastchar = ' ';
+            this.chaine = "";
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            // Unregister self before setText
+            et.removeTextChangedListener(this);
+            chaine = et.getText().toString();
+            if (!TextUtils.isEmpty(chaine)) {
+                if (!chaine.equals("#")) {
+                    lastchar = chaine.charAt(chaine.length() - 1);
+
+                    Log.i("test", chaine.toString() + " " + lastchar);
+                    if (lastchar == '#') {
+                        final SpannableStringBuilder sb = new SpannableStringBuilder(chaine.subSequence(0, chaine.length() - 1));
+
+                        // Span to set text color to some RGB value
+                        final ForegroundColorSpan fcs = new ForegroundColorSpan(getResources().getColor(R.color.mainblue));
+                        // Span to make text bold
+                        final StyleSpan bss = new StyleSpan(android.graphics.Typeface.BOLD);
+
+                        // Set the text color for first 4 characters
+                        sb.setSpan(fcs, 0, sb.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+                        // make them also bold
+                        sb.setSpan(bss, 0, sb.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+                        et.setText(sb + " ");
+
+                        //et.setText(chaine.subSequence(0, chaine.length() - 1) + " ");
+                        et.setSelection(et.getText().length());
+                    }
+                }else
+                    et.setText("");
+            }
+            // Re-register self after setText
+            et.addTextChangedListener(this);
+        }
+
     }
 }

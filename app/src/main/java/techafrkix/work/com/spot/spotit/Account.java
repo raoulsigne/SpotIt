@@ -246,21 +246,21 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         settings.setIndoorLevelPickerEnabled(true);
         settings.setMapToolbarEnabled(true);
         settings.setAllGesturesEnabled(true);
-        settings.setMyLocationButtonEnabled(true);
+        settings.setMyLocationButtonEnabled(false);
 
-        //try to position the location button in the sreen bottom
-        //get the dimension of the screen
-        int width = this.getResources().getDisplayMetrics().widthPixels;
-        int height = this.getResources().getDisplayMetrics().heightPixels;
-
-        final float scale = getContext().getResources().getDisplayMetrics().density; // calcul du ratio entre les pixels de l'écran
-        //get the size of tha actionbar which are at the bottom on the screen
-        final TypedArray styledAttributes = getContext().getTheme().obtainStyledAttributes(
-                new int[]{android.R.attr.actionBarSize});
-        int mActionBarSize = (int) styledAttributes.getDimension(0, 0);
-        styledAttributes.recycle();
-        int pixels = (int) ((mActionBarSize + 5) * scale + 0.5f);
-        mMap.setPadding(0, height - pixels, 0, 0); // position the pading of the map which will help to set the location button at the bottom
+//        //try to position the location button in the sreen bottom
+//        //get the dimension of the screen
+//        int width = this.getResources().getDisplayMetrics().widthPixels;
+//        int height = this.getResources().getDisplayMetrics().heightPixels;
+//
+//        final float scale = getContext().getResources().getDisplayMetrics().density; // calcul du ratio entre les pixels de l'écran
+//        //get the size of tha actionbar which are at the bottom on the screen
+//        final TypedArray styledAttributes = getContext().getTheme().obtainStyledAttributes(
+//                new int[]{android.R.attr.actionBarSize});
+//        int mActionBarSize = (int) styledAttributes.getDimension(0, 0);
+//        styledAttributes.recycle();
+//        int pixels = (int) ((mActionBarSize + 5) * scale + 0.5f);
+//        mMap.setPadding(0, height - pixels, 0, 0); // position the pading of the map which will help to set the location button at the bottom
 
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -383,20 +383,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
 
     @Override
     public void onLocationChanged(Location location) {
-        mMap.clear();
 
-        MarkerOptions mp1 = new MarkerOptions();
-        mp1.position(new LatLng(location.getLatitude(),
-                location.getLongitude()));
-
-        mp1.draggable(true);
-        mp1.icon(BitmapDescriptorFactory
-                .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-        mMap.addMarker(mp1);
-
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                new LatLng(location.getLatitude(), location
-                        .getLongitude()), 20));
     }
 
     @Override
@@ -416,6 +403,33 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
 
     @Override
     public void onConnected(Bundle bundle) {
+//        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+//                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            // TODO: Consider calling
+//            //    ActivityCompat#requestPermissions
+//            // here to request the missing permissions, and then overriding
+//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//            //                                          int[] grantResults)
+//            // to handle the case where the user grants the permission. See the documentation
+//            // for ActivityCompat#requestPermissions for more details.
+//            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+//                    MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+//            return;
+//        }
+//        else
+//        {
+//            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, new com.google.android.gms.location.LocationListener() {
+//                @Override
+//                public void onLocationChanged(Location location) {
+//                }
+//            });
+//            Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+//
+//            if (location != null)
+//            {
+//                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15));
+//            }
+//        }
     }
 
     @Override
@@ -444,8 +458,8 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
                 for (Spot s : spots) {
                     mMyMarkersArray.add(new MyMarker(s.getDate(), s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude())));
                 }
+                plotMarkers(mMyMarkersArray);
             }
-            plotMarkers(mMyMarkersArray);
         }catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -455,6 +469,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
     {
         if(markers.size() > 0)
         {
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(markers.get(0).getmLatitude(), markers.get(0).getmLongitude()), 15));
             for (MyMarker myMarker : markers)
             {
                 // Create user marker with custom icon and other options

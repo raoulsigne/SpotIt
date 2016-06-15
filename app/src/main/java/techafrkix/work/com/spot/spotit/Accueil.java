@@ -11,6 +11,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.ArrayList;
 
+import techafrkix.work.com.spot.bd.Commentaire;
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 

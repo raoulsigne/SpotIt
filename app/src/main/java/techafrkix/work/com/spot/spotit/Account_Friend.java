@@ -24,6 +24,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -266,6 +267,7 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final com.google.android.gms.maps.model.Marker marker) {
@@ -390,8 +392,8 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
                 for (Spot s : spots) {
                     mMyMarkersArray.add(new MyMarker(s.getDate(), s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude())));
                 }
+                plotMarkers(mMyMarkersArray);
             }
-            plotMarkers(mMyMarkersArray);
         }catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -400,9 +402,9 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
     private void plotMarkers(ArrayList<MyMarker> markers)
     {
         mMap.clear();
-        Log.i("marker", markers.size() + " ");
         if(markers.size() > 0)
         {
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(markers.get(0).getmLatitude(), markers.get(0).getmLongitude()), 15));
             for (MyMarker myMarker : markers)
             {
 

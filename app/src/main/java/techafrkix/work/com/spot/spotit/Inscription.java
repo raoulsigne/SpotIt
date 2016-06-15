@@ -301,7 +301,8 @@ public class Inscription extends AppCompatActivity {
                                                         // Creating user login session
                                                         // For testing i am stroing name, email as follow
                                                         // Use user real data
-                                                        session.createLoginSession(utilisateur.getPseudo(), utilisateur.getEmail(), utilisateur.getId());
+                                                        session.createLoginSession(utilisateur.getPseudo(), utilisateur.getEmail(), utilisateur.getId(),
+                                                                utilisateur.getNbspot(), utilisateur.getNbrespot(), 0, utilisateur.getPhoto());
 
                                                         startActivity(itmain); // déjà enregistré on démarre l'activité Welcome
                                                     }

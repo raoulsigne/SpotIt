@@ -97,24 +97,45 @@
                 android:layout_marginTop="10dp"
                 style="?android:attr/borderlessButtonStyle"/>
 
-            <com.facebook.login.widget.LoginButton
-                android:id="@+id/login_button"
+            <RelativeLayout
                 android:layout_width="match_parent"
+                android:layout_below="@+id/btnConnexion"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:layout_height="wrap_content"
-                android:paddingTop="12sp"
-                android:paddingBottom="12sp"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/mainblue"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
-                android:layout_below="@+id/btnConnexion"
-                android:layout_centerHorizontal="true"
                 android:radius="5dp"
-                android:background="@drawable/fb_button"/>
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/fb_button">
 
+                <ImageView
+                    android:id="@+id/imageView5"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/facebook" />
+
+                <com.facebook.login.widget.LoginButton
+                    android:id="@+id/login_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="12sp"
+                    android:layout_toEndOf="@+id/imageView5"
+                    android:layout_toRightOf="@+id/imageView5"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:paddingBottom="12sp"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/mainblue"
+                    android:radius="5dp"
+                    android:background="@color/blanc"/>
+
+            </RelativeLayout>
 
         </RelativeLayout>
     </ScrollView>

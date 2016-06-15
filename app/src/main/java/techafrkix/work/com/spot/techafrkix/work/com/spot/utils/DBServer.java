@@ -1023,7 +1023,7 @@ public class DBServer {
                         comment.setSpot_id((int) json2.get("spot_id"));
                         comment.setUser_id((int) json2.get("user_id"));
                         comment.setCommentaire((String) json2.get("commentaire"));
-                        comment.setCreated(convert_date((String) json2.get("created")));
+                        comment.setCreated(Commentaire.difftime((String) json2.get("created")));
                         comment.setPseudo((String) json2.get("pseudo"));
                         comment.setPhotokey((String) json2.get("photo"));
 
@@ -1428,7 +1428,6 @@ public class DBServer {
         datec.set(Calendar.YEAR, Integer.valueOf(tab2[0]));
         datec.set(Calendar.MONTH, Integer.valueOf(tab2[1]) - 1);
         datec.set(Calendar.DAY_OF_MONTH, Integer.valueOf(tab2[2]));
-        Log.i("date", tab2[0] + " " + tab2[1] + " " + tab2[2]);
         resultat = sdf.format(datec.getTime()) + " - " + tab3[0] + "h" + tab3[1];
 
         return resultat;

@@ -313,10 +313,15 @@ public class TakeSnap extends Activity implements View.OnClickListener{
                             parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
                         }
                         if (currentCameraId == Camera.CameraInfo.CAMERA_FACING_BACK) {
-//                            List<String> flashModes = parameters.getSupportedFlashModes();
-//                            if (flashModes.contains(android.hardware.Camera.Parameters.FLASH_MODE_AUTO)) {
-//                                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-//                            }
+                            List<String> flashModes = parameters.getSupportedFlashModes();
+                            if (flashModes == null || flashModes.isEmpty() || flashModes.size() == 1 && flashModes.get(0).equals(Camera.Parameters.FLASH_MODE_OFF)) {
+
+                            }
+                            else {
+                                if (flashModes.contains(android.hardware.Camera.Parameters.FLASH_MODE_AUTO)) {
+                                    parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+                                }
+                            }
                         }
                         mCamera.setParameters(parameters);
                         mCamera.setDisplayOrientation(90);
@@ -340,11 +345,15 @@ public class TakeSnap extends Activity implements View.OnClickListener{
                 if (parameters.getSupportedFocusModes().contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
                     parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
                 }
-//                List<String> flashModes = parameters.getSupportedFlashModes();
-//                if (flashModes.contains(android.hardware.Camera.Parameters.FLASH_MODE_AUTO))
-//                {
-//                    parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-//                }
+                List<String> flashModes = parameters.getSupportedFlashModes();
+                if (flashModes == null || flashModes.isEmpty() || flashModes.size() == 1 && flashModes.get(0).equals(Camera.Parameters.FLASH_MODE_OFF)) {
+
+                }
+                else {
+                    if (flashModes.contains(android.hardware.Camera.Parameters.FLASH_MODE_AUTO)) {
+                        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+                    }
+                }
                 requestLayout();
                 try {
                     mCamera.setPreviewDisplay(mHolder);

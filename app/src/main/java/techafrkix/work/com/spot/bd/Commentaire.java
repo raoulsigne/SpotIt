@@ -91,8 +91,8 @@ public class Commentaire implements Serializable{
 
     public static String difftime(String date){
         Calendar c = Calendar.getInstance();
-        int jour, moi, annee, heure, min;
-        int jour1 = 0, moi1 = 0, annee1 = 0, heure1 = 0, min1 = 0;
+        int jour, moi, annee, heure, min, sec;
+        int jour1 = 0, moi1 = 0, annee1 = 0, heure1 = 0, min1 = 0, sec1 = 0;
         String retour = "";
 
 
@@ -117,27 +117,45 @@ public class Commentaire implements Serializable{
         jour1 = Integer.valueOf(tab2[2]);
         heure1 = Integer.valueOf(tab3[0]);
         min1 = Integer.valueOf(tab3[1]);
+        sec1 = Integer.valueOf(tab1[1].split("Z")[0]);
 
         jour = c.get(Calendar.DAY_OF_MONTH);
         moi = c.get(Calendar.MONTH) + 1;
         annee = c.get(Calendar.YEAR);
         heure = c.get(Calendar.HOUR_OF_DAY);
         min = c.get(Calendar.MINUTE);
+        sec = c.get(Calendar.SECOND);
 
         retour = jour1 + " " + monthinleter(moi1) + " " + annee1 + " at " + heure1 + "h" + min1;
 
+        int diffday = jour - jour1;
+        int diffmin = min - min1;
+        int diffsec = sec - sec1;
+        int diffhour = heure - heure1;
+
         if ((annee == annee1) & (moi == moi1)){
-            int diffday = jour - jour1;
             if (diffday == 0){
-                int diffhour = heure - heure1;
                 if (diffhour == 0){
-                    retour = String.valueOf((min - min1)) + " minutes ago";
+                    if (diffmin == 0)
+                        if (diffsec > 1)
+                            retour = String.valueOf(diffsec) + " seconds ago";
+                        else
+                            retour = String.valueOf(diffsec) + " second ago";
+                    else {
+                        if (diffmin > 1)
+                            retour = String.valueOf(diffmin) + " minutes ago";
+                        else
+                            retour = String.valueOf(diffmin) + " minute ago";
+                    }
                 }
                 else {
-                    retour = String.valueOf(diffhour) + " hours ago";
+                    if (diffhour > 1)
+                        retour = String.valueOf(diffhour) + " hours ago";
+                    else
+                        retour = String.valueOf(diffhour) + " hour ago";
                 }
             }else if (diffday == 1){
-                retour = "yesterday at " + heure + "h" + min1;
+                retour = "yesterday at " + heure1 + "h" + min1;
             }
         }
 

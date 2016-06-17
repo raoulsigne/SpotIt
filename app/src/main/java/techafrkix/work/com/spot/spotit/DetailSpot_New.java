@@ -61,6 +61,7 @@ public class DetailSpot_New extends AppCompatActivity {
         session = new SessionManager(getApplicationContext());
         profile = new HashMap<>();
         server = new DBServer(getApplicationContext());
+        profile = session.getUserDetails();
 
         Bundle extras = getIntent().getExtras();
 
@@ -131,7 +132,7 @@ public class DetailSpot_New extends AppCompatActivity {
                     geoHash.setLatitude(latitude);
                     geoHash.setLongitude(longitude);
                     geoHash.encoder();
-                    String temps = String.valueOf(System.currentTimeMillis());
+                    String temps = profile.get(SessionManager.KEY_ID) + "_" + String.valueOf(System.currentTimeMillis());
 
                     String chaine = edtTags.getText().toString();
                     String[] tags = chaine.split(" ");
@@ -142,7 +143,6 @@ public class DetailSpot_New extends AppCompatActivity {
                     spot.setVisibilite(visibilite);
                     spot.setGeohash(geoHash.getHash());
                     spot.setPhotokey(temps);
-                    profile = session.getUserDetails();
                     spot.setUser_id(Integer.valueOf(profile.get(SessionManager.KEY_ID)));
 
                     //stockage du spot dans la BD embarqué
@@ -168,7 +168,7 @@ public class DetailSpot_New extends AppCompatActivity {
                                 resized.compress(Bitmap.CompressFormat.JPEG, 50, os);
                                 os.close();
                                 aws_tools = new AWS_Tools(DetailSpot_New.this);
-                                aws_tools.uploadPhoto(file,temps);
+                                aws_tools.uploadPhoto(file, temps);
                             }catch (Exception e)
                             {
                                 Log.e("file", e.getMessage());

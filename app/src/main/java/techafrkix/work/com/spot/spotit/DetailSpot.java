@@ -136,7 +136,7 @@ public class DetailSpot extends Fragment {
         imgrespot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (spot.getId() != Integer.valueOf(profile.get(SessionManager.KEY_ID))) {
+                if (spot.getUser_id() != Integer.valueOf(profile.get(SessionManager.KEY_ID))) {
                     Thread t = new Thread(new Runnable() {
                         @Override
                         public void run() {

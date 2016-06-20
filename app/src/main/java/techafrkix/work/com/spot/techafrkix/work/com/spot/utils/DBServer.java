@@ -51,6 +51,7 @@ public class DBServer {
     private static final String URL_CHECK = "/api/userwithpseudo";
     private static final String URL_LOGIN = "/api/login";
     private static final String URL_SPOT = "/api/spots";
+    private static final String URL_RESPOT = "/api/respot";
     private static final String URL_LIST_COMMENTAIRE = "/api/spotscoms";
     private static final String URL_TAG = "/api/spotstags";
     private static final String URL_ADD_TAG = "/api/tags";
@@ -673,7 +674,7 @@ public class DBServer {
      * @param spot spot à enregistrer
      * @return retourne un code qui représente la réponse du serveur
      */
-    public int enregistre_spot(Spot spot) {
+    public int enregistre_spot(Spot spot, String[] tags) {
 
         try {
             url = new URL(BASE_URL + URL_SPOT);
@@ -684,6 +685,17 @@ public class DBServer {
             OutputStream outputPost = new BufferedOutputStream(client.getOutputStream());
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputPost, "UTF-8"));
 
+            StringBuilder liste_tag = new StringBuilder();
+            liste_tag.append("[");
+            for (int i = 0; i < tags.length; i++) {
+                if (i < tags.length - 1)
+                    liste_tag.append("\"" + tags[i] + "\",");
+                else
+                    liste_tag.append("\"" + tags[i] + "\"");
+            }
+            liste_tag.append("]");
+            Log.i(TAG, liste_tag.toString());
+
             ContentValues values = new ContentValues();
             values.put("apikey", API_KEY);
             values.put(SpotsDBAdapteur.COLONNE_RESPOT, spot.getRespot());
@@ -693,7 +705,7 @@ public class DBServer {
             values.put(SpotsDBAdapteur.COLONNE_LATITUDE, spot.getLatitude());
             values.put(SpotsDBAdapteur.COLONNE_PHOTO, spot.getPhotokey());
             values.put(SpotsDBAdapteur.COLONNE_USER_ID, spot.getUser_id());
-
+            values.put("tags", liste_tag.toString());
             writer.write(getQuery(values));
             writer.flush();
             writer.close();
@@ -727,15 +739,85 @@ public class DBServer {
         } catch (MalformedURLException error) {
             //Handles an incorrectly entered URL
             Log.e(TAG, "MalformedURLException " + error.getMessage());
-            return 1;
+            return -1;
         } catch (SocketTimeoutException error) {
             //Handles URL access timeout.
             Log.e(TAG, "SocketTimeoutException " + error.getMessage());
-            return 1;
+            return -1;
         } catch (IOException error) {
             //Handles input and output errors
             Log.e(TAG, "IOException " + error.toString());
-            return 1;
+            return -1;
+        } finally {
+            client.disconnect();
+        }
+
+        return 0;
+    }
+
+    /**
+     * enregistrement d'un respot
+     * @param user_id
+     * @param spot_id
+     * @return
+     */
+    public int enregistrer_respot(int user_id, int spot_id){
+        try {
+            url = new URL(BASE_URL + URL_RESPOT);
+            client = (HttpURLConnection) url.openConnection();
+            client.setRequestMethod("POST");
+            client.setDoOutput(true);
+
+            OutputStream outputPost = new BufferedOutputStream(client.getOutputStream());
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputPost, "UTF-8"));
+
+            ContentValues values = new ContentValues();
+            values.put("apikey", API_KEY);
+            values.put("user_id", user_id);
+            values.put("spot_id", spot_id);
+            writer.write(getQuery(values));
+            writer.flush();
+            writer.close();
+            outputPost.close();
+            Log.i(TAG, getQuery(values));
+
+            StringBuilder builder = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                builder.append(line + "\n");
+            }
+            br.close();
+
+            try {
+                JSONObject json = new JSONObject(builder.toString());
+                int statut = Integer.valueOf(json.getString("statut"));
+                if (statut == 1) {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("insertId = " + json.getString("insertId"));
+                    return statut;
+                } else {
+                    builder.append("statut = " + json.getString("statut") + "\n");
+                    builder.append("errcode = " + json.getString("errcode") + "\n");
+                    builder.append("message = " + json.getString("message") + "\n");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Log.i(TAG, "reponse = " + builder.toString());
+
+        } catch (MalformedURLException error) {
+            //Handles an incorrectly entered URL
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
+            return -1;
+        } catch (SocketTimeoutException error) {
+            //Handles URL access timeout.
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
+            return -1;
+        } catch (IOException error) {
+            //Handles input and output errors
+            Log.e(TAG, "IOException " + error.toString());
+            return -1;
         } finally {
             client.disconnect();
         }
@@ -787,6 +869,7 @@ public class DBServer {
                         spot.setPhotokey((String) json2.get(SpotsDBAdapteur.COLONNE_PHOTO));
                         spot.setUser_id((int) json2.get(SpotsDBAdapteur.COLONNE_USER_ID));
                         spot.setDate(convert_date((String) json2.get("created")));
+                        spot.setNbcomment((int) json2.get("nbcomment"));
 
                         spots.add(spot);
                     }
@@ -869,6 +952,7 @@ public class DBServer {
                         spot.setPhotouser((String) json2.get("photouser"));
                         spot.setUser_id((int) json2.get(SpotsDBAdapteur.COLONNE_USER_ID));
                         spot.setDate(convert_date((String) json2.get("created")));
+                        spot.setNbcomment((int) json2.get("nbcomment"));
                         JSONArray jArrtag = json2.getJSONArray("tags");
                         tags = new ArrayList<>();
                         for (int j = 0; j < jArrtag.length(); j++) {
@@ -1177,7 +1261,7 @@ public class DBServer {
                         tag.setSpot_id((int) json2.get("spot_id"));
                         tag.setId((int) json2.get("id"));
                         tag.setTag((String) json2.get("tag"));
-                        tag.setCreated(convert_date((String) json2.get("created")));
+                        tag.setCreated((String) json2.get("created"));
 
                         tags.add(tag);
                     }

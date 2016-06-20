@@ -135,7 +135,7 @@ public class DetailSpot_New extends AppCompatActivity {
                     String temps = profile.get(SessionManager.KEY_ID) + "_" + String.valueOf(System.currentTimeMillis());
 
                     String chaine = edtTags.getText().toString();
-                    String[] tags = chaine.split(" ");
+                    final String[] tags = chaine.split(" ");
 
                     final Spot spot = new Spot();
                     spot.setLongitude(String.valueOf(longitude));
@@ -149,7 +149,7 @@ public class DetailSpot_New extends AppCompatActivity {
                     Thread t = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            cle = server.enregistre_spot(spot);
+                            cle = server.enregistre_spot(spot, tags);
                         }});
 
                     t.start(); // spawn thread

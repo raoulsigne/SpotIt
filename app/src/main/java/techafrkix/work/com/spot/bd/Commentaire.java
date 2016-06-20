@@ -25,7 +25,7 @@ public class Commentaire implements Serializable{
     public Commentaire() {
     }
 
-    public Commentaire(int spot_id, int user_id, String pseudo, String photokey, String commentaire, String created) {
+    public Commentaire(int spot_id, int user_id, String pseudo, String photokey, String commentaire, String created, int nbcomment) {
         this.spot_id = spot_id;
         this.user_id = user_id;
         this.pseudo = pseudo;

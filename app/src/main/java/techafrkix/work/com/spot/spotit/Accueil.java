@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import techafrkix.work.com.spot.bd.Commentaire;
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.GeoHash;
 
 public class Accueil extends AppCompatActivity {
 
@@ -49,5 +50,12 @@ public class Accueil extends AppCompatActivity {
                 startActivity(itSignin);
             }
         });
+
+        GeoHash geohash = new GeoHash(3.86744, 11.5167);
+        geohash.setLong_hash(5);
+        geohash.setLong_bits(25);
+        geohash.encoder();
+        Log.i("test", geohash.getHash());
+        Log.i("test", geohash.neighbours("s28nn041q").toString());
     }
 }

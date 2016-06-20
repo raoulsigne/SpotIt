@@ -20,6 +20,7 @@ public class Spot implements Serializable{
 	private int respot;
 	private int user_id;
     private int visibilite_id;
+	private int nbcomment;
 	private ArrayList<String> tags;
 
     public Spot(String longitude, String latitude, String visibilite, String photokey,
@@ -32,11 +33,12 @@ public class Spot implements Serializable{
 		this.geohash = geohash;
 		this.date = date;
 		this.respot = 0;
+		this.nbcomment = 0;
         this.tags = new ArrayList<>();
 	}
 
     public Spot(String longitude, String latitude, String visibilite, String photokey, String geohash,
-                String date, int respot, int user_id, String photouser, ArrayList<String> tags) {
+                String date, int respot, int user_id, String photouser, ArrayList<String> tags, int nbcomment) {
         this.longitude = longitude;
         this.latitude = latitude;
         this.visibilite = visibilite;
@@ -47,6 +49,7 @@ public class Spot implements Serializable{
         this.user_id = user_id;
         this.tags = tags;
         this.photouser = photouser;
+		this.nbcomment = nbcomment;
     }
 
     public int getId() {
@@ -134,7 +137,15 @@ public class Spot implements Serializable{
         this.photouser = photouser;
     }
 
-    public Spot() {
+	public int getNbcomment() {
+		return nbcomment;
+	}
+
+	public void setNbcomment(int nbcomment) {
+		this.nbcomment = nbcomment;
+	}
+
+	public Spot() {
 		super();
 		this.longitude = "";
 		this.latitude = "";
@@ -148,6 +159,7 @@ public class Spot implements Serializable{
         this.user_id = 0;
         this.photouser = "";
         this.tags = new ArrayList<>();
+		this.nbcomment = 0;
 	}
 
 	public int getvisibiliteId(){
@@ -172,6 +184,7 @@ public class Spot implements Serializable{
                 ", respot=" + respot +
                 ", user_id=" + user_id +
                 ", visibilite_id=" + visibilite_id +
+				", nbcomment=" + nbcomment +
                 ", tags=" + tags +
                 '}';
     }

@@ -264,7 +264,23 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
             }
         });
 
+        Log.i("test", mMap.getMaxZoomLevel() + "");
+
+        mMap.setOnCameraChangeListener(getCameraChangeListener());
+
         displaySpotOnMap();
+    }
+
+    public GoogleMap.OnCameraChangeListener getCameraChangeListener()
+    {
+        return new GoogleMap.OnCameraChangeListener()
+        {
+            @Override
+            public void onCameraChange(CameraPosition position)
+            {
+                Log.i("Zoom", "Zoom: " + position.zoom);
+            }
+        };
     }
 
     @Override

@@ -10,10 +10,6 @@ import java.util.Map;
  */
 public class GeoHash {
 
-    private double longitude;
-    private double latitude;
-    private String hash;
-
     private final int LONGUEUR_BITS = 60;
     private final int LONGUEUR_HASH = 12;
     private final int POIDS_LOURD = 16;
@@ -28,6 +24,16 @@ public class GeoHash {
 
     private final static Map<Character, Integer> decodeMap = new HashMap<Character, Integer>();
 
+
+    private double longitude;
+    private double latitude;
+    private String hash;
+
+    private int long_bits;
+    private int long_hash;
+    private int poid_lourd;
+    private int longeur_digit;
+
     static {
         int sz = base32.length;
         for (int i = 0; i < sz; i++) {
@@ -38,14 +44,23 @@ public class GeoHash {
     public GeoHash(double lat, double lng){
         this.latitude = lat;
         this.longitude = lng;
+        this.long_bits = LONGUEUR_BITS;
+        this.long_hash = LONGUEUR_HASH;
+        this.longeur_digit = LONG_DIGIT;
     }
 
     public GeoHash(String hash){
         this.hash = hash;
+        this.long_bits = LONGUEUR_BITS;
+        this.long_hash = LONGUEUR_HASH;
+        this.longeur_digit = LONG_DIGIT;
     }
 
     public GeoHash(){
         super();
+        this.long_bits = LONGUEUR_BITS;
+        this.long_hash = LONGUEUR_HASH;
+        this.longeur_digit = LONG_DIGIT;
     }
 
     public double getLongitude() {
@@ -72,12 +87,44 @@ public class GeoHash {
         this.hash = hash;
     }
 
+    public int getLong_hash() {
+        return long_hash;
+    }
+
+    public void setLong_hash(int long_hash) {
+        this.long_hash = long_hash;
+    }
+
+    public int getLong_bits() {
+        return long_bits;
+    }
+
+    public void setLong_bits(int long_bits) {
+        this.long_bits = long_bits;
+    }
+
+    public int getPoid_lourd() {
+        return poid_lourd;
+    }
+
+    public void setPoid_lourd(int poid_lourd) {
+        this.poid_lourd = poid_lourd;
+    }
+
+    public int getLongeur_digit() {
+        return longeur_digit;
+    }
+
+    public void setLongeur_digit(int longeur_digit) {
+        this.longeur_digit = longeur_digit;
+    }
+
     public String encoder(){
         long result = 0;
         double minLat = MIN_LATITUDE,  maxLat = MAX_LATITUDE;
         double minLng = MIN_LONGITUDE, maxLng = MAX_LONGITUDE;
 
-        for (int i = 0; i < LONGUEUR_BITS; i++) {
+        for (int i = 0; i < long_bits; i++) {
             if (i % 2 == 0){ // even bit: bisect longitude
 
                 double midpoint = (minLng + maxLng) / 2;
@@ -108,14 +155,14 @@ public class GeoHash {
 
     public String convertToHexa (long nombre){
         String chaine = Long.toBinaryString(nombre);
-        while (chaine.length() < LONGUEUR_BITS) // ensure that length of word is LONGUEUR_BITS
+        while (chaine.length() < long_bits) // ensure that length of word is LONGUEUR_BITS
             chaine = "0" + chaine;
 
         StringBuilder bui = new StringBuilder();
-        for (int i = 0; i < LONGUEUR_BITS; i = i+LONG_DIGIT) {
+        for (int i = 0; i < long_bits; i = i+longeur_digit) {
             int val = 0;
             int base = POIDS_LOURD;
-            for (int j = 0; j < LONG_DIGIT; j++) {
+            for (int j = 0; j < longeur_digit; j++) {
                 if(chaine.charAt(i + j) == '1')
                     val += base;
                 base /= 2;
@@ -146,7 +193,7 @@ public class GeoHash {
     public String convertToBits(String chaine){
         StringBuilder bui = new StringBuilder();
 
-        for (int i = 0; i < LONGUEUR_HASH; i++) {
+        for (int i = 0; i < long_hash; i++) {
             int val = decodeMap.get(chaine.charAt(i));
             String s = toBinaryString(val);
             for (int j = 0; j < 5; j++) {
@@ -163,7 +210,7 @@ public class GeoHash {
         double minLat = MIN_LATITUDE,  maxLat = MAX_LATITUDE;
         double minLng = MIN_LONGITUDE, maxLng = MAX_LONGITUDE;
 
-        for (int i = 0; i < LONGUEUR_BITS; i++) {
+        for (int i = 0; i < long_bits; i++) {
             if (i % 2 == 0)
                 bitsLongitude.append(bits.charAt(i));
             else
@@ -244,7 +291,7 @@ public class GeoHash {
         return  result.toString();
     }
 
-    Map<String, String> neighbours(String geohash){
+    public Map<String, String> neighbours(String geohash){
         Map<String, String> result = new HashMap<String, String>();
 
         result.put("n",adjacent(geohash, 'n'));

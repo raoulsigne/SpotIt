@@ -86,6 +86,7 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
         txtcomment = (TextView)convertView.findViewById(R.id.txtComments);
         txtletsgo = (TextView)convertView.findViewById(R.id.txtLetsgo);
         txtshare = (TextView)convertView.findViewById(R.id.txtShare);
+
         txtcomment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -109,6 +110,10 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
         try {
             spotDate.setText(spot.getDate());
             StringBuilder chainetag = new StringBuilder();
+            if (spot.getNbcomment() > 1)
+                txtcomment.setText(spot.getNbcomment() + " comments");
+            else
+                txtcomment.setText(spot.getNbcomment() + " comment");
             if (spot.getTags().size() == 0)
                 spotTag.setText("No tag");
             else {

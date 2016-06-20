@@ -97,10 +97,10 @@ public class DetailSpot extends Fragment {
         profile = session.getUserDetails();
         if (getArguments() != null) {
             spot = (Spot) getArguments().getSerializable(ARG_PARAM3);
-            try{
+            try {
                 friend = (Utilisateur) getArguments().getSerializable(ARG_PARAM2);
                 type = TYPE_FRIEND;
-            }catch (Exception e){
+            } catch (Exception e) {
                 type = TYPE_USER;
             }
         }
@@ -115,25 +115,45 @@ public class DetailSpot extends Fragment {
         server = new DBServer(getActivity());
         commentaires = new ArrayList<>();
 
-        txtdate = (TextView)view.findViewById(R.id.txtDate);
-        txttag = (TextView)view.findViewById(R.id.txtTag);
-        txtNbcomments = (TextView)view.findViewById(R.id.txtSpots);
-        imgprofile = (ImageView)view.findViewById(R.id.profile_image);
+        txtdate = (TextView) view.findViewById(R.id.txtDate);
+        txttag = (TextView) view.findViewById(R.id.txtTag);
+        txtNbcomments = (TextView) view.findViewById(R.id.txtSpots);
+        imgprofile = (ImageView) view.findViewById(R.id.profile_image);
         imgspot = (ImageView) view.findViewById(R.id.imgSpot);
         imgrespot = (ImageButton) view.findViewById(R.id.imgRespot);
         imgletgo = (ImageButton) view.findViewById(R.id.imgNavigation);
         imgcomment = (ImageButton) view.findViewById(R.id.imgchat);
         imgshare = (ImageButton) view.findViewById(R.id.imgshare);
-        listView = (ListView)view.findViewById(R.id.listComments);
+        listView = (ListView) view.findViewById(R.id.listComments);
         btnpost = (Button) view.findViewById(R.id.btnPost);
         edtComment = (EditText) view.findViewById(R.id.edtComment);
+
+        if (spot.getNbcomment() > 1)
+            txtNbcomments.setText(spot.getNbcomment() + " comments");
+        else
+            txtNbcomments.setText(spot.getNbcomment() + " comment");
 
         imgrespot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (type == TYPE_FRIEND) {
+                if (spot.getId() != Integer.valueOf(profile.get(SessionManager.KEY_ID))) {
+                    Thread t = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            resultat = server.enregistrer_respot(Integer.valueOf(profile.get(SessionManager.KEY_ID)), spot.getId());
+                        }
+                    });
 
-                }else
+                    t.start(); // spawn thread
+                    try {
+                        t.join();
+                        if (resultat > 0) {
+                            Toast.makeText(getActivity(), "Operation succeed!", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else
                     Toast.makeText(getActivity(), "You cannot comment your own spot!", Toast.LENGTH_SHORT).show();
             }
         });
@@ -163,9 +183,7 @@ public class DetailSpot extends Fragment {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                }
-
-                else
+                } else
                     Toast.makeText(getActivity(), "Specify the comment please!", Toast.LENGTH_SHORT).show();
             }
         });
@@ -182,7 +200,8 @@ public class DetailSpot extends Fragment {
                     chainetag.append("#" + s + " ");
                 }
                 txttag.setText(chainetag.toString());
-            };
+            }
+            ;
             String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
             final File file = new File(dossier + File.separator + spot.getPhotokey() + ".jpg");
             Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
@@ -193,12 +212,13 @@ public class DetailSpot extends Fragment {
             display.getSize(size);
             int width = size.x;
             //reduce the photo dimension keeping the ratio so that it'll fit in the imageview
-            int nh = (int) ( bitmap.getHeight() * (Double.valueOf(width) / bitmap.getWidth()) );
+            int nh = (int) (bitmap.getHeight() * (Double.valueOf(width) / bitmap.getWidth()));
             Bitmap scaled = Bitmap.createScaledBitmap(bitmap, width, nh, true);
             //define the image source of the imageview
             imgspot.setImageBitmap(scaled);
-        }catch (Exception e){
-            Log.e("spot", e.getMessage());}
+        } catch (Exception e) {
+            Log.e("spot", e.getMessage());
+        }
 
         if (profile.get(SessionManager.KEY_PHOTO) != null & profile.get(SessionManager.KEY_PHOTO) != "") {
             String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
@@ -300,7 +320,7 @@ public class DetailSpot extends Fragment {
 
     }
 
-    private void loadComment(){
+    private void loadComment() {
         final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
         barProgressDialog.setProgressStyle(barProgressDialog.STYLE_SPINNER);
 
@@ -309,7 +329,8 @@ public class DetailSpot extends Fragment {
             @Override
             public void run() {
                 commentaires = server.commentaires_spot(spot.getId());
-            }});
+            }
+        });
 
         t.start(); // spawn thread
         try {
@@ -322,11 +343,11 @@ public class DetailSpot extends Fragment {
                     txtNbcomments.setText(commentaires.size() + " comments");
                 else
                     txtNbcomments.setText(commentaires.size() + " comment");
-            }else {
+            } else {
                 // Setting new scroll position
                 listView.setSelectionFromTop(0, 0);
             }
-        }catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
@@ -359,10 +380,10 @@ class CommentAdapter extends ArrayAdapter<Commentaire> {
         }
 
         // Lookup view for data population
-        photoprofile = (ImageView)convertView.findViewById(R.id.profile_image);
-        txtcomment = (TextView)convertView.findViewById(R.id.txtcomment);
-        txtnom = (TextView)convertView.findViewById(R.id.txtnom);
-        txttemps = (TextView)convertView.findViewById(R.id.txttemps);
+        photoprofile = (ImageView) convertView.findViewById(R.id.profile_image);
+        txtcomment = (TextView) convertView.findViewById(R.id.txtcomment);
+        txtnom = (TextView) convertView.findViewById(R.id.txtnom);
+        txttemps = (TextView) convertView.findViewById(R.id.txttemps);
 
         // Populate the data into the template view using the data object
         txtcomment.setText(commentaire.getCommentaire());

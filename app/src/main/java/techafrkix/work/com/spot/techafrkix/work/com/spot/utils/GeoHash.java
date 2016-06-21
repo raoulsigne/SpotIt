@@ -305,4 +305,19 @@ public class GeoHash {
 
         return result;
     }
+
+    public String[] neighbours_1(String geohash){
+        String[] result = new String[8];
+
+        result[0] = adjacent(geohash, 'n');
+        result[1] = adjacent(adjacent(geohash, 'n'),'e');
+        result[2] = adjacent(geohash, 'e');
+        result[3] = adjacent(adjacent(geohash,'s'), 'e');
+        result[4] = adjacent(geohash, 's');
+        result[5] = adjacent(adjacent(geohash,'s'), 'w');
+        result[6] = adjacent(geohash, 'w');
+        result[7] = adjacent(adjacent(geohash,'n'), 'w');
+
+        return result;
+    }
 }

@@ -64,7 +64,8 @@ import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.MyMarker;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
-public class MapsActivity extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks {
+public class MapsActivity extends Fragment implements OnMapReadyCallback, android.location.LocationListener,
+        GoogleApiClient.ConnectionCallbacks, GoogleMap.OnMapLoadedCallback {
 
     private OnFragmentInteractionListener mListener;
 
@@ -181,6 +182,27 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
         return view;
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            mListener = (OnFragmentInteractionListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnHeadlineSelectedListener");
+        }
+
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -192,7 +214,31 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
         mMap = googleMap;
+        mMap.setOnMapLoadedCallback(this);
+        UiSettings settings = mMap.getUiSettings();
+        settings.setCompassEnabled(true);
+        settings.setIndoorLevelPickerEnabled(true);
+        settings.setMapToolbarEnabled(true);
+        settings.setAllGesturesEnabled(true);
+        settings.setMyLocationButtonEnabled(false);
+
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+            return;
+        } else {
+            mMap.setMyLocationEnabled(true);
+        }
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -264,33 +310,35 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
             }
         });
 
-        Log.i("test", mMap.getMaxZoomLevel() + "");
-
         mMap.setOnCameraChangeListener(getCameraChangeListener());
 
+        mMap.clear();
         displaySpotOnMap();
     }
 
-    public GoogleMap.OnCameraChangeListener getCameraChangeListener()
-    {
-        return new GoogleMap.OnCameraChangeListener()
-        {
-            @Override
-            public void onCameraChange(CameraPosition position)
-            {
-                Log.i("Zoom", "Zoom: " + position.zoom);
-            }
-        };
+    @Override
+    public void onMapLoaded() {
+        if (mMap != null) {
+            LatLng pos = mMap.getCameraPosition().target;
+            Log.i("map", "Pos : " + pos.toString());
+        }else
+            Log.i("map", "Map is nulle ");
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        final FragmentManager fragManager = this.getFragmentManager();
-        final Fragment fragment = fragManager.findFragmentById(R.id.map);
-        if(fragment!=null){
-            fragManager.beginTransaction().remove(fragment).commit();
-        }
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onLoadSpot();
+        void onSearchSpot();
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -305,8 +353,33 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
     }
 
     @Override
-    public void onViewCreated (View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onConnected(Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 
     /**
@@ -329,8 +402,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
             t.join();
             if (spots != null) {
                 //afficher le nombre de spots
-                int n = Integer.valueOf(profile.get(SessionManager.KEY_SPOT));
-                if (n < 1)
+                int n = spots.size();
+                if (n <= 1)
                     txtmyspot.setText(n + " Spot");
                 else
                     txtmyspot.setText(n + " Spots");
@@ -343,6 +416,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
             e.printStackTrace();
         }
     }
+
 
     private void plotMarkers(ArrayList<MyMarker> markers)
     {
@@ -361,6 +435,29 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
 
                 mMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
             }
+        }
+    }
+
+    public GoogleMap.OnCameraChangeListener getCameraChangeListener()
+    {
+        Log.i("map", mMap.getMaxZoomLevel() + "");
+        return new GoogleMap.OnCameraChangeListener()
+        {
+            @Override
+            public void onCameraChange(CameraPosition position)
+            {
+                Log.i("map", "Zoom: " + position.zoom);
+            }
+        };
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        final FragmentManager fragManager = this.getFragmentManager();
+        final Fragment fragment = fragManager.findFragmentById(R.id.map);
+        if(fragment!=null){
+            fragManager.beginTransaction().remove(fragment).commit();
         }
     }
 
@@ -431,80 +528,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
     public static boolean isNetworkAvailable(final Context context) {
         final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
         return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onLoadSpot();
-        void onSearchSpot();
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnHeadlineSelectedListener");
-        }
-
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    @Override
-    public void onConnected(Bundle bundle) {
-//        if (mGoogleApiClient.isConnected()){
-//            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-//                    ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                // TODO: Consider calling
-//                //    ActivityCompat#requestPermissions
-//                // here to request the missing permissions, and then overriding
-//                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//                //                                          int[] grantResults)
-//                // to handle the case where the user grants the permission. See the documentation
-//                // for ActivityCompat#requestPermissions for more details.
-//                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-//                        MY_PERMISSIONS_REQUEST_FINE_LOCATION);
-//            } else {
-//                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, new com.google.android.gms.location.LocationListener() {
-//                    @Override
-//                    public void onLocationChanged(Location location) {
-//                    }
-//                });
-//                Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-//
-//                if (location != null) {
-//                    mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude()))
-//                            .icon(BitmapDescriptorFactory
-//                                    .defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
-//                }
-//            }
-//        }else
-//            Log.i("map", "Not connected");
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
     }
 }
 

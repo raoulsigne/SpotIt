@@ -156,6 +156,8 @@ public class DetailSpot_New extends AppCompatActivity {
                     try {
                         t.join();
                         if (cle == DBServer.SUCCESS) {
+                            session.increment_nbspot(); // increment the number of spots
+
                             //stockage de la photo sur le serveur amazon
                             try {
                                 File folder = new File(getApplicationContext().getFilesDir().getPath()+"/SpotItPictures/");

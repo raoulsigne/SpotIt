@@ -60,9 +60,6 @@ public class DetailSpot extends Fragment {
     private static final String ARG_PARAM2 = "friend";
     private static final String ARG_PARAM3 = "spot";
 
-    private static final int TYPE_USER = 1;
-    private static final int TYPE_FRIEND = 11;
-
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -80,7 +77,6 @@ public class DetailSpot extends Fragment {
     Spot spot;
     SessionManager session;
     private HashMap<String, String> profile;
-    private int type;
     private Utilisateur friend;
 
     private ArrayList<Commentaire> commentaires;
@@ -99,9 +95,7 @@ public class DetailSpot extends Fragment {
             spot = (Spot) getArguments().getSerializable(ARG_PARAM3);
             try {
                 friend = (Utilisateur) getArguments().getSerializable(ARG_PARAM2);
-                type = TYPE_FRIEND;
             } catch (Exception e) {
-                type = TYPE_USER;
             }
         }
     }
@@ -148,6 +142,7 @@ public class DetailSpot extends Fragment {
                     try {
                         t.join();
                         if (resultat > 0) {
+                            session.increment_nbrespot(); // incremente le nombre de respots d'un utilisateur
                             Toast.makeText(getActivity(), "Operation succeed!", Toast.LENGTH_SHORT).show();
                         }
                     } catch (InterruptedException e) {

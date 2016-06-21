@@ -63,7 +63,7 @@ import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
  * {@link Account.OnFragmentInteractionListener} interface
  * to handle interaction events.
  */
-public class Account extends Fragment implements OnMapReadyCallback, LocationListener, GoogleApiClient.ConnectionCallbacks {
+public class Account extends Fragment implements OnMapReadyCallback, LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleMap.OnMapLoadedCallback {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -139,7 +139,11 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         txtPseudo.setText(profile.get(SessionManager.KEY_NAME));
         txtSpots.setText(profile.get(SessionManager.KEY_SPOT) + " spots" + " | " + profile.get(SessionManager.KEY_RESPOT) + " respots");
         txtFriends.setText(profile.get(SessionManager.KEY_FRIENDS) + " Friends");
-        txtmySpots.setText(profile.get(SessionManager.KEY_SPOT) + " Spots");
+        int n = Integer.valueOf(profile.get(SessionManager.KEY_SPOT)) + Integer.valueOf(profile.get(SessionManager.KEY_RESPOT));
+        if (n <= 1)
+            txtmySpots.setText(n + " Spot");
+        else
+            txtmySpots.setText(n + " Spots");
         if (profile.get(SessionManager.KEY_PHOTO) != null & profile.get(SessionManager.KEY_PHOTO) != "") {
             String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
             final File file = new File(dossier + File.separator + profile.get(SessionManager.KEY_PHOTO) + ".jpg");
@@ -241,6 +245,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setOnMapLoadedCallback(this);
         UiSettings settings = mMap.getUiSettings();
         settings.setCompassEnabled(true);
         settings.setIndoorLevelPickerEnabled(true);
@@ -352,6 +357,15 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         displaySpotOnMap();
     }
 
+    @Override
+    public void onMapLoaded() {
+        if (mMap != null) {
+            LatLng pos = mMap.getCameraPosition().target;
+            Log.i("map", "Pos : " + pos.toString());
+        }else
+            Log.i("map", "Map is nulle ");
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -403,38 +417,10 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
 
     @Override
     public void onConnected(Bundle bundle) {
-//        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-//                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            // TODO: Consider calling
-//            //    ActivityCompat#requestPermissions
-//            // here to request the missing permissions, and then overriding
-//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//            //                                          int[] grantResults)
-//            // to handle the case where the user grants the permission. See the documentation
-//            // for ActivityCompat#requestPermissions for more details.
-//            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-//                    MY_PERMISSIONS_REQUEST_FINE_LOCATION);
-//            return;
-//        }
-//        else
-//        {
-//            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, new com.google.android.gms.location.LocationListener() {
-//                @Override
-//                public void onLocationChanged(Location location) {
-//                }
-//            });
-//            Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-//
-//            if (location != null)
-//            {
-//                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15));
-//            }
-//        }
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
     }
 
     /**

@@ -19,6 +19,7 @@ import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.GeoHash;
 public class Accueil extends AppCompatActivity {
 
     Button login, signin;
+    ArrayList<Spot> spots;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +52,27 @@ public class Accueil extends AppCompatActivity {
             }
         });
 
-        GeoHash geohash = new GeoHash(3.86744, 11.5167);
+        final DBServer server = new DBServer(getApplicationContext());
+        final GeoHash geohash = new GeoHash(3.86744, 11.5167);
         geohash.setLong_hash(5);
         geohash.setLong_bits(25);
         geohash.encoder();
         Log.i("test", geohash.getHash());
-        Log.i("test", geohash.neighbours("s28nn041q").toString());
+        Log.i("test", geohash.neighbours_1("s28nn041q").toString());
+        spots = new ArrayList<>();
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                spots = server.find_spots(geohash.neighbours_1("s28nn041q"));
+            }});
+
+        t.start(); // spawn thread
+        try{
+            t.join();
+            if (spots != null)
+                Log.i("test", spots.toString());
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

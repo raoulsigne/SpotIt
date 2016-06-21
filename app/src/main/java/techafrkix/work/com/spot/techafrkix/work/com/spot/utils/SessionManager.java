@@ -156,6 +156,29 @@ public class SessionManager {
         // commit changes
         editor.commit();
     }
+
+    /**
+     * fonction qui incrémente de 1 le nombre de spots
+     */
+    public void increment_nbspot(){
+        int nb = Integer.valueOf(pref.getString(KEY_SPOT, null)) + 1;
+        editor.putString(KEY_SPOT, String.valueOf(nb));
+
+        // commit changes
+        editor.commit();
+    }
+
+    /**
+     * fonction qui incrémente de 1 le nombre de respots
+     */
+    public void increment_nbrespot(){
+        int nb = Integer.valueOf(pref.getString(KEY_RESPOT, null)) + 1;
+        editor.putString(KEY_RESPOT, String.valueOf(nb));
+
+        // commit changes
+        editor.commit();
+    }
+
     /**
      * Get stored session data
      * */

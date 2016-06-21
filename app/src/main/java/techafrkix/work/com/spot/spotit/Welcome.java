@@ -156,6 +156,47 @@ public class Welcome extends AppCompatActivity {
                         });
                     }
                 }
+                else{
+                    final Intent itmain = new Intent(getApplicationContext(), MainActivity.class);
+                    bar.setMax(10);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            bar.setProgress(2);
+                        }
+                    }, 3000);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            bar.setProgress(4);
+                        }
+                    }, 6000);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            bar.setProgress(6);
+                        }
+                    }, 9000);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            bar.setProgress(8);
+                        }
+                    }, 12000);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            bar.setProgress(10);
+                        }
+                    }, 15000);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            finish();
+                            startActivity(itmain);
+                        }
+                    }, 15000);
+                }
             }
             else{
                 final Intent itmain = new Intent(getApplicationContext(), MainActivity.class);

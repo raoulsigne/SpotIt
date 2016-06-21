@@ -58,6 +58,7 @@ public class DBServer {
     private static final String URL_COMMENTAIRE = "/api/commentaires";
     private static final String URL_FIND_SPOT = "/api/findspots";
     private static final String URL_FIND_SPOT_2 = "/api/findspotswithtagorhash";
+    private static final String URL_FIND_ALL_SPOT = "/api/findallspots";
     private static final String URL_ADD_FRIEND = "/api/friendships";
     private static final String URL_LIST_FRIEND = "/api/friendships";
     private static final String URL_LIST_NOTIFICATION = "/api/notifications";
@@ -953,6 +954,100 @@ public class DBServer {
                         spot.setUser_id((int) json2.get(SpotsDBAdapteur.COLONNE_USER_ID));
                         spot.setDate(convert_date((String) json2.get("created")));
                         spot.setNbcomment((int) json2.get("nbcomment"));
+                        JSONArray jArrtag = json2.getJSONArray("tags");
+                        tags = new ArrayList<>();
+                        for (int j = 0; j < jArrtag.length(); j++) {
+                            JSONObject json3 = jArrtag.getJSONObject(j);
+                            tags.add((String) json3.get("tag"));
+                        }
+                        spot.setTags(tags);
+                        spots.add(spot);
+                    }
+                    return spots;
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
+                    builder.append("message = " + json.getString("message"));
+
+                    Log.i(TAG, "reponse = " + builder.toString());
+                    return null;
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "JSONException " + e.getMessage());
+                return null;
+            }
+        } catch (MalformedURLException error) {
+            //Handles an incorrectly entered URL
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
+            return null;
+        } catch (SocketTimeoutException error) {
+            //Handles URL access timeout.
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
+            return null;
+        } catch (IOException error) {
+            //Handles input and output errors
+            Log.e(TAG, "IOException " + error.toString());
+            return null;
+        } finally {
+            client.disconnect();
+        }
+    }
+
+    /**
+     * fonction qui retourne tous les spots en fonction des geohash
+     * @param hash
+     * @return
+     */
+    public ArrayList<Spot> find_spots(String[] hash) {
+        ArrayList<Spot> spots = new ArrayList<>();
+        Spot spot = new Spot();
+
+        StringBuilder liste_hash = new StringBuilder();
+        liste_hash.append("[");
+        for (int i = 0; i < hash.length; i++) {
+            if (i < hash.length - 1)
+                liste_hash.append("\"" + hash[i] + "\",");
+            else
+                liste_hash.append("\"" + hash[i] + "\"");
+        }
+        liste_hash.append("]");
+        Log.i(TAG, liste_hash.toString());
+
+        ContentValues values = new ContentValues();
+        values.put("apikey", API_KEY);
+        values.put("hash", liste_hash.toString());
+
+        try {
+            url = new URL(BASE_URL + URL_FIND_ALL_SPOT + "?" + getQuery(values));
+            Log.i("url", url.toString());
+            client = (HttpURLConnection) url.openConnection();
+            client.setRequestMethod("GET");
+
+            StringBuilder builder = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                builder.append(line + "\n");
+            }
+            br.close();
+            Log.i(TAG, "reponse = " + builder.toString());
+            try {
+                JSONObject json = new JSONObject(builder.toString());
+                ArrayList<String> tags = new ArrayList<>();
+                int statut = Integer.valueOf(json.getString("statut"));
+                if (statut == 1) {
+                    JSONArray jArr = json.getJSONArray("data");
+                    for (int i = 0; i < jArr.length(); i++) {
+                        JSONObject json2 = jArr.getJSONObject(i);
+                        spot = new Spot();
+                        spot.setRespot((int) json2.get("respot"));
+                        spot.setVisibilite_id((int) json2.get("visibilite_id"));
+                        spot.setGeohash((String) json2.get("hash"));
+                        spot.setId((int) json2.get("id"));
+                        spot.setLongitude(json2.getDouble("gpslong") + "");
+                        spot.setLatitude(json2.getDouble("gpslat") + "");
+                        spot.setPhotokey((String) json2.get("photo"));
+                        spot.setDate(convert_date((String) json2.get("created")));
                         JSONArray jArrtag = json2.getJSONArray("tags");
                         tags = new ArrayList<>();
                         for (int j = 0; j < jArrtag.length(); j++) {

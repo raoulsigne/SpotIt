@@ -103,8 +103,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:gravity="bottom"
-                android:paddingBottom="35dp">
+                android:gravity="bottom|right"
+                android:paddingBottom="5dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"

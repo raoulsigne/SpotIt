@@ -662,7 +662,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     }
 
-    @Override
+    //@Override
     public void onSearchSpot() {
         try {
             //remove all others fragments if there exists

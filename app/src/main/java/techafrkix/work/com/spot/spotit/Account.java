@@ -253,20 +253,6 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         settings.setAllGesturesEnabled(true);
         settings.setMyLocationButtonEnabled(false);
 
-//        //try to position the location button in the sreen bottom
-//        //get the dimension of the screen
-//        int width = this.getResources().getDisplayMetrics().widthPixels;
-//        int height = this.getResources().getDisplayMetrics().heightPixels;
-//
-//        final float scale = getContext().getResources().getDisplayMetrics().density; // calcul du ratio entre les pixels de l'écran
-//        //get the size of tha actionbar which are at the bottom on the screen
-//        final TypedArray styledAttributes = getContext().getTheme().obtainStyledAttributes(
-//                new int[]{android.R.attr.actionBarSize});
-//        int mActionBarSize = (int) styledAttributes.getDimension(0, 0);
-//        styledAttributes.recycle();
-//        int pixels = (int) ((mActionBarSize + 5) * scale + 0.5f);
-//        mMap.setPadding(0, height - pixels, 0, 0); // position the pading of the map which will help to set the location button at the bottom
-
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling

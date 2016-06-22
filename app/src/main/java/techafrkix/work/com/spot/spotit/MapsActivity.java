@@ -38,6 +38,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -61,11 +62,23 @@ import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.GeoHash;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.MyMarker;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
 public class MapsActivity extends Fragment implements OnMapReadyCallback, android.location.LocationListener,
-        GoogleApiClient.ConnectionCallbacks, GoogleMap.OnMapLoadedCallback {
+        GoogleApiClient.ConnectionCallbacks, GoogleMap.OnMapLoadedCallback, GoogleApiClient.OnConnectionFailedListener {
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
+
 
     private OnFragmentInteractionListener mListener;
 
@@ -74,6 +87,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
     LocationRequest locationRequest;
+    Location mLastLocation;
     ArrayList<Spot> spots;
 
     private HashMap<Marker, MyMarker> mMarkersHashMap;
@@ -82,10 +96,14 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
     private SessionManager session;
     private HashMap<String, String> profile;
     private DBServer server;
+    private GeoHash geohash;
+    private LatLng middle;
 
-    private ImageButton locateme, myspot;
+    private ImageButton locateme;
     private TextView txtmyspot;
     private EditText findspot;
+
+    private ImageButton myspot;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -128,9 +146,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
                     ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                             MY_PERMISSIONS_REQUEST_FINE_LOCATION);
                     return;
-                }
-                else
-                {
+                } else {
                     LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, new LocationListener() {
                         @Override
                         public void onLocationChanged(Location location) {
@@ -138,8 +154,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
                     });
                     Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-                    if (location != null)
-                    {
+                    if (location != null) {
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
                                 new LatLng(location.getLatitude(), location.getLongitude()), 13));
 
@@ -151,7 +166,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
                                 .build();                   // Creates a CameraPosition from the builder
                         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-                    }else
+                    } else
                         Log.i("test", "location null");
                 }
             }
@@ -167,6 +182,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
         session = new SessionManager(getActivity());
         profile = new HashMap<>();
         server = new DBServer(getActivity());
+        profile = session.getUserDetails();
 
         buildGoogleApiClient();
         if (mGoogleApiClient != null) {
@@ -311,26 +327,27 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
         });
 
         mMap.setOnCameraChangeListener(getCameraChangeListener());
-
         mMap.clear();
-        displaySpotOnMap();
     }
+
 
     @Override
     public void onMapLoaded() {
         if (mMap != null) {
-            LatLng pos = mMap.getCameraPosition().target;
-            Log.i("map", "Pos : " + pos.toString());
-        }else
+            middle = mMap.getCameraPosition().target;
+            Log.i("map", "Pos : " + middle.toString());
+            displaySpotOnMap();
+        } else
             Log.i("map", "Map is nulle ");
     }
+
 
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p>
+     * <p/>
      * See the Android Training lesson <a href=
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
@@ -338,6 +355,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onLoadSpot();
+
         void onSearchSpot();
     }
 
@@ -349,17 +367,102 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
                 .build();
+    }
+
+    private void plotMarkers(ArrayList<MyMarker> markers) {
+        mMap.clear();
+        if (markers.size() > 0) {
+            for (MyMarker myMarker : markers) {
+                // Create user marker with custom icon and other options
+                MarkerOptions markerOption = new MarkerOptions().position(new LatLng(myMarker.getmLatitude(), myMarker.getmLongitude()));
+                markerOption.icon(BitmapDescriptorFactory
+                        .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+
+                Marker currentMarker = mMap.addMarker(markerOption);
+                mMarkersHashMap.put(currentMarker, myMarker);
+
+                mMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
+            }
+        }
+    }
+
+    /**
+     * afficher les spots sur la carte en utilisant leur coordonnées
+     */
+    private void displaySpotOnMap() {
+        //clear other markers on map and inside the list before adding new one
+        mMyMarkersArray.clear();
+        profile = session.getUserDetails();
+
+        if (middle.latitude != 0) {
+            geohash = new GeoHash(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            geohash.setLong_hash(5);
+            geohash.setLong_bits(5 * geohash.LONG_DIGIT);
+            geohash.encoder();
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    spots = server.find_spots(geohash.neighbours_1(geohash.getHash()));
+                }
+            });
+
+            t.start(); // spawn thread
+            try {
+                t.join();
+                if (spots != null) {
+                    Log.i("test", "spot not null");
+                    //afficher le nombre de spots
+                    int n = spots.size();
+                    if (n <= 1)
+                        txtmyspot.setText(n + " Spot");
+                    else
+                        txtmyspot.setText(n + " Spots");
+                    for (Spot s : spots) {
+                        mMyMarkersArray.add(new MyMarker(s.getDate(), s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude())));
+                    }
+                }
+                else
+                    Log.i("test", "spot null");
+                plotMarkers(mMyMarkersArray);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
     public void onConnected(Bundle bundle) {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+            return;
+        }
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
 
+        if (mLastLocation != null) {
+            Log.i("map", "Latitude: " + String.valueOf(mLastLocation.getLatitude()) + " Longitude: " +
+                    String.valueOf(mLastLocation.getLongitude()));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
+            middle = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            displaySpotOnMap();
+        }
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        Log.i("map", "connexion suspend");
     }
 
     @Override
@@ -382,110 +485,49 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
 
     }
 
-    /**
-     * afficher les spots sur la carte en utilisant leur coordonnées
-     */
-    private void displaySpotOnMap(){
-        //clear other markers on map and inside the list before adding new one
-        mMap.clear();
-        mMyMarkersArray.clear();
-        profile = session.getUserDetails();
-
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                spots = server.find_spot_user(Integer.valueOf(profile.get(SessionManager.KEY_ID)), 0, 10);
-            }});
-
-        t.start(); // spawn thread
-        try {
-            t.join();
-            if (spots != null) {
-                //afficher le nombre de spots
-                int n = spots.size();
-                if (n <= 1)
-                    txtmyspot.setText(n + " Spot");
-                else
-                    txtmyspot.setText(n + " Spots");
-                for (Spot s : spots) {
-                    mMyMarkersArray.add(new MyMarker(s.getDate(), s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude())));
-                }
-            }
-            plotMarkers(mMyMarkersArray);
-        }catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.i("map", "connexion failed");
     }
 
-
-    private void plotMarkers(ArrayList<MyMarker> markers)
-    {
-        if(markers.size() > 0)
-        {
-            for (MyMarker myMarker : markers)
-            {
-
-                // Create user marker with custom icon and other options
-                MarkerOptions markerOption = new MarkerOptions().position(new LatLng(myMarker.getmLatitude(), myMarker.getmLongitude()));
-                markerOption.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-
-                Marker currentMarker = mMap.addMarker(markerOption);
-                mMarkersHashMap.put(currentMarker, myMarker);
-
-                mMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
-            }
-        }
-    }
-
-    public GoogleMap.OnCameraChangeListener getCameraChangeListener()
-    {
-        Log.i("map", mMap.getMaxZoomLevel() + "");
-        return new GoogleMap.OnCameraChangeListener()
-        {
+    public GoogleMap.OnCameraChangeListener getCameraChangeListener() {
+        return new GoogleMap.OnCameraChangeListener() {
             @Override
-            public void onCameraChange(CameraPosition position)
-            {
+            public void onCameraChange(CameraPosition position) {
+                middle = mMap.getCameraPosition().target;
+                Log.i("map", "Pos : " + middle.toString());
+                Log.i("map", mMap.getMaxZoomLevel() + "");
                 Log.i("map", "Zoom: " + position.zoom);
+
+                //recherche des spots qui entourent la position du milieu en utilisant le niveau du zoom
+
+                displaySpotOnMap();
             }
         };
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        final FragmentManager fragManager = this.getFragmentManager();
-        final Fragment fragment = fragManager.findFragmentById(R.id.map);
-        if(fragment!=null){
-            fragManager.beginTransaction().remove(fragment).commit();
+    public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+
+        public MarkerInfoWindowAdapter() {
         }
-    }
-
-    public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter
-    {
-
-        public MarkerInfoWindowAdapter()
-        {}
 
         @Override
-        public View getInfoWindow(Marker marker)
-        {
+        public View getInfoWindow(Marker marker) {
             return null;
         }
 
         @Override
-        public View getInfoContents(Marker marker)
-        {
-            View v  = getActivity().getLayoutInflater().inflate(R.layout.infomarker, null);
+        public View getInfoContents(Marker marker) {
+            View v = getActivity().getLayoutInflater().inflate(R.layout.infomarker, null);
 
             final MyMarker myMarker = mMarkersHashMap.get(marker);
 
             final ImageView markerIcon = (ImageView) v.findViewById(R.id.marker_icon);
-            final TextView markerDate = (TextView)v.findViewById(R.id.marker_date);
-            final TextView markerGeohash = (TextView)v.findViewById(R.id.marker_geohash);
+            final TextView markerDate = (TextView) v.findViewById(R.id.marker_date);
+            final TextView markerGeohash = (TextView) v.findViewById(R.id.marker_geohash);
 
 
-            markerIcon.setImageBitmap(BitmapFactory.decodeFile(getActivity().getFilesDir().getPath()+"/Images/"+myMarker.getmIcon()+".jpg"));
+            markerIcon.setImageBitmap(BitmapFactory.decodeFile(getActivity().getFilesDir().getPath() + "/Images/" + myMarker.getmIcon() + ".jpg"));
             markerDate.setText(myMarker.getmDate());
             markerGeohash.setText(myMarker.getmGeohash());
 
@@ -493,7 +535,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
         }
     }
 
-    private void showdialogMarker(MyMarker marker, File file){
+    private void showdialogMarker(MyMarker marker, File file) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
@@ -503,9 +545,9 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
         final TextView latitude = (TextView) promptView.findViewById(R.id.latitude);
         final TextView longitude = (TextView) promptView.findViewById(R.id.longitude);
         final TextView date = (TextView) promptView.findViewById(R.id.dateSpot);
-        final ImageView imgspot = (ImageView)promptView.findViewById(R.id.imgspot);
-        final Button fermer = (Button)promptView.findViewById(R.id.btnFermer);
-        final Button respoter = (Button)promptView.findViewById(R.id.btnRespoter);
+        final ImageView imgspot = (ImageView) promptView.findViewById(R.id.imgspot);
+        final Button fermer = (Button) promptView.findViewById(R.id.btnFermer);
+        final Button respoter = (Button) promptView.findViewById(R.id.btnRespoter);
 
         latitude.setText(String.valueOf(marker.getmLatitude()));
         longitude.setText(String.valueOf(marker.getmLongitude()));

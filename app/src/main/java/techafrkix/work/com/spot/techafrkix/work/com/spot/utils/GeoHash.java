@@ -13,7 +13,7 @@ public class GeoHash {
     private final int LONGUEUR_BITS = 60;
     private final int LONGUEUR_HASH = 12;
     private final int POIDS_LOURD = 16;
-    private final int LONG_DIGIT = 5;
+    public final int LONG_DIGIT = 5;
     private final double MIN_LATITUDE = -90;
     private final double MIN_LONGITUDE = -180;
     private final double MAX_LATITUDE = 90;
@@ -307,7 +307,7 @@ public class GeoHash {
     }
 
     public String[] neighbours_1(String geohash){
-        String[] result = new String[8];
+        String[] result = new String[9];
 
         result[0] = adjacent(geohash, 'n');
         result[1] = adjacent(adjacent(geohash, 'n'),'e');
@@ -317,6 +317,7 @@ public class GeoHash {
         result[5] = adjacent(adjacent(geohash,'s'), 'w');
         result[6] = adjacent(geohash, 'w');
         result[7] = adjacent(adjacent(geohash,'n'), 'w');
+        result[8] = geohash;
 
         return result;
     }

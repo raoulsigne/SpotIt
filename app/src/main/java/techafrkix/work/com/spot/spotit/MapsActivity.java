@@ -104,6 +104,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
     private EditText findspot;
 
     private ImageButton myspot;
+    private int zoomlevel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -174,7 +175,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
         myspot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onLoadSpot();
+                mListener.onLoadSpot(spots);
             }
         });
 
@@ -234,10 +235,10 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
         mMap = googleMap;
         mMap.setOnMapLoadedCallback(this);
         UiSettings settings = mMap.getUiSettings();
-        settings.setCompassEnabled(true);
-        settings.setIndoorLevelPickerEnabled(true);
-        settings.setMapToolbarEnabled(true);
-        settings.setAllGesturesEnabled(true);
+//        settings.setCompassEnabled(true);
+//        settings.setIndoorLevelPickerEnabled(true);
+//        settings.setMapToolbarEnabled(true);
+//        settings.setAllGesturesEnabled(true);
         settings.setMyLocationButtonEnabled(false);
 
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -354,8 +355,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onLoadSpot();
-
+        void onLoadSpot(ArrayList<Spot> spots);
         void onSearchSpot();
     }
 
@@ -375,6 +375,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
     private void plotMarkers(ArrayList<MyMarker> markers) {
         mMap.clear();
         if (markers.size() > 0) {
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(Double.valueOf(markers.get(0).getmLatitude()), Double.valueOf(markers.get(0).getmLongitude()))));
             for (MyMarker myMarker : markers) {
                 // Create user marker with custom icon and other options
                 MarkerOptions markerOption = new MarkerOptions().position(new LatLng(myMarker.getmLatitude(), myMarker.getmLongitude()));
@@ -399,8 +400,11 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
 
         if (middle.latitude != 0) {
             geohash = new GeoHash(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-            geohash.setLong_hash(5);
-            geohash.setLong_bits(5 * geohash.LONG_DIGIT);
+            int maxZoomLevel = (int)mMap.getMaxZoomLevel();
+            int long_hash = (int) ((zoomlevel * geohash.LONGUEUR_HASH)/maxZoomLevel);
+            Log.i("map", "longueur geohash = " + long_hash);
+            geohash.setLong_hash(long_hash);
+            geohash.setLong_bits(geohash.getLong_hash() * geohash.LONG_DIGIT);
             geohash.encoder();
             Thread t = new Thread(new Runnable() {
                 @Override
@@ -413,7 +417,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
             try {
                 t.join();
                 if (spots != null) {
-                    Log.i("test", "spot not null");
                     //afficher le nombre de spots
                     int n = spots.size();
                     if (n <= 1)
@@ -497,11 +500,11 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
                 middle = mMap.getCameraPosition().target;
                 Log.i("map", "Pos : " + middle.toString());
                 Log.i("map", mMap.getMaxZoomLevel() + "");
-                Log.i("map", "Zoom: " + position.zoom);
-
-                //recherche des spots qui entourent la position du milieu en utilisant le niveau du zoom
-
-                displaySpotOnMap();
+                int zoom =  (int)position.zoom;
+                if (zoom != zoomlevel) {
+                    zoomlevel = zoom;
+                    displaySpotOnMap();
+                }
             }
         };
     }

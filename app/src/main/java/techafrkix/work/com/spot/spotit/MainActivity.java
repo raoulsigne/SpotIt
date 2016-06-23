@@ -37,6 +37,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import techafrkix.work.com.spot.bd.Spot;
@@ -624,6 +625,38 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
             getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
             // add the new fragment containing the list of spots
+
+            Bundle args = new Bundle();
+            args.putInt("type", 1);
+            fgSpots.setArguments(args);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, fgSpots, "SPOTS")
+                    .commit();
+        } catch (Exception e) {
+            Log.e("fragment", e.getMessage());
+        }
+    }
+
+
+    @Override
+    public void onLoadSpot(ArrayList<Spot> spots) {
+        try {
+            //remove all others fragments if there exists
+            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
+            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
+            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
+            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
+            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
+            // add the new fragment containing the list of spots
+
+            Bundle args = new Bundle();
+            args.putInt("type", 0);
+            args.putSerializable("spots", spots);
+            Log.i("teste", "entrer " + spots.toString());
+            fgSpots.setArguments(args);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container, fgSpots, "SPOTS")
                     .commit();

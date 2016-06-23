@@ -10,9 +10,9 @@ import java.util.Map;
  */
 public class GeoHash {
 
-    private final int LONGUEUR_BITS = 60;
-    private final int LONGUEUR_HASH = 12;
-    private final int POIDS_LOURD = 16;
+    public final int LONGUEUR_BITS = 60;
+    public final int LONGUEUR_HASH = 12;
+    public final int POIDS_LOURD = 16;
     public final int LONG_DIGIT = 5;
     private final double MIN_LATITUDE = -90;
     private final double MIN_LONGITUDE = -180;

@@ -51,5 +51,29 @@ public class Accueil extends AppCompatActivity {
                 startActivity(itSignin);
             }
         });
+
+        final DBServer server = new DBServer(getApplicationContext());
+
+//        Thread t = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                spots = server.find_spot("");
+//            }});
+//
+//        t.start(); // spawn thread
+//        try{
+//            t.join();
+//            if (spots != null){
+//                GeoHash geohash;
+//                for (Spot s :
+//                        spots) {
+//                    geohash = new GeoHash(Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude()));
+//                    geohash.encoder();
+//                    server.set_spot_hash(s.getId(), geohash.getHash());
+//                }
+//            }
+//        }catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 }

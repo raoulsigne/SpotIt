@@ -94,7 +94,7 @@
                         android:id="@+id/txtNbSpot"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="3 Spots"
+                        android:text=" Spots"
                         android:textAlignment="center"
                         android:textColor="@color/mainblue"
                         android:textSize="15sp" />

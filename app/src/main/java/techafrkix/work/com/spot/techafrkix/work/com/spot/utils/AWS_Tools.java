@@ -36,14 +36,8 @@ public class AWS_Tools {
     private static int RAPPORT_PROGRESSION = 0;
     private final int MAX_VALUE = 100;
     private final String MY_BUCKET = "bucketspotit";
-    private final String DATE_KEY = "date";
-    private final String LONGITUDE_KEY = "longitude";
-    private final String LATITUDE_KEY = "latitude";
-    private final String VISIBILITE_KEY = "visibilite";
 
     private CognitoCachingCredentialsProvider credentialsProvider;
-    private CognitoSyncManager syncClient;
-    private Dataset dataset;
     private AmazonS3 s3;
     private TransferUtility transferUtility;
     private Context context;

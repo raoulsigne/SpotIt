@@ -92,24 +92,6 @@ public class Welcome extends AppCompatActivity {
     /**
      * this version is running asynchronously to prevent the system to stuck on it
      */
-    private void loadSpots() {
-
-        spots = new ArrayList<>();
-
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                spots = server.find_spot_user(Integer.valueOf(profile.get(SessionManager.KEY_ID)), 0, 10);
-            }
-        });
-
-        t.start(); // spawn thread
-
-        Intent itmain = new Intent(getApplicationContext(), MainActivity.class);
-        finish();
-        startActivity(itmain);
-    }
-
 //    private void loadSpots() {
 //
 //        spots = new ArrayList<>();
@@ -118,150 +100,172 @@ public class Welcome extends AppCompatActivity {
 //            @Override
 //            public void run() {
 //                spots = server.find_spot_user(Integer.valueOf(profile.get(SessionManager.KEY_ID)), 0, 10);
-//            }});
+//            }
+//        });
 //
 //        t.start(); // spawn thread
-//        try{
-//            t.join();
-//            if (spots != null) {
-//                if (spots.size() > 0) {
-//                    bar.setVisibility(View.VISIBLE);
-//                    bar.setMax(spots.size());
-//                    String dossier = getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
-//                    Log.i("Photo", dossier);
-//                    File folder = new File(dossier);
-//                    if (!folder.exists())
-//                        folder.mkdirs();
 //
-//
-//                    for (final Spot s : spots) {
-//                        final File file = new File(dossier + File.separator + s.getPhotokey() + ".jpg");
-//                        Log.i("test", file.getAbsolutePath());
-//                        AWS_Tools aws_tools = new AWS_Tools(getApplicationContext());
-//                        int transfertId = aws_tools.download(file, s.getPhotokey());
-//                        TransferUtility transferUtility = aws_tools.getTransferUtility();
-//                        TransferObserver observer = transferUtility.getTransferById(transfertId);
-//                        observer.setTransferListener(new TransferListener() {
-//
-//                            @Override
-//                            public void onStateChanged(int id, TransferState state) {
-//                                // do something
-//                            }
-//
-//                            @Override
-//                            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-//                                int rapport = (int) (bytesCurrent * 100);
-//                                rapport /= bytesTotal;
-//                                if (rapport == 100) {
-//                                    mProgressStatus++;
-//                                    bar.setProgress(mProgressStatus);
-//                                }
-//                                if (bar.getProgress() == spots.size()) {
-//                                    if (RAPPORT_PROGRESSION == 0) {
-//                                        RAPPORT_PROGRESSION = 1;
-//                                        Intent itmain = new Intent(getApplicationContext(), MainActivity.class);
-//                                        finish();
-//                                        startActivity(itmain);
-//                                    }
-//                                }
-//                            }
-//
-//                            @Override
-//                            public void onError(int id, Exception ex) {
-//                                // do something
-//                                Log.e("error chargement", ex.getMessage());
-//                                mProgressStatus++;
-//                                bar.setProgress(mProgressStatus);
-//                            }
-//
-//                        });
-//                    }
-//                }
-//                else{
-//                    final Intent itmain = new Intent(getApplicationContext(), MainActivity.class);
-//                    bar.setMax(10);
-//                    new Handler().postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            bar.setProgress(2);
-//                        }
-//                    }, 3000);
-//                    new Handler().postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            bar.setProgress(4);
-//                        }
-//                    }, 6000);
-//                    new Handler().postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            bar.setProgress(6);
-//                        }
-//                    }, 9000);
-//                    new Handler().postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            bar.setProgress(8);
-//                        }
-//                    }, 12000);
-//                    new Handler().postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            bar.setProgress(10);
-//                        }
-//                    }, 15000);
-//                    new Handler().postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            finish();
-//                            startActivity(itmain);
-//                        }
-//                    }, 15000);
-//                }
-//            }
-//            else{
-//                final Intent itmain = new Intent(getApplicationContext(), MainActivity.class);
-//                bar.setMax(10);
-//                new Handler().postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        bar.setProgress(2);
-//                    }
-//                }, 3000);
-//                new Handler().postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        bar.setProgress(4);
-//                    }
-//                }, 6000);
-//                new Handler().postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        bar.setProgress(6);
-//                    }
-//                }, 9000);
-//                new Handler().postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        bar.setProgress(8);
-//                    }
-//                }, 12000);
-//                new Handler().postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        bar.setProgress(10);
-//                    }
-//                }, 15000);
-//                new Handler().postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        finish();
-//                        startActivity(itmain);
-//                    }
-//                }, 15000);
-//            }
-//        }catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+//        Intent itmain = new Intent(getApplicationContext(), MainActivity.class);
+//        finish();
+//        startActivity(itmain);
 //    }
+
+    private void loadSpots() {
+
+        spots = new ArrayList<>();
+
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                spots = server.find_spot_user(Integer.valueOf(profile.get(SessionManager.KEY_ID)), 0, 10);
+            }});
+
+        t.start(); // spawn thread
+        try{
+            t.join();
+            if (spots != null) {
+                if (spots.size() > 0) {
+                    bar.setVisibility(View.VISIBLE);
+                    bar.setMax(spots.size());
+                    String dossier = getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
+                    Log.i("Photo", dossier);
+                    File folder = new File(dossier);
+                    if (!folder.exists())
+                        folder.mkdirs();
+
+
+                    for (final Spot s : spots) {
+                        final File file = new File(dossier + File.separator + s.getPhotokey() + ".jpg");
+                        Log.i("test", file.getAbsolutePath());
+                        AWS_Tools aws_tools = new AWS_Tools(getApplicationContext());
+                        int transfertId = aws_tools.download(file, s.getPhotokey());
+                        TransferUtility transferUtility = aws_tools.getTransferUtility();
+                        TransferObserver observer = transferUtility.getTransferById(transfertId);
+                        observer.setTransferListener(new TransferListener() {
+
+                            @Override
+                            public void onStateChanged(int id, TransferState state) {
+                                // do something
+                            }
+
+                            @Override
+                            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                                int rapport = (int) (bytesCurrent * 100);
+                                try {
+                                    rapport /= bytesTotal;
+                                }catch (Exception e){
+                                    rapport= 100;
+                                }
+                                if (rapport == 100) {
+                                    mProgressStatus++;
+                                    bar.setProgress(mProgressStatus);
+                                }
+                                if (bar.getProgress() == spots.size()) {
+                                    if (RAPPORT_PROGRESSION == 0) {
+                                        RAPPORT_PROGRESSION = 1;
+                                        Intent itmain = new Intent(getApplicationContext(), MainActivity.class);
+                                        finish();
+                                        startActivity(itmain);
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onError(int id, Exception ex) {
+                                // do something
+                                Log.e("error chargement", ex.getMessage());
+                                mProgressStatus++;
+                                bar.setProgress(mProgressStatus);
+                            }
+
+                        });
+                    }
+                }
+                else{
+                    final Intent itmain = new Intent(getApplicationContext(), MainActivity.class);
+                    bar.setMax(10);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            bar.setProgress(2);
+                        }
+                    }, 3000);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            bar.setProgress(4);
+                        }
+                    }, 6000);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            bar.setProgress(6);
+                        }
+                    }, 9000);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            bar.setProgress(8);
+                        }
+                    }, 12000);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            bar.setProgress(10);
+                        }
+                    }, 15000);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            finish();
+                            startActivity(itmain);
+                        }
+                    }, 15000);
+                }
+            }
+            else{
+                final Intent itmain = new Intent(getApplicationContext(), MainActivity.class);
+                bar.setMax(10);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        bar.setProgress(2);
+                    }
+                }, 3000);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        bar.setProgress(4);
+                    }
+                }, 6000);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        bar.setProgress(6);
+                    }
+                }, 9000);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        bar.setProgress(8);
+                    }
+                }, 12000);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        bar.setProgress(10);
+                    }
+                }, 15000);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        finish();
+                        startActivity(itmain);
+                    }
+                }, 15000);
+            }
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }

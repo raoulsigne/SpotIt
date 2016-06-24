@@ -124,7 +124,6 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
                 spotTag.setText(chainetag.toString());
             }
             Bitmap bitmap = mapimages.get(spot.getPhotokey()); //BitmapFactory.decodeFile(spot.getPhotokey());
-
             // Get height or width of screen at runtime
             Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
             Point size = new Point();

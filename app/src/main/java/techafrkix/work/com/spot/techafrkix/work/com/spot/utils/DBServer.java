@@ -1538,7 +1538,7 @@ public class DBServer {
 
     public int set_spot_hash(int spot_id, String hash) {
         try {
-            url = new URL(BASE_URL + "api/updatehash");
+            url = new URL(BASE_URL + "/api/updatehash");
             client = (HttpURLConnection) url.openConnection();
             client.setRequestMethod("POST");
             client.setDoOutput(true);
@@ -1555,7 +1555,6 @@ public class DBServer {
             writer.flush();
             writer.close();
             outputPost.close();
-            Log.i(TAG, url.toString());
 
             StringBuilder builder = new StringBuilder();
             BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));

@@ -337,7 +337,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
         if (mMap != null) {
             middle = mMap.getCameraPosition().target;
             Log.i("map", "Pos : " + middle.toString());
-            displaySpotOnMap();
+            displaySpotOnMap(0);
         } else
             Log.i("map", "Map is nulle ");
     }
@@ -372,34 +372,16 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
                 .build();
     }
 
-    private void plotMarkers(ArrayList<MyMarker> markers) {
-        mMap.clear();
-        if (markers.size() > 0) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(Double.valueOf(markers.get(0).getmLatitude()), Double.valueOf(markers.get(0).getmLongitude()))));
-            for (MyMarker myMarker : markers) {
-                // Create user marker with custom icon and other options
-                MarkerOptions markerOption = new MarkerOptions().position(new LatLng(myMarker.getmLatitude(), myMarker.getmLongitude()));
-                markerOption.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-
-                Marker currentMarker = mMap.addMarker(markerOption);
-                mMarkersHashMap.put(currentMarker, myMarker);
-
-                mMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
-            }
-        }
-    }
-
     /**
      * afficher les spots sur la carte en utilisant leur coordonnées
      */
-    private void displaySpotOnMap() {
+    private void displaySpotOnMap(int type) {
         //clear other markers on map and inside the list before adding new one
         mMyMarkersArray.clear();
         profile = session.getUserDetails();
 
         if (middle.latitude != 0) {
-            geohash = new GeoHash(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            geohash = new GeoHash(middle.latitude, middle.longitude);
             int maxZoomLevel = (int)mMap.getMaxZoomLevel();
             int long_hash = (int) ((zoomlevel * geohash.LONGUEUR_HASH)/maxZoomLevel);
             Log.i("map", "longueur geohash = " + long_hash);
@@ -429,11 +411,66 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
                 }
                 else
                     Log.i("test", "spot null");
-                plotMarkers(mMyMarkersArray);
+                if (type == 0)
+                    plotMarkers(mMyMarkersArray);
+                else
+                    plotMarkers_1(mMyMarkersArray);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void plotMarkers(ArrayList<MyMarker> markers) {
+        mMap.clear();
+        if (markers.size() > 0) {
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(Double.valueOf(markers.get(0).getmLatitude()), Double.valueOf(markers.get(0).getmLongitude()))));
+            for (MyMarker myMarker : markers) {
+                // Create user marker with custom icon and other options
+                MarkerOptions markerOption = new MarkerOptions().position(new LatLng(myMarker.getmLatitude(), myMarker.getmLongitude()));
+                markerOption.icon(BitmapDescriptorFactory
+                        .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+
+                Marker currentMarker = mMap.addMarker(markerOption);
+                mMarkersHashMap.put(currentMarker, myMarker);
+
+                mMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
+            }
+        }
+    }
+
+    private void plotMarkers_1(ArrayList<MyMarker> markers) {
+        mMap.clear();
+        if (markers.size() > 0) {
+            for (MyMarker myMarker : markers) {
+                // Create user marker with custom icon and other options
+                MarkerOptions markerOption = new MarkerOptions().position(new LatLng(myMarker.getmLatitude(), myMarker.getmLongitude()));
+                markerOption.icon(BitmapDescriptorFactory
+                        .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+
+                Marker currentMarker = mMap.addMarker(markerOption);
+                mMarkersHashMap.put(currentMarker, myMarker);
+
+                mMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
+            }
+        }
+    }
+
+    public GoogleMap.OnCameraChangeListener getCameraChangeListener() {
+        return new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition position) {
+                LatLng pos = mMap.getCameraPosition().target;
+                int zoom =  (int)position.zoom;
+                Log.i("teste", pos.toString());
+                if (zoom != zoomlevel) {
+                    zoomlevel = zoom;
+                }else if (pos != middle){
+                    middle = pos;
+                }
+                displaySpotOnMap(1);
+            }
+        };
     }
 
     @Override
@@ -459,7 +496,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
                     String.valueOf(mLastLocation.getLongitude()));
             mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
             middle = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-            displaySpotOnMap();
+            displaySpotOnMap(0);
         }
     }
 
@@ -491,22 +528,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.i("map", "connexion failed");
-    }
-
-    public GoogleMap.OnCameraChangeListener getCameraChangeListener() {
-        return new GoogleMap.OnCameraChangeListener() {
-            @Override
-            public void onCameraChange(CameraPosition position) {
-                middle = mMap.getCameraPosition().target;
-                Log.i("map", "Pos : " + middle.toString());
-                Log.i("map", mMap.getMaxZoomLevel() + "");
-                int zoom =  (int)position.zoom;
-                if (zoom != zoomlevel) {
-                    zoomlevel = zoom;
-                    displaySpotOnMap();
-                }
-            }
-        };
     }
 
     public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {

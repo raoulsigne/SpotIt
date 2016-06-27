@@ -93,6 +93,8 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
     private ImageButton myspot;
     private de.hdodenhof.circleimageview.CircleImageView imageprofile;
 
+    private int total_spot;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -139,11 +141,11 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         txtPseudo.setText(profile.get(SessionManager.KEY_NAME));
         txtSpots.setText(profile.get(SessionManager.KEY_SPOT) + " spots" + " | " + profile.get(SessionManager.KEY_RESPOT) + " respots");
         txtFriends.setText(profile.get(SessionManager.KEY_FRIENDS) + " Friends");
-        int n = Integer.valueOf(profile.get(SessionManager.KEY_SPOT)) + Integer.valueOf(profile.get(SessionManager.KEY_RESPOT));
-        if (n <= 1)
-            txtmySpots.setText(n + " Spot");
+        total_spot = Integer.valueOf(profile.get(SessionManager.KEY_SPOT)) + Integer.valueOf(profile.get(SessionManager.KEY_RESPOT));
+        if (total_spot <= 1)
+            txtmySpots.setText(total_spot + " Spot");
         else
-            txtmySpots.setText(n + " Spots");
+            txtmySpots.setText(total_spot + " Spots");
         if (profile.get(SessionManager.KEY_PHOTO) != null & profile.get(SessionManager.KEY_PHOTO) != "") {
             String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
             final File file = new File(dossier + File.separator + profile.get(SessionManager.KEY_PHOTO) + ".jpg");
@@ -176,11 +178,15 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
                         @Override
                         public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
                             int rapport = (int) (bytesCurrent * 100);
-                            rapport /= bytesTotal;
-                            barProgressDialog.setProgress(rapport);
-                            if (rapport == 100) {
+                            if (bytesTotal != 0) {
+                                rapport /= bytesTotal;
+                                if (rapport == 100) {
+                                    barProgressDialog.dismiss();
+                                    imageprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                                }
+                                barProgressDialog.setProgress(rapport);
+                            }else{
                                 barProgressDialog.dismiss();
-                                imageprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
                             }
                         }
 
@@ -420,7 +426,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                spots = server.find_spot_user(Integer.valueOf(profile.get(SessionManager.KEY_ID)), 0, 10);
+                spots = server.find_spot_user(Integer.valueOf(profile.get(SessionManager.KEY_ID)), 0, total_spot);
             }});
 
         t.start(); // spawn thread

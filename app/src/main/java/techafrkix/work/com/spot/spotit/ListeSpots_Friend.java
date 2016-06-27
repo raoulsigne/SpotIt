@@ -334,10 +334,14 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
                             @Override
                             public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
                                 int rapport = (int) (bytesCurrent * 100);
-                                rapport /= bytesTotal;
-                                if (rapport == 100) {
+                                if (bytesTotal != 0) {
+                                    rapport /= bytesTotal;
+                                    if (rapport == 100) {
+                                        barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
+                                        spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
+                                    }
+                                }else{
                                     barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
-                                    spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
                                 }
                                 if (barProgressDialog.getProgress() == spots.size()) {
                                     barProgressDialog.dismiss();
@@ -357,7 +361,7 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
                             @Override
                             public void onError(int id, Exception ex) {
                                 // do something
-                                barProgressDialog.dismiss();
+                                // barProgressDialog.dismiss();
                             }
 
                         });

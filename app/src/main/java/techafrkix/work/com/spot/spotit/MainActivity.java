@@ -655,7 +655,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             Bundle args = new Bundle();
             args.putInt("type", 0);
             args.putSerializable("spots", spots);
-            Log.i("teste", "entrer " + spots.toString());
             fgSpots.setArguments(args);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container, fgSpots, "SPOTS")

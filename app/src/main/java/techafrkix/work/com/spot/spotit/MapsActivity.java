@@ -98,13 +98,13 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
     private DBServer server;
     private GeoHash geohash;
     private LatLng middle;
+    private int zoomlevel;
 
     private ImageButton locateme;
     private TextView txtmyspot;
     private EditText findspot;
 
     private ImageButton myspot;
-    private int zoomlevel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -380,43 +380,44 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
         mMyMarkersArray.clear();
         profile = session.getUserDetails();
 
-        if (middle.latitude != 0) {
-            geohash = new GeoHash(middle.latitude, middle.longitude);
-            int maxZoomLevel = (int)mMap.getMaxZoomLevel();
-            int long_hash = (int) ((zoomlevel * geohash.LONGUEUR_HASH)/maxZoomLevel);
-            Log.i("map", "longueur geohash = " + long_hash);
-            geohash.setLong_hash(long_hash);
-            geohash.setLong_bits(geohash.getLong_hash() * geohash.LONG_DIGIT);
-            geohash.encoder();
-            Thread t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    spots = server.find_spots(geohash.neighbours_1(geohash.getHash()));
-                }
-            });
-
-            t.start(); // spawn thread
-            try {
-                t.join();
-                if (spots != null) {
-                    //afficher le nombre de spots
-                    int n = spots.size();
-                    if (n <= 1)
-                        txtmyspot.setText(n + " Spot");
-                    else
-                        txtmyspot.setText(n + " Spots");
-                    for (Spot s : spots) {
-                        mMyMarkersArray.add(new MyMarker(s.getDate(), s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude())));
+        if (middle != null) {
+            if (middle.latitude != 0) {
+                geohash = new GeoHash(middle.latitude, middle.longitude);
+                int maxZoomLevel = (int) mMap.getMaxZoomLevel();
+                int long_hash = (int) ((zoomlevel * geohash.LONGUEUR_HASH) / maxZoomLevel);
+                Log.i("map", "longueur geohash = " + long_hash);
+                geohash.setLong_hash(long_hash);
+                geohash.setLong_bits(geohash.getLong_hash() * geohash.LONG_DIGIT);
+                geohash.encoder();
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        spots = server.find_spots(geohash.neighbours_1(geohash.getHash()));
                     }
+                });
+
+                t.start(); // spawn thread
+                try {
+                    t.join();
+                    if (spots != null) {
+                        //afficher le nombre de spots
+                        int n = spots.size();
+                        if (n <= 1)
+                            txtmyspot.setText(n + " Spot");
+                        else
+                            txtmyspot.setText(n + " Spots");
+                        for (Spot s : spots) {
+                            mMyMarkersArray.add(new MyMarker(s.getDate(), s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude())));
+                        }
+                    } else
+                        Log.i("test", "spot null");
+                    if (type == 0)
+                        plotMarkers(mMyMarkersArray);
+                    else
+                        plotMarkers_1(mMyMarkersArray);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                else
-                    Log.i("test", "spot null");
-                if (type == 0)
-                    plotMarkers(mMyMarkersArray);
-                else
-                    plotMarkers_1(mMyMarkersArray);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
     }
@@ -424,7 +425,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
     private void plotMarkers(ArrayList<MyMarker> markers) {
         mMap.clear();
         if (markers.size() > 0) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(Double.valueOf(markers.get(0).getmLatitude()), Double.valueOf(markers.get(0).getmLongitude()))));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
             for (MyMarker myMarker : markers) {
                 // Create user marker with custom icon and other options
                 MarkerOptions markerOption = new MarkerOptions().position(new LatLng(myMarker.getmLatitude(), myMarker.getmLongitude()));

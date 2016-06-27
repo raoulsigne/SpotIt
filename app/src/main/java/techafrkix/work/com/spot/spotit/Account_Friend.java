@@ -73,6 +73,8 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
     private ArrayList<MyMarker> mMyMarkersArray = new ArrayList<MyMarker>();
     private DBServer server;
 
+    private int total_spot;
+
     private OnFragmentInteractionListener mListener;
 
     public Account_Friend() {
@@ -129,6 +131,7 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
             txtSpot.setText(friend.getNbspot() + " spots | " + friend.getNbrespot() + " respots");
             txtNbSpot.setText(friend.getNbspot() + " Spots");
             txtNbFriend.setText(friend.getNbfriends() + " friends");
+            total_spot = friend.getNbspot() + friend.getNbrespot();
         }
 
         play_spot.setOnClickListener(new View.OnClickListener() {
@@ -382,7 +385,7 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                spots = server.find_spot_user(friend.getId(), 0, 10);
+                spots = server.find_spot_user(friend.getId(), 0, total_spot);
             }});
 
         t.start(); // spawn thread

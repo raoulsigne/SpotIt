@@ -415,12 +415,15 @@ class CommentAdapter extends ArrayAdapter<Commentaire> {
                         @Override
                         public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
                             int rapport = (int) (bytesCurrent * 100);
-                            rapport /= bytesTotal;
-                            barProgressDialog.setProgress(rapport);
-                            if (rapport == 100) {
+                            if (bytesTotal != 0) {
+                                rapport /= bytesTotal;
+                                barProgressDialog.setProgress(rapport);
+                                if (rapport == 100) {
+                                    barProgressDialog.dismiss();
+                                    photoprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                                }
+                            }else
                                 barProgressDialog.dismiss();
-                                photoprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
-                            }
                         }
 
                         @Override

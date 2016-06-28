@@ -312,6 +312,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                                     }
                                 }else{
                                     barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
+                                    tampon.remove(s);
                                 }
                                 if (barProgressDialog.getProgress() == barProgressDialog.getMax()) {
                                     barProgressDialog.dismiss();

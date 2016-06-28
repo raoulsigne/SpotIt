@@ -59,11 +59,13 @@ public class DBServer {
     private static final String URL_FIND_SPOT = "/api/findspots";
     private static final String URL_FIND_SPOT_2 = "/api/findspotswithtagorhash";
     private static final String URL_FIND_ALL_SPOT = "/api/findallspots";
-    private static final String URL_ADD_FRIEND = "/api/friendships";
-    private static final String URL_LIST_FRIEND = "/api/friendships";
+    private static final String URL_FRIEND = "/api/friendships";
     private static final String URL_LIST_NOTIFICATION = "/api/notifications";
     private static final String URL_FIND_USER = "/api/findusers";
     private static final String URL_FIND_SPOT_USER = "/api/allspotslistwithoffset";
+
+    private static final int STATUT_REQUEST = 0;
+    private static final int STATUT_CONFIRM = 1;
 
     public static final int CONNEXION_FB = 11;
     public static final int CONNEXION_NORMAL = 1;
@@ -230,77 +232,6 @@ public class DBServer {
         }
 
         return -1;
-    }
-
-    /**
-     * fonction qui retourne la liste des amis d'un utilisateurs
-     *
-     * @param user_one id du premier utilisateur
-     * @param user_two id de l'utilisateur ami
-     * @return retourne le code de retour
-     */
-    public int add_friend(int user_one, int user_two) {
-        try {
-            url = new URL(BASE_URL + URL_ADD_FRIEND);
-            client = (HttpURLConnection) url.openConnection();
-            client.setRequestMethod("POST");
-            client.setDoOutput(true);
-
-            OutputStream outputPost = new BufferedOutputStream(client.getOutputStream());
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputPost, "UTF-8"));
-
-            ContentValues values = new ContentValues();
-            values.put("apikey", API_KEY);
-            values.put("user_one", user_one);
-            values.put("user_two", user_two);
-
-            writer.write(getQuery(values));
-            writer.flush();
-            writer.close();
-            outputPost.close();
-            Log.i(TAG, getQuery(values));
-
-            StringBuilder builder = new StringBuilder();
-            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            String line;
-            while ((line = br.readLine()) != null) {
-                builder.append(line + "\n");
-            }
-            br.close();
-
-            try {
-                JSONObject json = new JSONObject(builder.toString());
-                int statut = Integer.valueOf(json.getString("statut"));
-                if (statut == 1) {
-                    builder.append("statut = " + json.getString("statut"));
-                    builder.append("insertId = " + json.getString("insertId"));
-                } else {
-                    builder.append("statut = " + json.getString("statut"));
-                    builder.append("errcode = " + json.getString("errcode"));
-                    builder.append("message = " + json.getString("message"));
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            Log.i(TAG, "reponse = " + builder.toString());
-
-        } catch (MalformedURLException error) {
-            //Handles an incorrectly entered URL
-            Log.e(TAG, "MalformedURLException " + error.getMessage());
-            return 1;
-        } catch (SocketTimeoutException error) {
-            //Handles URL access timeout.
-            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
-            return 1;
-        } catch (IOException error) {
-            //Handles input and output errors
-            Log.e(TAG, "IOException " + error.toString());
-            return 1;
-        } finally {
-            client.disconnect();
-        }
-
-        return 0;
     }
 
     /**
@@ -540,6 +471,154 @@ public class DBServer {
     }
 
     /**
+     * fonction qui retourne la liste des amis d'un utilisateurs
+     *
+     * @param user_one id du premier utilisateur
+     * @param user_two id de l'utilisateur ami
+     * @return retourne le code de retour
+     */
+    public int send_friend_request(int user_one, int user_two) {
+        try {
+            url = new URL(BASE_URL + URL_FRIEND);
+            client = (HttpURLConnection) url.openConnection();
+            client.setRequestMethod("POST");
+            client.setDoOutput(true);
+
+            OutputStream outputPost = new BufferedOutputStream(client.getOutputStream());
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputPost, "UTF-8"));
+
+            ContentValues values = new ContentValues();
+            values.put("apikey", API_KEY);
+            values.put("user_one", user_one);
+            values.put("user_two", user_two);
+            values.put("statut", STATUT_REQUEST);
+
+            writer.write(getQuery(values));
+            writer.flush();
+            writer.close();
+            outputPost.close();
+            Log.i(TAG, getQuery(values));
+
+            StringBuilder builder = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                builder.append(line + "\n");
+            }
+            br.close();
+            Log.i(TAG, "reponse = " + builder.toString());
+
+            try {
+                JSONObject json = new JSONObject(builder.toString());
+                int statut = Integer.valueOf(json.getString("statut"));
+                if (statut == 1) {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("insertId = " + json.getString("insertId"));
+                    return statut;
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
+                    builder.append("message = " + json.getString("message"));
+                    return Integer.valueOf(json.getString("errcode"));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        } catch (MalformedURLException error) {
+            //Handles an incorrectly entered URL
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
+            return -1;
+        } catch (SocketTimeoutException error) {
+            //Handles URL access timeout.
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
+            return -1;
+        } catch (IOException error) {
+            //Handles input and output errors
+            Log.e(TAG, "IOException " + error.toString());
+            return -1;
+        } finally {
+            client.disconnect();
+        }
+
+        return -1;
+    }
+
+    /**
+     *
+     * @param user_one
+     * @param user_two
+     * @param friendship_id
+     * @return
+     */
+    public int confirmer_friendship(int user_one, int user_two, int friendship_id){
+        try {
+            url = new URL(BASE_URL + URL_FRIEND);
+            client = (HttpURLConnection) url.openConnection();
+            client.setRequestMethod("PUT");
+            client.setDoOutput(true);
+
+            OutputStream outputPost = new BufferedOutputStream(client.getOutputStream());
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputPost, "UTF-8"));
+
+            ContentValues values = new ContentValues();
+            values.put("apikey", API_KEY);
+            values.put("user_one", user_one);
+            values.put("user_two", user_two);
+            values.put("id", friendship_id);
+            values.put("statut", STATUT_CONFIRM);
+
+            writer.write(getQuery(values));
+            writer.flush();
+            writer.close();
+            outputPost.close();
+            Log.i(TAG, getQuery(values));
+
+            StringBuilder builder = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                builder.append(line + "\n");
+            }
+            br.close();
+
+            try {
+                JSONObject json = new JSONObject(builder.toString());
+                int statut = Integer.valueOf(json.getString("statut"));
+                if (statut == 1) {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("insertId = " + json.getString("insertId"));
+                    return statut;
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
+                    builder.append("message = " + json.getString("message"));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Log.i(TAG, "reponse = " + builder.toString());
+
+        } catch (MalformedURLException error) {
+            //Handles an incorrectly entered URL
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
+            return -1;
+        } catch (SocketTimeoutException error) {
+            //Handles URL access timeout.
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
+            return -1;
+        } catch (IOException error) {
+            //Handles input and output errors
+            Log.e(TAG, "IOException " + error.toString());
+            return -1;
+        } finally {
+            client.disconnect();
+        }
+
+        return -1;
+    }
+
+    /**
      * fonction qui retourne la liste des amis d'un utilisateur
      *
      * @param user_id represente l'id de l'utilisateur concerné
@@ -552,8 +631,12 @@ public class DBServer {
             ContentValues values = new ContentValues();
             values.put("apikey", API_KEY);
             values.put("user_id", user_id);
+            values.put("statut", STATUT_CONFIRM);
 
-            url = new URL(BASE_URL + URL_LIST_FRIEND + "?" + getQuery(values));
+            url = new URL(BASE_URL + URL_FRIEND + "?" + getQuery(values));
+
+            Log.i("url", url.toString());
+
             client = (HttpURLConnection) url.openConnection();
             client.setRequestMethod("GET");
 
@@ -614,6 +697,83 @@ public class DBServer {
         }
     }
 
+    /**
+     * fonction qui retourne la liste des amis d'un utilisateur
+     *
+     * @param user_id represente l'id de l'utilisateur concerné
+     * @return retourne une liste d'utilisateur
+     */
+    public ArrayList<Utilisateur> waiting_friend(int user_id) {
+        ArrayList<Utilisateur> users = new ArrayList<Utilisateur>();
+        Utilisateur user = new Utilisateur();
+        try {
+            ContentValues values = new ContentValues();
+            values.put("apikey", API_KEY);
+            values.put("user_id", user_id);
+            values.put("statut", STATUT_REQUEST);
+
+            url = new URL(BASE_URL + URL_FRIEND + "?" + getQuery(values));
+            client = (HttpURLConnection) url.openConnection();
+            client.setRequestMethod("GET");
+
+            StringBuilder builder = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                builder.append(line + "\n");
+            }
+            br.close();
+
+            try {
+                JSONObject json = new JSONObject(builder.toString());
+                int statut = Integer.valueOf(json.getString("statut"));
+                if (statut == 1) {
+                    JSONArray jArr = json.getJSONArray("data");
+                    for (int i = 0; i < jArr.length(); i++) {
+                        JSONObject json2 = jArr.getJSONObject(i);
+                        user = new Utilisateur();
+                        user.setEmail((String) json2.get(MaBaseOpenHelper.COLONNE_EMAIL));
+                        user.setId((int) json2.get(MaBaseOpenHelper.COLONNE_USER_ID));
+                        user.setPseudo((String) json2.get(MaBaseOpenHelper.COLONNE_PSEUDO));
+                        user.setPhoto((String) json2.get(MaBaseOpenHelper.COLONNE_PHOTO_PROFILE));
+                        user.setNbrespot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_RESPOT));
+                        user.setNbspot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_SPOT));
+                        user.setNbfriends((int) json2.get("nbfriend"));
+
+                        users.add(user);
+                    }
+                    Log.i(TAG, "reponse = " + builder.toString());
+                    return users;
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
+                    builder.append("message = " + json.getString("message"));
+
+                    Log.i(TAG, "reponse = " + builder.toString());
+                    return null;
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "JSONException " + e.getMessage());
+                return null;
+            }
+        } catch (MalformedURLException error) {
+            //Handles an incorrectly entered URL
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
+            return null;
+        } catch (SocketTimeoutException error) {
+            //Handles URL access timeout.
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
+            return null;
+        } catch (IOException error) {
+            //Handles input and output errors
+            Log.e(TAG, "IOException " + error.getMessage());
+            return null;
+        } finally {
+            client.disconnect();
+        }
+    }
+
+
     public int friends_count(int user_id) {
         ArrayList<Utilisateur> users = new ArrayList<Utilisateur>();
         Utilisateur user = new Utilisateur();
@@ -622,7 +782,7 @@ public class DBServer {
             values.put("apikey", API_KEY);
             values.put("user_id", user_id);
 
-            url = new URL(BASE_URL + URL_LIST_FRIEND + "?" + getQuery(values));
+            url = new URL(BASE_URL + URL_FRIEND + "?" + getQuery(values));
             client = (HttpURLConnection) url.openConnection();
             client.setRequestMethod("GET");
 

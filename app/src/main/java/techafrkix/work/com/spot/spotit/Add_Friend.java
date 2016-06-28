@@ -13,7 +13,10 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +28,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
@@ -68,6 +72,7 @@ public class Add_Friend extends Fragment {
     private ArrayList<Utilisateur> users;
     private SessionManager session;
     private HashMap<String, String> profile;
+    private int response;
 
     private OnFragmentInteractionListener mListener;
 
@@ -110,6 +115,8 @@ public class Add_Friend extends Fragment {
         edtFindspot = (EditText) view.findViewById(R.id.edtFindspot);
         lvfriends = (ListView) view.findViewById(R.id.friends);
         btnLaunch = (Button)view.findViewById(R.id.btnLaunch);
+
+        registerForContextMenu(lvfriends);
 
         // Session class instance
         session = new SessionManager(getActivity());
@@ -187,6 +194,52 @@ public class Add_Friend extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getActivity().getMenuInflater();
+        inflater.inflate(R.menu.context_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        int index = info.position;
+        switch (item.getItemId()) {
+            case R.id.sendrequest:
+                sendrequest(index);
+                return true;
+            case R.id.viewprofile:
+                mListener.onLoadFriend(users.get(index));
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+
+    private void sendrequest(final int index){
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                response = server.send_friend_request(Integer.valueOf(profile.get(SessionManager.KEY_ID)), users.get(index).getId());
+            }
+        });
+
+        t.start(); // spawn thread
+        try {
+            t.join();
+            if (response > 0) {
+                Toast.makeText(getActivity(), "your request has been sent", Toast.LENGTH_LONG).show();
+            }else if (response == -5){
+                Toast.makeText(getActivity(), "Request already sent! wait for user confirmation", Toast.LENGTH_LONG).show();
+            }else
+                Log.e("server", "problem when sending request");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -356,6 +409,8 @@ public class Add_Friend extends Fragment {
                 else
                     imgaction.setBackground(getResources().getDrawable(R.drawable.plus));
             }
+            else
+                imgaction.setBackground(getResources().getDrawable(R.drawable.plus));
 
             return rowView;
         }

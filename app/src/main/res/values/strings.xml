@@ -3,6 +3,11 @@
     <string name="facebook_app_id">266488693686761</string>
     <string name="google_app_id">63279613137</string>
     <string name="title_activity_maps">Map</string>
+
+    <string name="GCM_PROJECT_NUMBER_NUMBER">63279613137</string>
+    <string name="GCM_PROJECT_NUMBER_ID">Map</string>
+    <string name="GCM_API_KEY">AIzaSyD4rV0UCi4CmhMyxyEjLHIdmW-0Ks9Qz-c</string>
+
     <string-array name="visibility">
         <item>Moi</item>
         <item>Amis</item>

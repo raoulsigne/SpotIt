@@ -1,9 +1,11 @@
 package techafrkix.work.com.spot.bd;
 
+import java.io.Serializable;
+
 /**
  * Created by techafrkix0 on 24/05/2016.
  */
-public class Notification {
+public class Notification implements Serializable{
 
     private int id;
     private int typenotification_id;

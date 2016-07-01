@@ -48,6 +48,7 @@ public class DBServer {
     private static final String API_KEY = "012YEYQS5653278GHQSD234671QSDF26";
     private static final String URL_USER = "/api/users";
     private static final String URL_USER_PHOTO = "/api/setphotoprofile";
+    private static final String URL_USER_DEVICE_ID = "/api/setDeviceId";
     private static final String URL_CHECK = "/api/userwithpseudo";
     private static final String URL_LOGIN = "/api/login";
     private static final String URL_SPOT = "/api/spots";
@@ -63,6 +64,7 @@ public class DBServer {
     private static final String URL_LIST_NOTIFICATION = "/api/notifications";
     private static final String URL_FIND_USER = "/api/findusers";
     private static final String URL_FIND_SPOT_USER = "/api/allspotslistwithoffset";
+    private static final String URL_SEND_NOTIFICATION = "/api/testnotif";
 
     private static final int STATUT_REQUEST = 0;
     private static final int STATUT_CONFIRM = 1;
@@ -199,6 +201,76 @@ public class DBServer {
             }
             br.close();
             Log.i(TAG, "reponse = " + builder.toString());
+
+            try {
+                JSONObject json = new JSONObject(builder.toString());
+                int statut = Integer.valueOf(json.getString("statut"));
+                if (statut == 1) {
+                    builder.append("statut = " + json.getString("statut"));
+                    return 1;
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
+                    builder.append("message = " + json.getString("message"));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        } catch (MalformedURLException error) {
+            //Handles an incorrectly entered URL
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
+            return -1;
+        } catch (SocketTimeoutException error) {
+            //Handles URL access timeout.
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
+            return -1;
+        } catch (IOException error) {
+            //Handles input and output errors
+            Log.e(TAG, "IOException " + error.toString());
+            return -1;
+        } finally {
+            client.disconnect();
+        }
+
+        return -1;
+    }
+
+    /**
+     *
+     * @param userid
+     * @param android_id
+     * @return
+     */
+    public int set_device_id(int userid, String android_id) {
+        try {
+            url = new URL(BASE_URL + URL_USER_DEVICE_ID);
+            client = (HttpURLConnection) url.openConnection();
+            client.setRequestMethod("POST");
+            client.setDoOutput(true);
+
+            OutputStream outputPost = new BufferedOutputStream(client.getOutputStream());
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputPost, "UTF-8"));
+
+            ContentValues values = new ContentValues();
+            values.put("apikey", API_KEY);
+            values.put("user_id", userid);
+            values.put("androidid", android_id);
+
+            writer.write(getQuery(values));
+            writer.flush();
+            writer.close();
+            outputPost.close();
+            Log.i(TAG, url.toString());
+
+            StringBuilder builder = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                builder.append(line + "\n");
+            }
+            br.close();
+            Log.i(TAG, "reponse device id = " + builder.toString());
 
             try {
                 JSONObject json = new JSONObject(builder.toString());
@@ -1724,6 +1796,74 @@ public class DBServer {
             }
             br.close();
             Log.i(TAG, "reponse = " + builder.toString());
+
+            try {
+                JSONObject json = new JSONObject(builder.toString());
+                int statut = Integer.valueOf(json.getString("statut"));
+                if (statut == 1) {
+                    builder.append("statut = " + json.getString("statut"));
+                    return 1;
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
+                    builder.append("message = " + json.getString("message"));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        } catch (MalformedURLException error) {
+            //Handles an incorrectly entered URL
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
+            return -1;
+        } catch (SocketTimeoutException error) {
+            //Handles URL access timeout.
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
+            return -1;
+        } catch (IOException error) {
+            //Handles input and output errors
+            Log.e(TAG, "IOException " + error.toString());
+            return -1;
+        } finally {
+            client.disconnect();
+        }
+
+        return -1;
+    }
+
+    /**
+     *
+     * @param userid
+     * @return
+     */
+    public int send_notification(int userid) {
+        try {
+            url = new URL(BASE_URL + URL_SEND_NOTIFICATION);
+            client = (HttpURLConnection) url.openConnection();
+            client.setRequestMethod("POST");
+            client.setDoOutput(true);
+
+            OutputStream outputPost = new BufferedOutputStream(client.getOutputStream());
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputPost, "UTF-8"));
+
+            ContentValues values = new ContentValues();
+            values.put("apikey", API_KEY);
+            values.put("user_id", userid);
+
+            writer.write(getQuery(values));
+            writer.flush();
+            writer.close();
+            outputPost.close();
+            Log.i(TAG, url.toString());
+
+            StringBuilder builder = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                builder.append(line + "\n");
+            }
+            br.close();
+            Log.i(TAG, "reponse notif = " + builder.toString());
 
             try {
                 JSONObject json = new JSONObject(builder.toString());

@@ -146,14 +146,15 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
             txtmySpots.setText(total_spot + " Spot");
         else
             txtmySpots.setText(total_spot + " Spots");
+
         if (profile.get(SessionManager.KEY_PHOTO) != null & profile.get(SessionManager.KEY_PHOTO) != "") {
+            Log.i("file", profile.get(SessionManager.KEY_PHOTO));
             String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
             final File file = new File(dossier + File.separator + profile.get(SessionManager.KEY_PHOTO) + ".jpg");
 
             if (file.exists()) {
                 // marker.showInfoWindow();
                 imageprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
-                Log.i("file", "file exists");
             } else {
                 if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
                     Log.i("file", "file not exists");

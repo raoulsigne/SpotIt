@@ -10,6 +10,8 @@ public class Notification implements Serializable{
     private int id;
     private int typenotification_id;
     private int user_id;
+    private int sender_id;
+    private String data;
     private String message;
     private String created;
 

@@ -4,8 +4,8 @@
     <string name="google_app_id">63279613137</string>
     <string name="title_activity_maps">Map</string>
 
-    <string name="GCM_PROJECT_NUMBER_NUMBER">63279613137</string>
-    <string name="GCM_PROJECT_NUMBER_ID">Map</string>
+    <string name="GCM_PROJECT_NUMBER_NUMBER">674910960416</string>
+    <string name="GCM_PROJECT_NUMBER_ID">spotit-1357</string>
     <string name="GCM_API_KEY">AIzaSyD4rV0UCi4CmhMyxyEjLHIdmW-0Ks9Qz-c</string>
 
     <string-array name="visibility">

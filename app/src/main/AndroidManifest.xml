@@ -101,7 +101,8 @@
             android:screenOrientation="portrait"
             android:theme="@style/Base.Theme.AppCompat" />
         <activity android:name=".Welcome" />
-        <activity android:name=".Test" />
+        <activity android:name=".Test" >
+        </activity>
 
         <receiver android:name=".GcmBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
@@ -110,7 +111,7 @@
                 <category android:name="com.ippon.fr.android" />
             </intent-filter>
         </receiver>
-        <service android:name=".GCMNotificationIntentService" />
+        <service android:name=".GcmIntentService" />
     </application>
 
 </manifest>

@@ -65,7 +65,7 @@ public class SessionManager {
     public static final String KEY_PHOTO = "photo";
 
     // GCM registration id
-    public static final String KEY_REGISTRATION_ID = "photo";
+    public static final String KEY_REGISTRATION_ID = "gcm_registration_id";
 
     // <user Id (make variable public to access from outside)
     public static final String KEY_OFFSET = "offset";
@@ -113,7 +113,7 @@ public class SessionManager {
         // Récupération du registerId du terminal ou enregistrement de ce dernier
         regId = registerGCM();
         if (TextUtils.isEmpty(regId)){
-            Log.d("GCM", "register key vide");
+            Log.i("GCM", "register key vide");
         }else
             editor.putString(KEY_REGISTRATION_ID, regId);
 

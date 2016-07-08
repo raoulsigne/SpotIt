@@ -410,7 +410,7 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
         mMap.clear();
         if(markers.size() > 0)
         {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(markers.get(0).getmLatitude(), markers.get(0).getmLongitude()), 15));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(markers.get(0).getmLatitude(), markers.get(0).getmLongitude()), 10));
             for (MyMarker myMarker : markers)
             {
 

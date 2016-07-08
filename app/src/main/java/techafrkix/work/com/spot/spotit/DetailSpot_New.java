@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +40,8 @@ public class DetailSpot_New extends AppCompatActivity {
     TextView txtMoi, txtAmis, txtPublic;
     EditText edtTags;
     ImageView imgspot;
+    LinearLayout liste;
+    Button buttonAdd;
 
     AWS_Tools aws_tools;
     private SessionManager session;
@@ -81,10 +84,33 @@ public class DetailSpot_New extends AppCompatActivity {
         txtPublic = (TextView)findViewById(R.id.txtPublic);
         imgspot = (ImageView)findViewById(R.id.imgspot);
         edtTags = (EditText)findViewById(R.id.edtTags);
+        liste = (LinearLayout) findViewById(R.id.listes);
+        buttonAdd = (Button) findViewById(R.id.btnAdd);
 
         imgspot.setImageBitmap(BitmapFactory.decodeFile(imagepath));
 
-        edtTags.addTextChangedListener(new MyTextWatcher(edtTags));
+//        edtTags.addTextChangedListener(new MyTextWatcher(edtTags));
+
+        buttonAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String chaine = edtTags.getText().toString();
+                View child = getLayoutInflater().inflate(R.layout.btntag, null);
+                ((Button)child.findViewById(R.id.button)).setText(chaine);
+                liste.addView(child);
+
+                child.requestFocus(); //change the position of the visible element inside a list
+
+                edtTags.setText("");
+
+                child.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        liste.removeView(view); //remove the view element inside the linearlayout
+                    }
+                });
+            }
+        });
 
         vMoi.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,8 +160,13 @@ public class DetailSpot_New extends AppCompatActivity {
                     geoHash.encoder();
                     String temps = profile.get(SessionManager.KEY_ID) + "_" + String.valueOf(System.currentTimeMillis());
 
-                    String chaine = edtTags.getText().toString();
-                    final String[] tags = chaine.split(" ");
+                    int childcount = liste.getChildCount();
+                    final String[] tags = new String[childcount];
+                    for (int i=0; i < childcount; i++){
+                        View view = liste.getChildAt(i);
+                        tags[i] = ((Button)view.findViewById(R.id.button)).getText().toString();
+                        Log.i("tags", tags[i]);
+                    }
 
                     final Spot spot = new Spot();
                     spot.setLongitude(String.valueOf(longitude));
@@ -254,4 +285,6 @@ public class DetailSpot_New extends AppCompatActivity {
         }
 
     }
+
+
 }

@@ -448,7 +448,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
     {
         if(markers.size() > 0)
         {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(markers.get(0).getmLatitude(), markers.get(0).getmLongitude()), 15));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(markers.get(0).getmLatitude(), markers.get(0).getmLongitude()), 10));
             for (MyMarker myMarker : markers)
             {
                 // Create user marker with custom icon and other options

@@ -334,6 +334,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
 
     @Override
     public void onMapLoaded() {
+//        mMap.animateCamera( CameraUpdateFactory.zoomTo( 11.0f ) );
+
         if (mMap != null) {
             middle = mMap.getCameraPosition().target;
             Log.i("map", "Pos : " + middle.toString());
@@ -466,10 +468,11 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
                 Log.i("teste", pos.toString());
                 if (zoom != zoomlevel) {
                     zoomlevel = zoom;
+                    displaySpotOnMap(1);
                 }else if (pos != middle){
                     middle = pos;
+                    displaySpotOnMap(1);
                 }
-                displaySpotOnMap(1);
             }
         };
     }

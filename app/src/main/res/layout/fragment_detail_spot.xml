@@ -23,18 +23,53 @@
                 android:layout_marginBottom="10dp"
                 android:scaleType="centerCrop" />
 
-            <EditText
+            <HorizontalScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="20dp"
-                android:textSize="14sp"
-                android:hint="list tags here"
-                android:id="@+id/edtTags"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/listes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:isScrollContainer="true"
+                    android:orientation="horizontal"/>
+
+            </HorizontalScrollView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
                 android:layout_gravity="center_horizontal"
-                android:background="@drawable/custom_edittext"/>
+                android:background="@drawable/custom_bar"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/edtTags"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/custom_edittext"
+                    android:hint="Type tag here"
+                    android:padding="10dp"
+                    android:textSize="14sp" />
+
+                <Button
+                    android:id="@+id/btnAdd"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="10dp"
+                    android:background="@color/blanc"
+                    android:text="Add"
+                    android:textAllCaps="false"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"

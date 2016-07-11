@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -39,11 +40,13 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.facebook.Profile;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Calendar;
 
@@ -60,6 +63,9 @@ public class Inscription extends AppCompatActivity {
     LoginButton fbSignin;
     Button signin;
     ProgressDialog progress;
+
+    GoogleCloudMessaging gcm;
+    String regId;
 
     // Session Manager Class
     SessionManager session;
@@ -89,6 +95,8 @@ public class Inscription extends AppCompatActivity {
         session = new SessionManager(getApplicationContext());
         server = new DBServer(getApplicationContext());
         final Intent itmain = new Intent(this,MainActivity.class);
+        registerDevice();
+        Log.i(TAG, "android id = " + regId);
 
         //recuperation des elements graphiques
         fbSignin = (LoginButton)findViewById(R.id.login_button);
@@ -179,7 +187,7 @@ public class Inscription extends AppCompatActivity {
                                 public void run() {
                                     String pass = BCrypt.hashpw(user.getPassword()+_TO_CONCAT, BCrypt.gensalt(12)).toString();
                                     USER_ID = server.register(user.getEmail(), user.getPseudo(),
-                                            pass, DBServer.CONNEXION_NORMAL, user.getDate_naissance());
+                                            pass, DBServer.CONNEXION_NORMAL, user.getDate_naissance(), regId);
                                 }});
 
                             t.start(); // spawn thread
@@ -348,7 +356,7 @@ public class Inscription extends AppCompatActivity {
                                                                             @Override
                                                                             public void run() {
                                                                                 USER_ID = server.register(user.getEmail(), user.getPseudo(),
-                                                                                        user.getPassword(), DBServer.CONNEXION_FB, user.getDate_naissance());
+                                                                                        user.getPassword(), DBServer.CONNEXION_FB, user.getDate_naissance(), regId);
                                                                             }});
 
                                                                         t3.start(); // spawn thread
@@ -447,5 +455,28 @@ public class Inscription extends AppCompatActivity {
             if (day < 10) jour = "0"+day;
             date.setText(year + "-" + mois + "-" + jour);
         }
+    }
+
+    /** * Cette méthode permet l'enregistrement du terminal */
+    private void registerDevice() {
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                String msg = "";
+                try {
+                    if (gcm == null) {
+                        gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
+                    }
+                    regId = gcm.register(getApplicationContext().getResources().getString(R.string.GCM_PROJECT_NUMBER_NUMBER));
+                    msg = "Terminal enregistré, register ID=" + regId;
+                    // On enregistre le registerId dans les SharedPreferences
+                    Log.i("GCM: ", msg);
+                } catch (IOException ex) {
+                    msg = "Error :" + ex.getMessage();
+                    Log.e("GCM Error: ", msg);
+                }
+                return msg;
+            }
+        }.execute(null, null, null);
     }
 }

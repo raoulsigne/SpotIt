@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.support.v4.content.IntentCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -32,9 +33,12 @@ import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import org.json.JSONObject;
 import org.mindrot.jbcrypt.BCrypt;
+
+import java.io.IOException;
 
 import techafrkix.work.com.spot.bd.Utilisateur;
 import techafrkix.work.com.spot.bd.UtilisateurDBAdapteur;
@@ -48,6 +52,9 @@ public class Connexion extends AppCompatActivity {
     CallbackManager callbackManager;
     EditText email, password;
     Switch switch_pwd;
+
+    GoogleCloudMessaging gcm;
+    String regId;
 
     UtilisateurDBAdapteur dbAdapteur;
     SQLiteDatabase db;
@@ -73,6 +80,8 @@ public class Connexion extends AppCompatActivity {
         // Session class instance
         session = new SessionManager(getApplicationContext());
         server = new DBServer(getApplicationContext());
+        registerDevice();
+        Log.i(TAG, "android id = " + regId);
 
         //recuperation des elements de l'activité
         email = (EditText)findViewById(R.id.editText2);
@@ -224,7 +233,7 @@ public class Connexion extends AppCompatActivity {
                                                                             @Override
                                                                             public void run() {
                                                                                 USER_ID = server.register(user.getEmail(), user.getPseudo(),
-                                                                                        user.getPassword(), DBServer.CONNEXION_FB, user.getDate_naissance());
+                                                                                        user.getPassword(), DBServer.CONNEXION_FB, user.getDate_naissance(), regId);
 
                                                                             }});
 
@@ -237,6 +246,9 @@ public class Connexion extends AppCompatActivity {
                                                                                 // For testing i am stroing name, email as follow
                                                                                 // Use user real data
                                                                                 session.createLoginSession(pseudo, user.getEmail(), USER_ID);
+
+                                                                                session.createLoginSession(user.getPseudo(), user.getEmail(), USER_ID,
+                                                                                        0, 0, 0, "");
 
                                                                                 startActivity(itwelcome);
                                                                             } else {
@@ -348,5 +360,28 @@ public class Connexion extends AppCompatActivity {
             return true;
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         return accessToken != null;
+    }
+
+    /** * Cette méthode permet l'enregistrement du terminal */
+    private void registerDevice() {
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                String msg = "";
+                try {
+                    if (gcm == null) {
+                        gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
+                    }
+                    regId = gcm.register(getApplicationContext().getResources().getString(R.string.GCM_PROJECT_NUMBER_NUMBER));
+                    msg = "Terminal enregistré, register ID=" + regId;
+                    // On enregistre le registerId dans les SharedPreferences
+                    Log.i("GCM: ", msg);
+                } catch (IOException ex) {
+                    msg = "Error :" + ex.getMessage();
+                    Log.e("GCM Error: ", msg);
+                }
+                return msg;
+            }
+        }.execute(null, null, null);
     }
 }

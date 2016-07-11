@@ -79,10 +79,10 @@ public class Welcome extends AppCompatActivity {
                 }
 
                 //set device id
-                if (profile.get(SessionManager.KEY_REGISTRATION_ID) != null)
-                    server.set_device_id(Integer.valueOf(profile.get(SessionManager.KEY_ID)), profile.get(SessionManager.KEY_REGISTRATION_ID));
-                else
-                    Log.e("GCM", "registration id null");
+//                if (profile.get(SessionManager.KEY_REGISTRATION_ID) != null)
+//                    server.set_device_id(Integer.valueOf(profile.get(SessionManager.KEY_ID)), profile.get(SessionManager.KEY_REGISTRATION_ID));
+//                else
+//                    Log.e("GCM", "registration id null");
             }
         });
 

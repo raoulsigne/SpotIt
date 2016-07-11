@@ -94,9 +94,10 @@ public class DBServer {
      * @param password         son mot de passe
      * @param typeconnexion_id ceci renseigne s'il s'est connecté avec facebook ou non
      * @param birth            date de naissance au format yyyy-mm-dd
+     * @param androidid        device id from gcm server
      * @return retourne un entier qui represente le code de retour
      */
-    public int register(String email, String pseudo, String password, int typeconnexion_id, String birth) {
+    public int register(String email, String pseudo, String password, int typeconnexion_id, String birth, String androidid) {
 
         try {
             url = new URL(BASE_URL + URL_USER);
@@ -114,6 +115,7 @@ public class DBServer {
             values.put("password", password);
             values.put("typeconnexion_id", typeconnexion_id);
             values.put("birth", birth);
+            values.put("androidid", androidid);
 
             writer.write(getQuery(values));
             writer.flush();
@@ -128,7 +130,7 @@ public class DBServer {
                 builder.append(line + "\n");
             }
             br.close();
-            Log.i(TAG, "reponse = " + builder.toString());
+            Log.i(TAG, "reponse = " + builder.toString() + " androidid=" + androidid);
 
             try {
                 JSONObject json = new JSONObject(builder.toString());

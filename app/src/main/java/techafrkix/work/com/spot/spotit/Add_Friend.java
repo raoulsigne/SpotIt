@@ -53,7 +53,7 @@ import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
  * Use the {@link Add_Friend#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Add_Friend extends Fragment {
+public class Add_Friend extends Fragment implements FriendCallback{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -69,7 +69,8 @@ public class Add_Friend extends Fragment {
 
     private DBServer server;
     private ArrayList<String> friends;
-    private ArrayList<Utilisateur> users;
+    private ArrayList<Utilisateur> users, waiting_friends;
+    private Utilisateur[] tampons;
     private SessionManager session;
     private HashMap<String, String> profile;
     private int response;
@@ -124,27 +125,52 @@ public class Add_Friend extends Fragment {
         server = new DBServer(getActivity());
         profile = session.getUserDetails();
         users = new ArrayList<>();
+        waiting_friends = new ArrayList<>();
         friends = new ArrayList<>();
 
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                users = server.getAllFriends(Integer.valueOf(profile.get(SessionManager.KEY_ID)));
+                users = server.getAllFriends(Integer.valueOf(profile.get(SessionManager.KEY_ID))); // amis confirmés
             }});
 
         t.start(); // spawn thread
         try{
             t.join();
-            if (users != null){
-                friends = new ArrayList<>();
-                Utilisateur[] tampons = new Utilisateur[users.size()];
-                for (int i = 0; i < users.size(); i++) {
-                    tampons[i] = users.get(i);
-                    friends.add(users.get(i).getPseudo());
+
+            Thread t1 = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    waiting_friends = server.waiting_friend(Integer.valueOf(profile.get(SessionManager.KEY_ID))); // amis en attente
+                }});
+
+            t1.start(); // spawn thread
+            try{
+                t1.join();
+
+                if (waiting_friends == null)
+                    waiting_friends = new ArrayList<>();
+                if (users == null)
+                    users = new ArrayList<>();
+                if (users != null){
+                    friends = new ArrayList<>();
+                    tampons = new Utilisateur[users.size() + waiting_friends.size()];
+                    int i = 0;
+                    for (i = 0; i < users.size(); i++) {
+                        tampons[i] = users.get(i);
+                        friends.add(users.get(i).getPseudo());
+                    }
+                    for (int j = 0; j < waiting_friends.size(); j++) {
+                        tampons[i+j] = waiting_friends.get(j);
+                    }
+
+                    for (i = 0; i < tampons.length; i++)
+                        Log.i("friend", tampons[i].toString());
+                    CustomList adapter = new CustomList(getActivity(), tampons, Add_Friend.this);
+                    lvfriends.setAdapter(adapter);
                 }
-                Log.i("friend", users.toString());
-                CustomList adapter = new CustomList(getActivity(), tampons);
-                lvfriends.setAdapter(adapter);
+            }catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }catch (InterruptedException e) {
             e.printStackTrace();
@@ -175,7 +201,7 @@ public class Add_Friend extends Fragment {
                             for (int i = 0; i < users.size(); i++)
                                 items[i] = users.get(i).getPseudo();
                             Log.i("test", items.toString());
-                            CustomList_Search adapter = new CustomList_Search(getActivity(), items, cle);
+                            CustomList_Search adapter = new CustomList_Search(getActivity(), items, cle, Add_Friend.this);
                             lvfriends.invalidate();
                             lvfriends.setAdapter(adapter);
                         }
@@ -282,19 +308,75 @@ public class Add_Friend extends Fragment {
         void onLoadFriend(Utilisateur friend);
     }
 
+
+    @Override
+    public void confirm_request(final int position) {
+        Log.i("testons", Integer.valueOf(profile.get(SessionManager.KEY_ID)) + " " + tampons[position].getId() + " " +tampons[position].getFriendship_id() );
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                response = server.confirmer_friendship(Integer.valueOf(profile.get(SessionManager.KEY_ID)), tampons[position].getId(), tampons[position].getFriendship_id());
+            }
+        });
+
+        t.start(); // spawn thread
+        try {
+            t.join();
+            if (response > 0) {
+                Toast.makeText(getActivity(), "Confirmation succeed", Toast.LENGTH_LONG).show();
+            }else if (response == -5){
+                Toast.makeText(getActivity(), "Failed to confirm", Toast.LENGTH_LONG).show();
+            }else
+                Log.e("server", "problem when sending request");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void send_request(final int position) {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                response = server.send_friend_request(Integer.valueOf(profile.get(SessionManager.KEY_ID)), tampons[position].getId());
+            }
+        });
+
+        t.start(); // spawn thread
+        try {
+            t.join();
+            if (response > 0) {
+                Toast.makeText(getActivity(), "your request has been sent", Toast.LENGTH_LONG).show();
+            }else if (response == -5){
+                Toast.makeText(getActivity(), "Request already sent! wait for user confirmation", Toast.LENGTH_LONG).show();
+            }else
+                Log.e("server", "problem when sending request");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     public class CustomList extends ArrayAdapter<Utilisateur> {
 
         private final Activity context;
         private final Utilisateur[] utilisateurs;
+        private FriendCallback mAdapterCallback;
 
-        public CustomList(Activity context, Utilisateur[] utilisateurs) {
+        public CustomList(Activity context, Utilisateur[] utilisateurs, Fragment fg) {
             super(context, R.layout.item_friend, utilisateurs);
             this.context = context;
             this.utilisateurs = utilisateurs;
+            for (int i = 0; i < utilisateurs.length; i++)
+                Log.i("friend", utilisateurs[i].toString());
 
+            try {
+                this.mAdapterCallback = ((FriendCallback) fg);
+            } catch (ClassCastException e) {
+                throw new ClassCastException("Activity must implement AdapterCallback.");
+            }
         }
         @Override
-        public View getView(int position, View view, ViewGroup parent) {
+        public View getView(final int position, View view, ViewGroup parent) {
             LayoutInflater inflater = context.getLayoutInflater();
             View rowView= inflater.inflate(R.layout.item_friend, null, true);
 
@@ -302,6 +384,15 @@ public class Add_Friend extends Fragment {
             TextView txtPseudo = (TextView) rowView.findViewById(R.id.txtPseudo_friend);
             TextView txtSpot = (TextView) rowView.findViewById(R.id.txtSpots_friend);
             TextView txtFriend = (TextView) rowView.findViewById(R.id.txtFriends_friend);
+            final ImageView imgaction = (ImageView) rowView.findViewById(R.id.imgaction);
+
+            imgaction.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    imgaction.setBackground(null);
+                    mAdapterCallback.confirm_request(position);
+                }
+            });
 
             if (utilisateurs[position].getPhoto() != "") {
                 String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
@@ -372,6 +463,10 @@ public class Add_Friend extends Fragment {
                 }
             }
 
+            if (friends != null){
+                if (!friends.contains(utilisateurs[position].getPseudo()))
+                    imgaction.setBackground(getResources().getDrawable(R.drawable.plus));
+            }
             txtPseudo.setText(utilisateurs[position].getPseudo());
             txtSpot.setText(utilisateurs[position].getNbspot() + " spots | " + utilisateurs[position].getNbrespot() + " respots");
             txtFriend.setText(utilisateurs[position].getNbfriends() + " Friends");
@@ -385,21 +480,38 @@ public class Add_Friend extends Fragment {
         private final Activity context;
         private final String[] items;
         private final String cle;
+        private FriendCallback mAdapterCallback;
 
-        public CustomList_Search(Activity context, String[] items, String cle) {
+        public CustomList_Search(Activity context, String[] items, String cle, Fragment fg) {
             super(context, R.layout.item_search, items);
             this.context = context;
             this.items = items;
             this.cle = cle;
+
+            try {
+                this.mAdapterCallback = ((FriendCallback) fg);
+            } catch (ClassCastException e) {
+                throw new ClassCastException("Activity must implement AdapterCallback.");
+            }
         }
         @Override
-        public View getView(int position, View view, ViewGroup parent) {
+        public View getView(final int position, View view, ViewGroup parent) {
             LayoutInflater inflater = context.getLayoutInflater();
             View rowView= inflater.inflate(R.layout.item_search, null, true);
 
             final ImageView imgaction = (ImageView) rowView.findViewById(R.id.imgaction);
             TextView txtPseudo = (TextView) rowView.findViewById(R.id.txtPseudo_friend);
             TextView txtcle = (TextView) rowView.findViewById(R.id.txtcle);
+
+            imgaction.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (!friends.contains(items[position]))
+                        mAdapterCallback.send_request(position);
+                    else
+                        Toast.makeText(getActivity(), "You are already friend", Toast.LENGTH_SHORT).show();
+                }
+            });
 
             txtPseudo.setText(items[position]);
             txtcle.setText(cle);
@@ -415,4 +527,9 @@ public class Add_Friend extends Fragment {
             return rowView;
         }
     }
+}
+
+interface FriendCallback{
+    public void confirm_request(int position);
+    public void send_request(int position);
 }

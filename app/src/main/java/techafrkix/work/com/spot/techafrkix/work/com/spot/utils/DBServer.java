@@ -737,6 +737,7 @@ public class DBServer {
                         user.setNbrespot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_RESPOT));
                         user.setNbspot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_SPOT));
                         user.setNbfriends((int) json2.get("nbfriend"));
+                        user.setFriendship_id((int)json2.get("friendship_id"));
 
                         users.add(user);
                     }
@@ -813,6 +814,7 @@ public class DBServer {
                         user.setNbrespot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_RESPOT));
                         user.setNbspot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_SPOT));
                         user.setNbfriends((int) json2.get("nbfriend"));
+                        user.setFriendship_id((int)json2.get("friendship_id"));
 
                         users.add(user);
                     }
@@ -1282,6 +1284,7 @@ public class DBServer {
                         spot.setLatitude(json2.getDouble("gpslat") + "");
                         spot.setPhotokey((String) json2.get("photo"));
                         spot.setDate(convert_date((String) json2.get("created")));
+                        spot.setPhotouser((String) json2.get("photouser"));
                         JSONArray jArrtag = json2.getJSONArray("tags");
                         tags = new ArrayList<>();
                         for (int j = 0; j < jArrtag.length(); j++) {

@@ -39,6 +39,7 @@ import org.json.JSONObject;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import techafrkix.work.com.spot.bd.Utilisateur;
 import techafrkix.work.com.spot.bd.UtilisateurDBAdapteur;
@@ -63,6 +64,7 @@ public class Connexion extends AppCompatActivity {
     // Session Manager Class
     SessionManager session;
     DBServer server;
+    private HashMap<String, String> profile;
 
     private static final String TAG = "Facebook";
     private String fbProfileName;
@@ -80,7 +82,8 @@ public class Connexion extends AppCompatActivity {
         // Session class instance
         session = new SessionManager(getApplicationContext());
         server = new DBServer(getApplicationContext());
-        registerDevice();
+        profile = new HashMap<>();
+        profile = session.getUserDetails();
         Log.i(TAG, "android id = " + regId);
 
         //recuperation des elements de l'activité
@@ -115,6 +118,7 @@ public class Connexion extends AppCompatActivity {
         String parent = getIntent().getExtras().getString("caller");
         if (isLoggedIn()) {
             if (parent.compareTo("Accueil") == 0) {
+                registerDevice();
                 startActivity(itwelcome);
             }
             else {
@@ -167,7 +171,7 @@ public class Connexion extends AppCompatActivity {
                                         {
                                             if (response.getError() != null)
                                             {
-                                                Log.d(TAG, "FB: cannot parse email");
+                                                Log.i(TAG, "FB: cannot parse email");
                                             }
                                             else
                                             {
@@ -373,6 +377,13 @@ public class Connexion extends AppCompatActivity {
                         gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
                     }
                     regId = gcm.register(getApplicationContext().getResources().getString(R.string.GCM_PROJECT_NUMBER_NUMBER));
+                    if (!TextUtils.equals(regId, profile.get(SessionManager.KEY_REGISTRATION_ID))){
+                        Log.i("GCM: ", "Differentes valeurs de android id");
+                        server.set_device_id(Integer.valueOf(profile.get(SessionManager.KEY_ID)), regId);
+                        session.storeRegistrationId(regId);
+                    }else
+                        Log.i("GCM: ", "Identiques valeurs de android id");
+
                     msg = "Terminal enregistré, register ID=" + regId;
                     // On enregistre le registerId dans les SharedPreferences
                     Log.i("GCM: ", msg);

@@ -20,6 +20,8 @@ public class Utilisateur implements Serializable {
     private String photo;
     private String created;
 
+    private int friendship_id;
+
     public Utilisateur(String email, String password, String date_naissance) {
         this.email = email;
         this.password = password;
@@ -128,6 +130,14 @@ public class Utilisateur implements Serializable {
 
     public void setNbfriends(int nbfriends) {
         this.nbfriends = nbfriends;
+    }
+
+    public int getFriendship_id() {
+        return friendship_id;
+    }
+
+    public void setFriendship_id(int friendship_id) {
+        this.friendship_id = friendship_id;
     }
 
     @Override

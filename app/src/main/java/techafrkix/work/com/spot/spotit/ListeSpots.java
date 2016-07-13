@@ -42,7 +42,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
 
     private ArrayList<Spot> spots;
     private Spot s;
-    private HashMap<String, Bitmap> spotsimages;
+//    private HashMap<String, Bitmap> spotsimages;
     private SpotAdapter adapter;
     private ListView listView;
 
@@ -99,7 +99,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
         profile = new HashMap<>();
         server = new DBServer(getActivity());
 
-        spotsimages = new HashMap<String, Bitmap>();
+//        spotsimages = new HashMap<String, Bitmap>();
         tampon = new ArrayList<>();
         loadSpots();
 
@@ -158,9 +158,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                         for (Spot s : tampon) {
                             spots.add(s);
                         }
-                        Log.i("spots", spots.toString());
                         //set the value of the offset that will be use next time
-                        Log.i("test", offset + "");
                         offset += PORTION_TELECHARGEABLE; //session.putOffset(offset + PORTION_TELECHARGEABLE);
                         String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
                         File folder = new File(dossier);
@@ -181,7 +179,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                             for (final Spot s : spots) {
                                 final File file = new File(dossier + File.separator + s.getPhotokey() + ".jpg");
                                 if (file.exists()) {
-                                    spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
+//                                    spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
                                     barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
                                     if (barProgressDialog.getProgress() == spots.size()) {
                                         barProgressDialog.dismiss();
@@ -211,15 +209,13 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                                                 rapport /= bytesTotal;
                                                 if (rapport == 100) {
                                                     barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
-                                                    spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
+//                                                    spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
                                                 }
                                             }else{
                                                 barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
                                             }
                                             if (barProgressDialog.getProgress() == spots.size()) {
                                                 barProgressDialog.dismiss();
-
-                                                Log.i("teste", "dedans 2 " + offset);
                                                 // Create the adapter to convert the array to views
                                                 adapter = new SpotAdapter(getActivity(), tampon, ListeSpots.this);
                                                 // Attach the adapter to a ListView
@@ -279,7 +275,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                     //photo du spot
                     final File file = new File(dossier + File.separator + s.getPhotokey() + ".jpg");
                     if (file.exists()) {
-                        spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
+//                        spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
                         barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
 
                         if (barProgressDialog.getProgress() == barProgressDialog.getMax()) {
@@ -308,7 +304,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                                     rapport /= bytesTotal;
                                     if (rapport == 100) {
                                         barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
-                                        spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
+//                                        spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
                                     }
                                 }else{
                                     barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
@@ -330,7 +326,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                             public void onError(int id, Exception ex) {
                                 // do something
 //                                barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
-                                spotsimages.put(s.getPhotokey(), null);
+//                                spotsimages.put(s.getPhotokey(), null);
                             }
 
                         });
@@ -356,7 +352,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                                     rapport /= bytesTotal;
                                     if (rapport == 100) {
                                         barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
-                                        spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
+//                                        spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
                                     }
                                 }else{
                                     barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);

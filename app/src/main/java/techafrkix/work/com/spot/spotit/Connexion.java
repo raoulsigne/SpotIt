@@ -368,6 +368,7 @@ public class Connexion extends AppCompatActivity {
 
     /** * Cette méthode permet l'enregistrement du terminal */
     private void registerDevice() {
+        Log.i("GCM: ", "Device registration");
         new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {

@@ -741,7 +741,7 @@ public class DBServer {
 
                         users.add(user);
                     }
-                    Log.i(TAG, "reponse = " + builder.toString());
+                    Log.i(TAG, "reponse friend list = " + builder.toString());
                     return users;
                 } else {
                     builder.append("statut = " + json.getString("statut"));
@@ -818,7 +818,7 @@ public class DBServer {
 
                         users.add(user);
                     }
-                    Log.i(TAG, "reponse = " + builder.toString());
+                    Log.i(TAG, "waiting reponse = " + builder.toString());
                     return users;
                 } else {
                     builder.append("statut = " + json.getString("statut"));

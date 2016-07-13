@@ -149,7 +149,7 @@ public class DetailSpot extends Fragment {
                         e.printStackTrace();
                     }
                 } else
-                    Toast.makeText(getActivity(), "You cannot comment your own spot!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "You cannot respot your own spot!", Toast.LENGTH_SHORT).show();
             }
         });
         btnpost.setOnClickListener(new View.OnClickListener() {

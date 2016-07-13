@@ -338,7 +338,7 @@ public class Add_Friend extends Fragment implements FriendCallback{
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                response = server.send_friend_request(Integer.valueOf(profile.get(SessionManager.KEY_ID)), tampons[position].getId());
+                response = server.send_friend_request(Integer.valueOf(profile.get(SessionManager.KEY_ID)), users.get(position).getId());
             }
         });
 

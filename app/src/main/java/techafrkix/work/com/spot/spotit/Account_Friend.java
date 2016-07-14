@@ -129,7 +129,7 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
         if (friend != null){
             txtPseudo.setText(friend.getPseudo());
             txtSpot.setText(friend.getNbspot() + " spots | " + friend.getNbrespot() + " respots");
-            txtNbSpot.setText(friend.getNbspot() + " Spots");
+            txtNbSpot.setText(friend.getSpot() + " Spots");
             txtNbFriend.setText(friend.getNbfriends() + " friends");
             total_spot = friend.getNbspot() + friend.getNbrespot();
         }

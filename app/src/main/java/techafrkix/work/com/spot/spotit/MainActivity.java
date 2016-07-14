@@ -166,14 +166,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 //traitement de l'action lors du click
                 try {
                     //remove all others fragments if there exists
-                    getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-                    getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-                    getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-                    getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-                    getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-                    getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-                    getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-                    getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
                     // add the new fragment containing the main map
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.container, fgAccueil, "ACCUEIL")
@@ -203,14 +203,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 //traitement de l'action lors du click
                 try {
                     //remove all others fragments if there exists
-                    getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-                    getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-                    getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-                    getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-                    getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-                    getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-                    getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-                    getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
                     // add the new fragment containing the list of spots
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.container, fgAddfrient, "ADD_FRIEND")
@@ -293,14 +293,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 //traitement de l'action lors du click
                 try {
                     //remove all others fragments if there exists
-                    getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-                    getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-                    getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-                    getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-                    getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-                    getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-                    getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-                    getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
+//                    getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
                     // add the new fragment containing the main map
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.container, fgAccount, "ACCOUNT")
@@ -374,14 +374,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                         try {
                             //remove all others fragments if there exists
-                            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-                            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-                            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-                            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-                            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-                            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-                            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-                            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
+//                            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+//                            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+//                            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
+//                            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+//                            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
+//                            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
+//                            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
+//                            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
                             // add the new fragment containing the main map
                             getSupportFragmentManager().beginTransaction()
                                     .replace(R.id.container, fgAccount, "ACCOUNT")
@@ -616,14 +616,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onLoadSpot() {
         try {
             //remove all others fragments if there exists
-            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
             // add the new fragment containing the list of spots
 
             Bundle args = new Bundle();
@@ -642,14 +642,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onLoadSpot(ArrayList<Spot> spots) {
         try {
             //remove all others fragments if there exists
-            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
             // add the new fragment containing the list of spots
 
             Bundle args = new Bundle();
@@ -668,14 +668,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onDetailSpot(Spot spot) {
         try {
             //remove all others fragments if there exists
-            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
             // add the new fragment containing the list of spots
 
             Bundle args = new Bundle();
@@ -698,14 +698,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onSearchSpot() {
         try {
             //remove all others fragments if there exists
-            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
             // add the new fragment containing the list of spots
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container, fgSearch, "SPOTS")
@@ -738,14 +738,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onLoadFriend(Utilisateur friend) {
         try {
             //remove all others fragments if there exists
-            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
             // add the new fragment containing the list of spots
             Bundle args = new Bundle();
             args.putSerializable("friend", friend);
@@ -763,14 +763,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onListSpot_Friend(Utilisateur friend) {
         try {
             //remove all others fragments if there exists
-            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
             // add the new fragment containing the list of spots
             Bundle args = new Bundle();
             args.putSerializable("friend", friend);
@@ -788,14 +788,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onDetailSpot(Spot spot, Utilisateur utilisateur) {
         try {
             //remove all others fragments if there exists
-            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
+//            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
             // add the new fragment containing the list of spots
 
             Bundle args = new Bundle();

@@ -111,11 +111,11 @@ public class SessionManager {
         editor.putString(KEY_PHOTO, "");
 
         // Récupération du registerId du terminal ou enregistrement de ce dernier
-        regId = registerGCM();
-        if (TextUtils.isEmpty(regId)){
-            Log.i("GCM", "register key vide");
-        }else
-            editor.putString(KEY_REGISTRATION_ID, regId);
+//        regId = registerGCM();
+//        if (TextUtils.isEmpty(regId)){
+//            Log.i("GCM", "register key vide");
+//        }else
+//            editor.putString(KEY_REGISTRATION_ID, regId);
 
 
         // commit changes
@@ -154,11 +154,11 @@ public class SessionManager {
         editor.putString(KEY_OFFSET, String.valueOf(0));
 
         // Récupération du registerId du terminal ou enregistrement de ce dernier
-        regId = registerGCM();
-        if (TextUtils.isEmpty(regId)){
-            Log.i("GCM", "register key vide");
-        }else
-            editor.putString(KEY_REGISTRATION_ID, regId);
+//        regId = registerGCM();
+//        if (TextUtils.isEmpty(regId)){
+//            Log.i("GCM", "register key vide");
+//        }else
+//            editor.putString(KEY_REGISTRATION_ID, regId);
 
         // commit changes
         editor.commit();

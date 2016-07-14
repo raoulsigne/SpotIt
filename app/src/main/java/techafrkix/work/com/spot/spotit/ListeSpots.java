@@ -184,7 +184,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                                     if (barProgressDialog.getProgress() == spots.size()) {
                                         barProgressDialog.dismiss();
                                         // Create the adapter to convert the array to views
-                                        adapter = new SpotAdapter(getActivity(), tampon, ListeSpots.this);
+                                        adapter = new SpotAdapter(getActivity(), spots, ListeSpots.this);
                                         // Attach the adapter to a ListView
                                         listView.setAdapter(adapter);
                                         // Setting new scroll position
@@ -217,7 +217,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                                             if (barProgressDialog.getProgress() == spots.size()) {
                                                 barProgressDialog.dismiss();
                                                 // Create the adapter to convert the array to views
-                                                adapter = new SpotAdapter(getActivity(), tampon, ListeSpots.this);
+                                                adapter = new SpotAdapter(getActivity(), spots, ListeSpots.this);
                                                 // Attach the adapter to a ListView
                                                 listView.setAdapter(adapter);
                                                 // Setting new scroll position

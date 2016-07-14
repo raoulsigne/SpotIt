@@ -355,6 +355,7 @@ public class DBServer {
                     user.setNbrespot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_RESPOT));
                     user.setNbspot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_SPOT));
                     user.setTypeconnexion_id((int) json2.get(MaBaseOpenHelper.COLONNE_TYPECONNEXION_ID));
+                    user.setAndroidid((String) json2.get("androidid"));
 
                     return user;
                 } else {
@@ -729,6 +730,7 @@ public class DBServer {
                     JSONArray jArr = json.getJSONArray("data");
                     for (int i = 0; i < jArr.length(); i++) {
                         JSONObject json2 = jArr.getJSONObject(i);
+
                         user = new Utilisateur();
                         user.setEmail((String) json2.get(MaBaseOpenHelper.COLONNE_EMAIL));
                         user.setId((int) json2.get(MaBaseOpenHelper.COLONNE_USER_ID));
@@ -738,6 +740,7 @@ public class DBServer {
                         user.setNbspot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_SPOT));
                         user.setNbfriends((int) json2.get("nbfriend"));
                         user.setFriendship_id((int)json2.get("friendship_id"));
+                        user.setStatut((int) json2.get("statut"));
 
                         users.add(user);
                     }
@@ -815,7 +818,7 @@ public class DBServer {
                         user.setNbspot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_SPOT));
                         user.setNbfriends((int) json2.get("nbfriend"));
                         user.setFriendship_id((int)json2.get("friendship_id"));
-
+                        user.setStatut((int) json2.get("statut"));
                         users.add(user);
                     }
                     Log.i(TAG, "waiting reponse = " + builder.toString());

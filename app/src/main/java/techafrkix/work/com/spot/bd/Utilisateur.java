@@ -15,12 +15,15 @@ public class Utilisateur implements Serializable {
     private String pseudo;
     private int nbspot;
     private int nbrespot;
+    private int spot;
     private int nbfriends;
     private int typeconnexion_id;
     private String photo;
     private String created;
 
     private int friendship_id;
+    private int statut;
+    private String androidid;
 
     public Utilisateur(String email, String password, String date_naissance) {
         this.email = email;
@@ -100,6 +103,10 @@ public class Utilisateur implements Serializable {
         this.nbrespot = nbrespot;
     }
 
+    public int getSpot(){
+        return this.nbspot + this.nbrespot;
+    }
+
     public int getTypeconnexion_id() {
         return typeconnexion_id;
     }
@@ -138,6 +145,22 @@ public class Utilisateur implements Serializable {
 
     public void setFriendship_id(int friendship_id) {
         this.friendship_id = friendship_id;
+    }
+
+    public int getStatut() {
+        return statut;
+    }
+
+    public void setStatut(int statut) {
+        this.statut = statut;
+    }
+
+    public String getAndroidid() {
+        return androidid;
+    }
+
+    public void setAndroidid(String androidid) {
+        this.androidid = androidid;
     }
 
     @Override

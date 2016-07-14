@@ -69,7 +69,7 @@ public class Add_Friend extends Fragment implements FriendCallback{
 
     private DBServer server;
     private ArrayList<String> friends;
-    private ArrayList<Utilisateur> users, waiting_friends;
+    private ArrayList<Utilisateur> users;
     private Utilisateur[] tampons;
     private SessionManager session;
     private HashMap<String, String> profile;
@@ -125,7 +125,6 @@ public class Add_Friend extends Fragment implements FriendCallback{
         server = new DBServer(getActivity());
         profile = session.getUserDetails();
         users = new ArrayList<>();
-        waiting_friends = new ArrayList<>();
         friends = new ArrayList<>();
 
         Thread t = new Thread(new Runnable() {
@@ -138,39 +137,18 @@ public class Add_Friend extends Fragment implements FriendCallback{
         try{
             t.join();
 
-            Thread t1 = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    waiting_friends = server.waiting_friend(Integer.valueOf(profile.get(SessionManager.KEY_ID))); // amis en attente
-                }});
-
-            t1.start(); // spawn thread
-            try{
-                t1.join();
-
-                if (waiting_friends == null)
-                    waiting_friends = new ArrayList<>();
-                if (users == null)
-                    users = new ArrayList<>();
-                if (users != null){
-                    friends = new ArrayList<>();
-                    tampons = new Utilisateur[users.size() + waiting_friends.size()];
-                    int i = 0;
-                    for (i = 0; i < users.size(); i++) {
-                        tampons[i] = users.get(i);
+            if (users != null){
+                friends = new ArrayList<>();
+                tampons = new Utilisateur[users.size()];
+                int i = 0;
+                for (i = 0; i < users.size(); i++) {
+                    tampons[i] = users.get(i);
+                    if (users.get(i).getStatut() == 1)
                         friends.add(users.get(i).getPseudo());
-                    }
-                    for (int j = 0; j < waiting_friends.size(); j++) {
-                        tampons[i+j] = waiting_friends.get(j);
-                    }
-
-                    for (i = 0; i < tampons.length; i++)
-                        Log.i("friend", tampons[i].toString());
-                    CustomList adapter = new CustomList(getActivity(), tampons, Add_Friend.this);
-                    lvfriends.setAdapter(adapter);
                 }
-            }catch (InterruptedException e) {
-                e.printStackTrace();
+
+                CustomList adapter = new CustomList(getActivity(), tampons, Add_Friend.this);
+                lvfriends.setAdapter(adapter);
             }
         }catch (InterruptedException e) {
             e.printStackTrace();
@@ -215,7 +193,7 @@ public class Add_Friend extends Fragment implements FriendCallback{
         lvfriends.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mListener.onLoadFriend(users.get(position));
+                mListener.onLoadFriend(tampons[position]);
             }
         });
 
@@ -243,28 +221,6 @@ public class Add_Friend extends Fragment implements FriendCallback{
                 return true;
             default:
                 return super.onContextItemSelected(item);
-        }
-    }
-
-    private void sendrequest(final int index){
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                response = server.send_friend_request(Integer.valueOf(profile.get(SessionManager.KEY_ID)), users.get(index).getId());
-            }
-        });
-
-        t.start(); // spawn thread
-        try {
-            t.join();
-            if (response > 0) {
-                Toast.makeText(getActivity(), "your request has been sent", Toast.LENGTH_LONG).show();
-            }else if (response == -5){
-                Toast.makeText(getActivity(), "Request already sent! wait for user confirmation", Toast.LENGTH_LONG).show();
-            }else
-                Log.e("server", "problem when sending request");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 
@@ -335,10 +291,34 @@ public class Add_Friend extends Fragment implements FriendCallback{
 
     @Override
     public void send_request(final int position) {
+        Log.i("testons", position + " ");
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
                 response = server.send_friend_request(Integer.valueOf(profile.get(SessionManager.KEY_ID)), users.get(position).getId());
+            }
+        });
+
+        t.start(); // spawn thread
+        try {
+            t.join();
+            if (response > 0) {
+                Toast.makeText(getActivity(), "your request has been sent", Toast.LENGTH_LONG).show();
+            }else if (response == -5){
+                Toast.makeText(getActivity(), "Request already sent! wait for user confirmation", Toast.LENGTH_LONG).show();
+            }else
+                Log.e("server", "problem when sending request");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendrequest(final int index){
+        Log.i("testons", index + " ");
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                response = server.send_friend_request(Integer.valueOf(profile.get(SessionManager.KEY_ID)), users.get(index).getId());
             }
         });
 

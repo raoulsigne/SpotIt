@@ -1,52 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:gravity="bottom|right"
-        android:paddingBottom="5dp">
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/blanc"
+        android:layout_below="@+id/listplaces"
+        android:id="@+id/bloccontrol"
+        android:elevation="10dp"
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_below="@+id/editText2">
 
-            <LinearLayout
+            <Switch
+                android:id="@+id/switch_me"
+                android:layout_width="52dp"
+                android:layout_centerVertical="true"
+                android:layout_height="32dp" />
+
+            <TextView
+                android:id="@+id/textView10"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/switch_me"
+                android:layout_toRightOf="@+id/switch_me"
+                android:text="Search only in my spot"
+                android:textSize="14sp" />
 
-                <TextView
-                    android:id="@+id/txtMySpot"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="3 Spots"
-                    android:textAlignment="center"
-                    android:textColor="@color/mainblue"
-                    android:textSize="15sp" />
+        </RelativeLayout>
 
-                <ImageButton
-                    android:id="@+id/imgMySpots"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/play_spot" />
-            </LinearLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_below="@+id/editText2">
 
-            <ImageButton
-                android:id="@+id/imgLocateMe"
+            <Switch
+                android:id="@+id/switch_friend"
+                android:layout_centerVertical="true"
+                android:layout_width="52dp"
+                android:layout_height="32dp" />
+
+            <TextView
+                android:id="@+id/textView13"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:background="@drawable/locate_me" />
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/switch_friend"
+                android:layout_toRightOf="@+id/switch_friend"
+                android:text="Search only in my friend's spot"
+                android:textSize="14sp" />
 
-        </LinearLayout>
-    </RelativeLayout>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnValider"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/button_blue"
+        android:text="Search"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp" />
 
 </LinearLayout>

@@ -192,6 +192,7 @@ public class Connexion extends AppCompatActivity {
                                                         // Use user real data
                                                         session.createLoginSession(utilisateur.getPseudo(), utilisateur.getEmail(), utilisateur.getId(),
                                                                 utilisateur.getNbspot(), utilisateur.getNbrespot(), 0, utilisateur.getPhoto());
+                                                        session.storeRegistrationId(utilisateur.getAndroidid());
 
                                                         startActivity(itwelcome); // déjà enregistré on démarre l'activité Welcome
                                                     }
@@ -322,6 +323,7 @@ public class Connexion extends AppCompatActivity {
                             // Use user real data
                             session.createLoginSession(utilisateur.getPseudo(), utilisateur.getEmail(), utilisateur.getId(),
                                     utilisateur.getNbspot(), utilisateur.getNbrespot(), 0, utilisateur.getPhoto());
+                            session.storeRegistrationId(utilisateur.getAndroidid());
 
                             startActivity(itwelcome);
                         } else {
@@ -384,6 +386,8 @@ public class Connexion extends AppCompatActivity {
                         session.storeRegistrationId(regId);
                     }else
                         Log.i("GCM: ", "Identiques valeurs de android id");
+                    Log.i("GCM: ", "1 " + regId);
+                    Log.i("GCM: ", "2 " + profile.get(SessionManager.KEY_REGISTRATION_ID));
 
                     msg = "Terminal enregistré, register ID=" + regId;
                     // On enregistre le registerId dans les SharedPreferences

@@ -193,7 +193,7 @@ public class Add_Friend extends Fragment implements FriendCallback{
         lvfriends.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mListener.onLoadFriend(tampons[position]);
+                mListener.onLoadFriend(users.get(position));
             }
         });
 

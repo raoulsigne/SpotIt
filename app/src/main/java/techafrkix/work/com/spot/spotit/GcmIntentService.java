@@ -122,7 +122,7 @@ public class GcmIntentService extends IntentService {
                         .setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.logospotitblue))
                         .setContentTitle("Notification from Spot It")
                         .setStyle(new NotificationCompat.InboxStyle()
-                                .addLine(msg.getMessage())
+                                .addLine(msg.getDescription())
                                 .addLine(msg.getCreated()))
                         .setContentText(extras.getString(MESSAGE_TEXTE))
                         .setAutoCancel(false)
@@ -159,7 +159,7 @@ public class GcmIntentService extends IntentService {
                 nfe.printStackTrace();
             }
             notification.setTypenotification_id(12); //notification.setTypenotification_id(Integer.parseInt(extras.getString(MESSAGE_TYPE)));
-            notification.setMessage(extras.getString(MESSAGE_TEXTE));
+            notification.setDescription(extras.getString(MESSAGE_TEXTE));
         }
         Log.d(TAG, "extractMessageFromExtra - fin");
 

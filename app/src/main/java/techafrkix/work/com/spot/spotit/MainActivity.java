@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         GoogleApiClient.OnConnectionFailedListener, FragmentAccueil.OnFragmentInteractionListener, Account.OnFragmentInteractionListener,
         MapsActivity.OnFragmentInteractionListener, ListeSpots.OnFragmentInteractionListener, DetailSpot.OnFragmentInteractionListener,
         Search.OnFragmentInteractionListener, Add_Friend.OnFragmentInteractionListener, Account_Friend.OnFragmentInteractionListener,
-        ListeSpots_Friend.OnFragmentInteractionListener {
+        ListeSpots_Friend.OnFragmentInteractionListener, techafrkix.work.com.spot.spotit.Notification.OnFragmentInteractionListener {
 
     static final int REQUEST_IMAGE_CAPTURE = 10;
 
@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     Add_Friend fgAddfrient;
     Account_Friend fgFriendAcount;
     ListeSpots_Friend fgSpots_friend;
+    Notification fgNotification;
     FragmentTransaction ft;
 
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 3;
@@ -129,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         fgAddfrient = new Add_Friend();
         fgFriendAcount = new Account_Friend();
         fgSpots_friend = new ListeSpots_Friend();
+        fgNotification = new Notification();
 
         FragmentTransaction ft;
         geoHash = new GeoHash();
@@ -272,6 +274,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 txtAccount.setTextColor(getResources().getColor(R.color.noir));
 
                 //traitement de l'action lors du click
+                try {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, fgNotification, "NOTIFICATION")
+                            .commit();
+                } catch (Exception e) {
+                    Log.e("fragment", e.getMessage());
+                }
 
             }
         });

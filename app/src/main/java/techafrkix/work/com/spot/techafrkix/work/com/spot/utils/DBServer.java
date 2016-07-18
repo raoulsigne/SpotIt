@@ -1656,6 +1656,8 @@ public class DBServer {
                 builder.append(line + "\n");
             }
             br.close();
+            Log.i(TAG, url.toString());
+            Log.i(TAG, "reponse = " + builder.toString());
 
             try {
                 JSONObject json = new JSONObject(builder.toString());
@@ -1668,13 +1670,23 @@ public class DBServer {
 
                         notification.setId((int) json2.get("id"));
                         notification.setUser_id((int) json2.get("user_id"));
-                        notification.setMessage((String) json2.get("message"));
-                        notification.setCreated(convert_date((String) json2.get("created")));
                         notification.setTypenotification_id((int) json2.get("typenotification_id"));
+                        notification.setCreated(convert_date((String) json2.get("created")));
+                        notification.setData((String) json2.get("data"));
+                        try {
+                            notification.setSender_id((int) json2.get("sender_id"));
+                        }catch (ClassCastException e){
+                            Log.e(TAG, e.getMessage());
+                        }
+                        notification.setDescription((String) json2.get("description"));
+                        try {
+                            notification.setPhotosender((String) json2.get("photosender"));
+                        }catch (ClassCastException e){
+                            Log.e(TAG, e.getMessage());
+                        }
 
                         notifications.add(notification);
                     }
-                    Log.i(TAG, "reponse = " + builder.toString());
                     return notifications;
                 } else {
                     builder.append("statut = " + json.getString("statut"));

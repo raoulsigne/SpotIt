@@ -47,6 +47,9 @@ public class Notification extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    public static final int TYPE_FRIENDSHIP = 1;
+    public static final int TYPE_NEW_SPOT = 11;
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -56,6 +59,7 @@ public class Notification extends Fragment {
     private DBServer server;
     private ArrayList<techafrkix.work.com.spot.bd.Notification> list_notifications;
     private techafrkix.work.com.spot.bd.Notification[] notifications;
+    private techafrkix.work.com.spot.bd.Notification notification;
     private SessionManager session;
     private HashMap<String, String> profile;
     private int response;
@@ -105,7 +109,7 @@ public class Notification extends Fragment {
         server = new DBServer(getActivity());
         profile = session.getUserDetails();
         list_notifications = new ArrayList<>();
-
+        notification = new techafrkix.work.com.spot.bd.Notification();
 
         listview_notif = (ListView)view.findViewById(R.id.listnotifications);
 
@@ -136,6 +140,20 @@ public class Notification extends Fragment {
         listview_notif.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                notification = list_notifications.get(i);
+                switch (notification.getTypenotification_id()){
+                    case TYPE_FRIENDSHIP:
+                        Add_Friend fgFriend = new Add_Friend();
+                        getActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.container, fgFriend, "ADD_FRIEND")
+                                .commit();
+                        ((MainActivity)getActivity()).setAciveTab(MainActivity.MENU_ACTIF_SOCIAL);
+                        break;
+
+                    case TYPE_NEW_SPOT:
+
+                        break;
+                }
 
             }
         });
@@ -265,8 +283,8 @@ public class Notification extends Fragment {
                 }
             }
 
-            txttitre.setText(notifications[position].getDescription());
-            txtdescription.setText(" ");
+            txttitre.setText("Titre");
+            txtdescription.setText(notifications[position].getDescription());
             txtdate.setText(notifications[position].getCreated());
 
             return rowView;

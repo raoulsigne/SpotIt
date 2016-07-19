@@ -282,9 +282,9 @@ public class DetailSpot extends Fragment {
                 }
             }
         }
-        else if (profile.get(SessionManager.KEY_PHOTO) != null & profile.get(SessionManager.KEY_PHOTO) != "") {
+        else if (spot.getPhotouser() != null & spot.getPhotouser() != "") {
             String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
-            final File file = new File(dossier + File.separator + profile.get(SessionManager.KEY_PHOTO) + ".jpg");
+            final File file = new File(dossier + File.separator + spot.getPhotouser() + ".jpg");
 
             if (file.exists()) {
                 // marker.showInfoWindow();
@@ -301,7 +301,7 @@ public class DetailSpot extends Fragment {
                     barProgressDialog.setProgress(0);
                     barProgressDialog.setMax(100);
                     barProgressDialog.show();
-                    int transfertId = aws_tools.download(file, profile.get(SessionManager.KEY_PHOTO));
+                    int transfertId = aws_tools.download(file, spot.getPhotouser());
                     TransferUtility transferUtility = aws_tools.getTransferUtility();
                     TransferObserver observer = transferUtility.getTransferById(transfertId);
                     observer.setTransferListener(new TransferListener() {

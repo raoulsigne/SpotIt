@@ -8,12 +8,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.google.android.gcm.server.Message;
 
 /**
  * Created by techafrkix0 on 29/06/2016.
@@ -27,16 +25,30 @@ public class GcmIntentService extends IntentService {
     /* * Constantes permettant la récupération des informations
     * * du message dans les extras de la notification envoyée
     * * par le serveur de notification. */
-    // Récupération de l'identification du message
-    public static final String MESSAGE_ID = "id";
+
+    // Récupération de l'identification de la notification
+    public static final String _ID = "id";
+
+    // Récupération de l'identification de l'utilisateur
+    public static final String _USER_ID = "id";
+
     // Récupération de l'identification du type de message
-    public static final String MESSAGE_TYPE = "typenotification_id";
-    // Récupération du nom du message
-    public static final String MESSAGE_TITRE = "titre";
+    public static final String _TYPE_ID = "typenotification_id";
+
     // Récupération de la date et heure du message
-    public static final String MESSAGE_DATE_CREATION = "created";
+    public static final String _DATE_CREATION = "created";
+
     // Récupération du texte du message
-    public static final String MESSAGE_TEXTE = "message";
+    public static final String _DATA = "data";
+
+    // Récupération de l'identification de la personne qui envoie
+    public static final String _SENDER_ID = "sender_id";
+
+    // Récupération du texte du message
+    public static final String _DESCRIPTION = "description";
+
+    // Récupération du texte du message
+    public static final String _PHOTOSENDER = "photosender";
 
     public GcmIntentService() {
         super("GcmIntentService");
@@ -124,7 +136,7 @@ public class GcmIntentService extends IntentService {
                         .setStyle(new NotificationCompat.InboxStyle()
                                 .addLine(msg.getDescription())
                                 .addLine(msg.getCreated()))
-                        .setContentText(extras.getString(MESSAGE_TEXTE))
+                        .setContentText(extras.getString(_DATA))
                         .setAutoCancel(false)
                         .setDefaults(Notification.DEFAULT_SOUND);
 
@@ -144,22 +156,69 @@ public class GcmIntentService extends IntentService {
         techafrkix.work.com.spot.bd.Notification notification = null;
         if (extras != null) {
             notification = new techafrkix.work.com.spot.bd.Notification();
-            final String id = extras.getString(MESSAGE_ID);
+            final String id = extras.getString(_ID);
             try {
                 notification.setId(Integer.parseInt(id));
             } catch (NumberFormatException nfe) {
                 Log.e(TAG, "error : le message n'a pas un identifiant valide. "+ nfe.getMessage());
                 nfe.printStackTrace();
             }
-            final String dateTime = extras.getString(MESSAGE_DATE_CREATION);
+
+            final String userid = extras.getString(_USER_ID);
+            try {
+                notification.setUser_id(Integer.parseInt(userid));
+            } catch (NumberFormatException nfe) {
+                Log.e(TAG, "error : l'id de l'utilisateur concerné est non valide. "+ nfe.getMessage());
+                nfe.printStackTrace();
+            }
+
+            final String typeid = extras.getString(_TYPE_ID);
+            try {
+                notification.setTypenotification_id(Integer.parseInt(typeid));
+            } catch (NumberFormatException nfe) {
+                Log.e(TAG, "error : l'id du type de la notification n'est valide. "+ nfe.getMessage());
+                nfe.printStackTrace();
+            }
+
+            final String dateTime = extras.getString(_DATE_CREATION);
             try {
                 notification.setCreated(dateTime);
             } catch (NumberFormatException nfe) {
                 Log.e(TAG, "error : le message n'a pas une date valide. "+ nfe.getMessage());
                 nfe.printStackTrace();
             }
-            notification.setTypenotification_id(12); //notification.setTypenotification_id(Integer.parseInt(extras.getString(MESSAGE_TYPE)));
-            notification.setDescription(extras.getString(MESSAGE_TEXTE));
+
+            final String data = extras.getString(_DATA);
+            try {
+                notification.setData(data);
+            } catch (NumberFormatException nfe) {
+                Log.e(TAG, "error : le champ data n'est pas valide. "+ nfe.getMessage());
+                nfe.printStackTrace();
+            }
+
+            final String senderid = extras.getString(_SENDER_ID);
+            try {
+                notification.setSender_id(Integer.parseInt(senderid));
+            } catch (NumberFormatException nfe) {
+                Log.e(TAG, "error : l'id de l'utilisateur ayant envoyé la notification n'est valide. "+ nfe.getMessage());
+                nfe.printStackTrace();
+            }
+
+            final String description = extras.getString(_DESCRIPTION);
+            try {
+                notification.setDescription(description);
+            } catch (NumberFormatException nfe) {
+                Log.e(TAG, "error : le champ description n'est pas valide. "+ nfe.getMessage());
+                nfe.printStackTrace();
+            }
+
+            final String photosender = extras.getString(_PHOTOSENDER);
+            try {
+                notification.setPhotosender(photosender);
+            } catch (NumberFormatException nfe) {
+                Log.e(TAG, "error : le champ photosender n'est pas valide. "+ nfe.getMessage());
+                nfe.printStackTrace();
+            }
         }
         Log.d(TAG, "extractMessageFromExtra - fin");
 

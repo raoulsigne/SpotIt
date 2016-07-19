@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     FragmentTransaction ft;
 
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 3;
+
     public static final int MENU_ACTIF_HOME = 1;
     public static final int MENU_ACTIF_SOCIAL = 2;
     public static final int MENU_ACTIF_NEW = 3;
@@ -147,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 .add(R.id.container, fgAccueil, "ACCUEIL")
                 .commit();
         menuactif = MENU_ACTIF_HOME;
+        setAciveTab(MENU_ACTIF_HOME);
 
         CheckEnableGPS();
 
@@ -154,29 +156,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             @Override
             public void onClick(View v) {
                 //changement des couleurs des widgets
-                imgHome.setBackground(getResources().getDrawable(R.drawable.world_clicked));
-                imgSocial.setBackground(getResources().getDrawable(R.drawable.user));
-                imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
-                imgNotification.setBackground(getResources().getDrawable(R.drawable.bell));
-                imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
-                txtHome.setTextColor(getResources().getColor(R.color.mainblue));
-                txtSocial.setTextColor(getResources().getColor(R.color.noir));
-                txtNew.setTextColor(getResources().getColor(R.color.noir));
-                txtNotification.setTextColor(getResources().getColor(R.color.noir));
-                txtAccount.setTextColor(getResources().getColor(R.color.noir));
+                setAciveTab(MENU_ACTIF_HOME);
 
                 //traitement de l'action lors du click
                 try {
-                    //remove all others fragments if there exists
-//                    getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-//                    getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-//                    getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-//                    getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-//                    getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-//                    getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-//                    getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-//                    getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
-                    // add the new fragment containing the main map
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.container, fgAccueil, "ACCUEIL")
                             .commit();
@@ -191,29 +174,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             @Override
             public void onClick(View v) {
                 //changement des couleurs des widgets
-                imgHome.setBackground(getResources().getDrawable(R.drawable.world));
-                imgSocial.setBackground(getResources().getDrawable(R.drawable.user_clicked));
-                imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
-                imgNotification.setBackground(getResources().getDrawable(R.drawable.bell));
-                imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
-                txtHome.setTextColor(getResources().getColor(R.color.noir));
-                txtSocial.setTextColor(getResources().getColor(R.color.mainblue));
-                txtNew.setTextColor(getResources().getColor(R.color.noir));
-                txtNotification.setTextColor(getResources().getColor(R.color.noir));
-                txtAccount.setTextColor(getResources().getColor(R.color.noir));
+                setAciveTab(MENU_ACTIF_SOCIAL);
 
                 //traitement de l'action lors du click
                 try {
-                    //remove all others fragments if there exists
-//                    getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-//                    getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-//                    getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-//                    getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-//                    getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-//                    getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-//                    getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-//                    getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
-                    // add the new fragment containing the list of spots
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.container, fgAddfrient, "ADD_FRIEND")
                             .commit();
@@ -228,16 +192,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             @Override
             public void onClick(View v) {
                 //changement des couleurs des widgets
-                imgHome.setBackground(getResources().getDrawable(R.drawable.world));
-                imgSocial.setBackground(getResources().getDrawable(R.drawable.user));
-                imgNew.setBackground(getResources().getDrawable(R.drawable.spot_clicked));
-                imgNotification.setBackground(getResources().getDrawable(R.drawable.bell));
-                imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
-                txtHome.setTextColor(getResources().getColor(R.color.noir));
-                txtSocial.setTextColor(getResources().getColor(R.color.noir));
-                txtNew.setTextColor(getResources().getColor(R.color.mainblue));
-                txtNotification.setTextColor(getResources().getColor(R.color.noir));
-                txtAccount.setTextColor(getResources().getColor(R.color.noir));
+                setAciveTab(MENU_ACTIF_NEW);
 
                 //traitement de l'action lors du click
                 Bundle bundle = new Bundle();
@@ -262,16 +217,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             @Override
             public void onClick(View v) {
                 //changement des couleurs des widgets
-                imgHome.setBackground(getResources().getDrawable(R.drawable.world));
-                imgSocial.setBackground(getResources().getDrawable(R.drawable.user));
-                imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
-                imgNotification.setBackground(getResources().getDrawable(R.drawable.bell_clicked));
-                imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
-                txtHome.setTextColor(getResources().getColor(R.color.noir));
-                txtSocial.setTextColor(getResources().getColor(R.color.noir));
-                txtNew.setTextColor(getResources().getColor(R.color.noir));
-                txtNotification.setTextColor(getResources().getColor(R.color.mainblue));
-                txtAccount.setTextColor(getResources().getColor(R.color.noir));
+                setAciveTab(MENU_ACTIF_NOTIFICATION);
 
                 //traitement de l'action lors du click
                 try {
@@ -288,29 +234,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             @Override
             public void onClick(View v) {
                 //changement des couleurs des widgets
-                imgHome.setBackground(getResources().getDrawable(R.drawable.world));
-                imgSocial.setBackground(getResources().getDrawable(R.drawable.user));
-                imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
-                imgNotification.setBackground(getResources().getDrawable(R.drawable.bell));
-                imgAccount.setBackground(getResources().getDrawable(R.drawable.setting_clicked));
-                txtHome.setTextColor(getResources().getColor(R.color.noir));
-                txtSocial.setTextColor(getResources().getColor(R.color.noir));
-                txtNew.setTextColor(getResources().getColor(R.color.noir));
-                txtNotification.setTextColor(getResources().getColor(R.color.noir));
-                txtAccount.setTextColor(getResources().getColor(R.color.mainblue));
+                setAciveTab(MENU_ACTIF_ACCOUNT);
 
                 //traitement de l'action lors du click
                 try {
-                    //remove all others fragments if there exists
-//                    getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-//                    getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-//                    getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-//                    getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-//                    getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-//                    getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-//                    getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-//                    getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
-                    // add the new fragment containing the main map
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.container, fgAccount, "ACCOUNT")
                             .commit();
@@ -382,16 +309,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         }
 
                         try {
-                            //remove all others fragments if there exists
-//                            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-//                            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-//                            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-//                            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-//                            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-//                            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-//                            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-//                            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
-                            // add the new fragment containing the main map
                             getSupportFragmentManager().beginTransaction()
                                     .replace(R.id.container, fgAccount, "ACCOUNT")
                                     .commit();
@@ -624,17 +541,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onLoadSpot() {
         try {
-            //remove all others fragments if there exists
-//            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
-            // add the new fragment containing the list of spots
-
             Bundle args = new Bundle();
             args.putInt("type", 1);
             fgSpots.setArguments(args);
@@ -650,17 +556,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onLoadSpot(ArrayList<Spot> spots) {
         try {
-            //remove all others fragments if there exists
-//            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
-            // add the new fragment containing the list of spots
-
             Bundle args = new Bundle();
             args.putInt("type", 0);
             args.putSerializable("spots", spots);
@@ -676,16 +571,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onDetailSpot(Spot spot) {
         try {
-            //remove all others fragments if there exists
-//            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
-            // add the new fragment containing the list of spots
 
             Bundle args = new Bundle();
             args.putSerializable("spot", spot);
@@ -706,16 +591,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     //@Override
     public void onSearchSpot() {
         try {
-            //remove all others fragments if there exists
-//            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
-            // add the new fragment containing the list of spots
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container, fgSearch, "SPOTS")
                     .commit();
@@ -746,16 +621,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onLoadFriend(Utilisateur friend) {
         try {
-            //remove all others fragments if there exists
-//            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
-            // add the new fragment containing the list of spots
             Bundle args = new Bundle();
             args.putSerializable("friend", friend);
             fgFriendAcount.setArguments(args);
@@ -771,16 +636,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onListSpot_Friend(Utilisateur friend) {
         try {
-            //remove all others fragments if there exists
-//            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
-            // add the new fragment containing the list of spots
             Bundle args = new Bundle();
             args.putSerializable("friend", friend);
             fgSpots_friend.setArguments(args);
@@ -796,16 +651,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onDetailSpot(Spot spot, Utilisateur utilisateur) {
         try {
-            //remove all others fragments if there exists
-//            getSupportFragmentManager().beginTransaction().remove(fgSpots).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgAccueil).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgSearch).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgDetailspot).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgSpots_friend).commit();
-//            getSupportFragmentManager().beginTransaction().remove(fgFriendAcount).commit();
-            // add the new fragment containing the list of spots
 
             Bundle args = new Bundle();
             args.putSerializable("spot", spot);
@@ -816,6 +661,82 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     .commit();
         } catch (Exception e) {
             Log.e("fragment", e.getMessage());
+        }
+    }
+
+    public void setAciveTab(int menu){
+        switch (menu){
+            case MENU_ACTIF_HOME:
+
+                imgHome.setBackground(getResources().getDrawable(R.drawable.world_clicked));
+                imgSocial.setBackground(getResources().getDrawable(R.drawable.user));
+                imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
+                imgNotification.setBackground(getResources().getDrawable(R.drawable.bell));
+                imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
+                txtHome.setTextColor(getResources().getColor(R.color.mainblue));
+                txtSocial.setTextColor(getResources().getColor(R.color.noir));
+                txtNew.setTextColor(getResources().getColor(R.color.noir));
+                txtNotification.setTextColor(getResources().getColor(R.color.noir));
+                txtAccount.setTextColor(getResources().getColor(R.color.noir));
+
+                break;
+            case MENU_ACTIF_SOCIAL:
+
+                imgHome.setBackground(getResources().getDrawable(R.drawable.world));
+                imgSocial.setBackground(getResources().getDrawable(R.drawable.user_clicked));
+                imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
+                imgNotification.setBackground(getResources().getDrawable(R.drawable.bell));
+                imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
+                txtHome.setTextColor(getResources().getColor(R.color.noir));
+                txtSocial.setTextColor(getResources().getColor(R.color.mainblue));
+                txtNew.setTextColor(getResources().getColor(R.color.noir));
+                txtNotification.setTextColor(getResources().getColor(R.color.noir));
+                txtAccount.setTextColor(getResources().getColor(R.color.noir));
+
+                break;
+
+            case MENU_ACTIF_NEW:
+
+                imgHome.setBackground(getResources().getDrawable(R.drawable.world));
+                imgSocial.setBackground(getResources().getDrawable(R.drawable.user));
+                imgNew.setBackground(getResources().getDrawable(R.drawable.spot_clicked));
+                imgNotification.setBackground(getResources().getDrawable(R.drawable.bell));
+                imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
+                txtHome.setTextColor(getResources().getColor(R.color.noir));
+                txtSocial.setTextColor(getResources().getColor(R.color.noir));
+                txtNew.setTextColor(getResources().getColor(R.color.mainblue));
+                txtNotification.setTextColor(getResources().getColor(R.color.noir));
+                txtAccount.setTextColor(getResources().getColor(R.color.noir));
+
+                break;
+            case MENU_ACTIF_NOTIFICATION:
+
+                imgHome.setBackground(getResources().getDrawable(R.drawable.world));
+                imgSocial.setBackground(getResources().getDrawable(R.drawable.user));
+                imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
+                imgNotification.setBackground(getResources().getDrawable(R.drawable.bell_clicked));
+                imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
+                txtHome.setTextColor(getResources().getColor(R.color.noir));
+                txtSocial.setTextColor(getResources().getColor(R.color.noir));
+                txtNew.setTextColor(getResources().getColor(R.color.noir));
+                txtNotification.setTextColor(getResources().getColor(R.color.mainblue));
+                txtAccount.setTextColor(getResources().getColor(R.color.noir));
+
+                break;
+            case MENU_ACTIF_ACCOUNT:
+
+                imgHome.setBackground(getResources().getDrawable(R.drawable.world));
+                imgSocial.setBackground(getResources().getDrawable(R.drawable.user));
+                imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
+                imgNotification.setBackground(getResources().getDrawable(R.drawable.bell));
+                imgAccount.setBackground(getResources().getDrawable(R.drawable.setting_clicked));
+                txtHome.setTextColor(getResources().getColor(R.color.noir));
+                txtSocial.setTextColor(getResources().getColor(R.color.noir));
+                txtNew.setTextColor(getResources().getColor(R.color.noir));
+                txtNotification.setTextColor(getResources().getColor(R.color.noir));
+                txtAccount.setTextColor(getResources().getColor(R.color.mainblue));
+
+                break;
         }
     }
 }

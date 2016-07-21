@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -82,6 +83,9 @@ public class GcmIntentService extends IntentService {
                 Log.i(TAG, "Received: " + extras.toString());
             }
         }
+
+        sendInsideNotification();
+
         // On indique à notre broadcastReceiver que nous avons fini le traitement.
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
@@ -223,5 +227,15 @@ public class GcmIntentService extends IntentService {
         Log.d(TAG, "extractMessageFromExtra - fin");
 
         return notification;
+    }
+
+    // Send an Intent with an action named "custom-event-name". The Intent sent should
+    // be received by the ReceiverActivity.
+    private void sendInsideNotification() {
+        Log.i("localbroadcast", "Broadcasting message");
+        Intent intent = new Intent("custom-event-name");
+        // You can also include some extra data.
+        intent.putExtra("message", "there is a new notification!");
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 }

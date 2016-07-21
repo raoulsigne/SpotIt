@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -37,6 +38,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 import techafrkix.work.com.spot.bd.Commentaire;
@@ -54,6 +56,7 @@ import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
  * to handle interaction events.
  */
 public class DetailSpot extends Fragment {
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -71,7 +74,7 @@ public class DetailSpot extends Fragment {
     EditText edtComment;
     ImageView imgspot, imgprofile;
     ListView listView;
-    TextView txttag, txtdate, txtNbcomments;
+    TextView txttag, txtdate, txtNbcomments, txtletgo;
     int resultat;
 
     Spot spot;
@@ -112,6 +115,7 @@ public class DetailSpot extends Fragment {
         txtdate = (TextView) view.findViewById(R.id.txtDate);
         txttag = (TextView) view.findViewById(R.id.txtTag);
         txtNbcomments = (TextView) view.findViewById(R.id.txtSpots);
+        txtletgo = (TextView) view.findViewById(R.id.txtNavigation);
         imgprofile = (ImageView) view.findViewById(R.id.profile_image);
         imgspot = (ImageView) view.findViewById(R.id.imgSpot);
         imgrespot = (ImageButton) view.findViewById(R.id.imgRespot);
@@ -180,6 +184,20 @@ public class DetailSpot extends Fragment {
                     }
                 } else
                     Toast.makeText(getActivity(), "Specify the comment please!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        imgletgo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                letsgo();
+            }
+        });
+
+        txtletgo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                letsgo();
             }
         });
 
@@ -418,6 +436,14 @@ public class DetailSpot extends Fragment {
 
         // closing progress dialog
         barProgressDialog.dismiss();
+    }
+
+    public void letsgo() {
+        String uri = String.format(Locale.ENGLISH, "google.navigation:q=%f,%f&mode=d,w,b", Double.valueOf(spot.getLatitude()),
+                Double.valueOf(spot.getLongitude()));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+        intent.setPackage("com.google.android.apps.maps");
+        getActivity().startActivity(intent);
     }
 }
 

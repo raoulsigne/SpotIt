@@ -271,7 +271,7 @@ public class Add_Friend extends Fragment implements FriendCallback{
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                response = server.confirmer_friendship(Integer.valueOf(profile.get(SessionManager.KEY_ID)), tampons[position].getId(), tampons[position].getFriendship_id());
+                response = server.confirmer_friendship(tampons[position].getId(), Integer.valueOf(profile.get(SessionManager.KEY_ID)), tampons[position].getFriendship_id());
             }
         });
 

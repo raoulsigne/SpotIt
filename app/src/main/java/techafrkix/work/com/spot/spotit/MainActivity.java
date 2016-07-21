@@ -4,10 +4,12 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -18,11 +20,14 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.IntentCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,6 +74,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     Notification fgNotification;
     FragmentTransaction ft;
 
+    static MainActivity instance;
+
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 3;
 
     public static final int MENU_ACTIF_HOME = 1;
@@ -92,6 +99,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     ImageButton imgHome, imgSocial, imgNew, imgNotification, imgAccount;
     TextView txtHome, txtSocial, txtNew, txtNotification, txtAccount;
+    Button notif_count;
+    LinearLayout groupeHome, groupeSocial, groupeNewspot, groupeNotification, groupeAccount;
 
     int menuactif;
     int resultat;
@@ -100,6 +109,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main3);
+
+        // Register to receive messages.
+        // We are registering an observer (mMessageReceiver) to receive Intents
+        // with actions named "custom-event-name".
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                new IntentFilter("custom-event-name"));
+
+        instance = this;
 
         // Session class instance
         session = new SessionManager(getApplicationContext());
@@ -121,7 +138,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         txtNew = (TextView) findViewById(R.id.txtAdd);
         txtNotification = (TextView) findViewById(R.id.txtLogout);
         txtAccount = (TextView) findViewById(R.id.txtAccount);
+        groupeHome = (LinearLayout)findViewById(R.id.groupeHome);
+        groupeSocial = (LinearLayout)findViewById(R.id.groupeSocial);
+        groupeNewspot = (LinearLayout)findViewById(R.id.groupeNewspot);
+        groupeNotification = (LinearLayout)findViewById(R.id.groupeNotification);
+        groupeAccount = (LinearLayout)findViewById(R.id.groupeAccount);
 
+        notif_count = (Button) findViewById(R.id.notif_count);
+        notif_count.setVisibility(View.INVISIBLE);
 
         fgAccueil = new MapsActivity();
         fgSpots = new ListeSpots();
@@ -159,17 +183,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 setAciveTab(MENU_ACTIF_HOME);
 
                 //traitement de l'action lors du click
-                try {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container, fgAccueil, "ACCUEIL")
-                            .commit();
-                    menuactif = MENU_ACTIF_HOME;
-                } catch (Exception e) {
-                    Log.e("fragment", e.getMessage());
-                }
+                startFragment(MENU_ACTIF_HOME);
 
             }
         });
+        groupeHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //changement des couleurs des widgets
+                setAciveTab(MENU_ACTIF_HOME);
+
+                //traitement de l'action lors du click
+                startFragment(MENU_ACTIF_HOME);
+
+            }
+        });
+
         imgSocial.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -177,17 +206,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 setAciveTab(MENU_ACTIF_SOCIAL);
 
                 //traitement de l'action lors du click
-                try {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container, fgAddfrient, "ADD_FRIEND")
-                            .commit();
-                    menuactif = MENU_ACTIF_SOCIAL;
-                } catch (Exception e) {
-                    Log.e("fragment", e.getMessage());
-                }
+                startFragment(MENU_ACTIF_SOCIAL);
             }
 
         });
+        groupeSocial.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //changement des couleurs des widgets
+                setAciveTab(MENU_ACTIF_SOCIAL);
+
+                //traitement de l'action lors du click
+                startFragment(MENU_ACTIF_SOCIAL);
+            }
+
+        });
+
         imgNew.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -195,41 +229,39 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 setAciveTab(MENU_ACTIF_NEW);
 
                 //traitement de l'action lors du click
-                Bundle bundle = new Bundle();
-                //bundle.putString("image", selectedImagePath);
-                if (mLastLocation != null) {
-                    Log.i("location", "location not null");
-                    bundle.putDouble("longitude", mLastLocation.getLongitude());
-                    bundle.putDouble("latitude", mLastLocation.getLatitude());
-                } else {
-                    Log.i("location", "your location is null");
-                    bundle.putDouble("longitude", 0);
-                    bundle.putDouble("latitude", 0);
-                }
-
-                Intent imagepreview = new Intent(MainActivity.this, TakeSnap.class);
-                imagepreview.putExtras(bundle);
-                // finish();
-                startActivity(imagepreview);
+                startFragment(MENU_ACTIF_NEW);
             }
         });
+        groupeNewspot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //changement des couleurs des widgets
+                setAciveTab(MENU_ACTIF_NEW);
+
+                //traitement de l'action lors du click
+                startFragment(MENU_ACTIF_NEW);
+            }
+        });
+
         imgNotification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //changement des couleurs des widgets
                 setAciveTab(MENU_ACTIF_NOTIFICATION);
 
-                //traitement de l'action lors du click
-                try {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container, fgNotification, "NOTIFICATION")
-                            .commit();
-                } catch (Exception e) {
-                    Log.e("fragment", e.getMessage());
-                }
-
+                startFragment(MENU_ACTIF_NOTIFICATION);
             }
         });
+        groupeNotification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //changement des couleurs des widgets
+                setAciveTab(MENU_ACTIF_NOTIFICATION);
+
+                startFragment(MENU_ACTIF_NOTIFICATION);
+            }
+        });
+
         imgAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -237,14 +269,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 setAciveTab(MENU_ACTIF_ACCOUNT);
 
                 //traitement de l'action lors du click
-                try {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container, fgAccount, "ACCOUNT")
-                            .commit();
-                    menuactif = MENU_ACTIF_ACCOUNT;
-                } catch (Exception e) {
-                    Log.e("fragment", e.getMessage());
-                }
+                startFragment(MENU_ACTIF_ACCOUNT);
+            }
+
+        });
+        groupeAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //changement des couleurs des widgets
+                setAciveTab(MENU_ACTIF_ACCOUNT);
+
+                //traitement de l'action lors du click
+                startFragment(MENU_ACTIF_ACCOUNT);
             }
 
         });
@@ -664,6 +700,81 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
+    public void startFragment(int menu){
+        switch (menu){
+            case MENU_ACTIF_HOME:
+                try {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, fgAccueil, "ACCUEIL")
+                            .commit();
+                    menuactif = MENU_ACTIF_HOME;
+                } catch (Exception e) {
+                    Log.e("fragment", e.getMessage());
+                }
+
+                break;
+            case MENU_ACTIF_SOCIAL:
+                try {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, fgAddfrient, "ADD_FRIEND")
+                            .commit();
+                    menuactif = MENU_ACTIF_SOCIAL;
+                } catch (Exception e) {
+                    Log.e("fragment", e.getMessage());
+                }
+
+                break;
+
+            case MENU_ACTIF_NEW:
+                Bundle bundle = new Bundle();
+                //bundle.putString("image", selectedImagePath);
+                if (mLastLocation != null) {
+                    Log.i("location", "location not null");
+                    bundle.putDouble("longitude", mLastLocation.getLongitude());
+                    bundle.putDouble("latitude", mLastLocation.getLatitude());
+                } else {
+                    Log.i("location", "your location is null");
+                    bundle.putDouble("longitude", 0);
+                    bundle.putDouble("latitude", 0);
+                }
+
+                Intent imagepreview = new Intent(MainActivity.this, TakeSnap.class);
+                imagepreview.putExtras(bundle);
+                // finish();
+                startActivity(imagepreview);
+
+                break;
+
+            case MENU_ACTIF_NOTIFICATION:
+                notif_count.setText(String.valueOf(0));
+                notif_count.setVisibility(View.INVISIBLE);
+
+                //traitement de l'action lors du click
+                try {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, fgNotification, "NOTIFICATION")
+                            .commit();
+                } catch (Exception e) {
+                    Log.e("fragment", e.getMessage());
+                }
+
+                break;
+
+            case MENU_ACTIF_ACCOUNT:
+                try {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, fgAccount, "ACCOUNT")
+                            .commit();
+                    menuactif = MENU_ACTIF_ACCOUNT;
+                } catch (Exception e) {
+                    Log.e("fragment", e.getMessage());
+                }
+
+                break;
+        }
+    }
+
+
     public void setAciveTab(int menu){
         switch (menu){
             case MENU_ACTIF_HOME:
@@ -738,5 +849,31 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                 break;
         }
+    }
+
+    // Our handler for received Intents. This will be called whenever an Intent
+    // with an action named "custom-event-name" is broadcasted.
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            String message = intent.getStringExtra("message");
+            Log.i("localbroadcast", "Got notification: " + message);
+            updatenotif_count();
+        }
+    };
+
+    public void updatenotif_count() {
+        Log.i("localbroadcast", "new notif increment the number");
+
+        notif_count.setVisibility(View.VISIBLE);
+        notif_count.setText(String.valueOf(Integer.parseInt(notif_count.getText().toString()) + 1));
+    }
+
+    @Override
+    protected void onDestroy() {
+        // Unregister since the activity is about to be closed.
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        super.onDestroy();
     }
 }

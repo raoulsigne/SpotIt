@@ -153,7 +153,7 @@ public class DetailSpot_New extends AppCompatActivity {
         valider.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (visibilite != null & visibilite != "") {
+                if ((visibilite != null) & (visibilite != "") & (liste.getChildCount() > 0)) {
                     GeoHash geoHash = new GeoHash();
                     geoHash.setLatitude(latitude);
                     geoHash.setLongitude(longitude);

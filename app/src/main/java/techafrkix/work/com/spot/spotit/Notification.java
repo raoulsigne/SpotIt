@@ -28,6 +28,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
@@ -63,6 +64,7 @@ public class Notification extends Fragment {
     private SessionManager session;
     private HashMap<String, String> profile;
     private int response;
+    private Spot spot;
 
     private OnFragmentInteractionListener mListener;
 
@@ -151,7 +153,30 @@ public class Notification extends Fragment {
                         break;
 
                     case TYPE_NEW_SPOT:
+                        DetailSpot fgDetailspot = new DetailSpot();
+                        Bundle args = new Bundle();
+                        spot = new Spot();
+                        Thread t = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                spot = server.find_spot(notification.getIdspot());
+                            }});
 
+                        t.start(); // spawn thread
+                        try{
+                            t.join();
+
+                            if (spot != null){
+                                args.putSerializable("spot", spot);
+                                fgDetailspot.setArguments(args);
+                                getActivity().getSupportFragmentManager().beginTransaction()
+                                        .replace(R.id.container, fgDetailspot, "DETAIL")
+                                        .commit();
+
+                            }
+                        }catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                         break;
                 }
 

@@ -59,6 +59,7 @@ public class DBServer {
     private static final String URL_COMMENTAIRE = "/api/commentaires";
     private static final String URL_FIND_SPOT = "/api/findspots";
     private static final String URL_FIND_SPOT_2 = "/api/findspotswithtagorhash";
+    private static final String URL_FIND_SPOT_3 = "/api/getspot";
     private static final String URL_FIND_ALL_SPOT = "/api/findallspots";
     private static final String URL_FRIEND = "/api/friendships";
     private static final String URL_LIST_NOTIFICATION = "/api/notifications";
@@ -1203,6 +1204,87 @@ public class DBServer {
                         spots.add(spot);
                     }
                     return spots;
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
+                    builder.append("message = " + json.getString("message"));
+
+                    Log.i(TAG, "reponse = " + builder.toString());
+                    return null;
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "JSONException " + e.getMessage());
+                return null;
+            }
+        } catch (MalformedURLException error) {
+            //Handles an incorrectly entered URL
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
+            return null;
+        } catch (SocketTimeoutException error) {
+            //Handles URL access timeout.
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
+            return null;
+        } catch (IOException error) {
+            //Handles input and output errors
+            Log.e(TAG, "IOException " + error.toString());
+            return null;
+        } finally {
+            client.disconnect();
+        }
+    }
+
+    /**
+     * function which find a spot given an id of the spot
+     * @param id
+     * @return spot ou null
+     */
+    public Spot find_spot(int id) {
+        Spot spot = new Spot();
+        ContentValues values = new ContentValues();
+        values.put("apikey", API_KEY);
+        values.put("id", id);
+        try {
+            url = new URL(BASE_URL + URL_FIND_SPOT_3 + "?" + getQuery(values));
+            Log.i("url", url.toString());
+            client = (HttpURLConnection) url.openConnection();
+            client.setRequestMethod("GET");
+
+            StringBuilder builder = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                builder.append(line + "\n");
+            }
+            br.close();
+            Log.i(TAG, "reponse = " + builder.toString());
+            try {
+                JSONObject json = new JSONObject(builder.toString());
+                ArrayList<String> tags = new ArrayList<>();
+                int statut = Integer.valueOf(json.getString("statut"));
+                if (statut == 1) {
+                    JSONObject json2 = json.getJSONObject("data");
+
+                    spot = new Spot();
+                    spot.setRespot((int) json2.get("respot"));
+                    spot.setVisibilite_id((int) json2.get("visibilite_id"));
+                    spot.setGeohash((String) json2.get("hash"));
+                    spot.setId((int) json2.get("id"));
+                    spot.setLongitude(json2.getDouble("gpslong") + "");
+                    spot.setLatitude(json2.getDouble("gpslat") + "");
+                    spot.setPhotokey((String) json2.get("photo"));
+                    spot.setPhotouser((String) json2.get("photouser"));
+                    spot.setUser_id((int) json2.get(SpotsDBAdapteur.COLONNE_USER_ID));
+                    spot.setDate(convert_date((String) json2.get("created")));
+                    spot.setNbcomment((int) json2.get("nbcomment"));
+                    JSONArray jArrtag = json2.getJSONArray("tags");
+                    tags = new ArrayList<>();
+                    for (int j = 0; j < jArrtag.length(); j++) {
+                        JSONObject json3 = jArrtag.getJSONObject(j);
+                        tags.add((String) json3.get("tag"));
+                    }
+                    spot.setTags(tags);
+
+                    return spot;
                 } else {
                     builder.append("statut = " + json.getString("statut"));
                     builder.append("errcode = " + json.getString("errcode"));

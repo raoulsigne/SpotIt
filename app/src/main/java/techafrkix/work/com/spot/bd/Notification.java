@@ -1,5 +1,10 @@
 package techafrkix.work.com.spot.bd;
 
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.Serializable;
 
 /**
@@ -93,6 +98,16 @@ public class Notification implements Serializable{
     }
 
     public Notification() {
+    }
+
+    public int getIdspot(){
+        try {
+            JSONObject json = new JSONObject(this.data);
+            return (int) json.get("spot_id");
+        } catch (JSONException e) {
+            Log.e("Notif", "JSONException " + e.getMessage());
+            return -1;
+        }
     }
 
     @Override

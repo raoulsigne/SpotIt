@@ -707,7 +707,7 @@ public class DBServer {
             ContentValues values = new ContentValues();
             values.put("apikey", API_KEY);
             values.put("user_id", user_id);
-            values.put("statut", STATUT_CONFIRM);
+//            values.put("statut", STATUT_CONFIRM);
 
             url = new URL(BASE_URL + URL_FRIEND + "?" + getQuery(values));
 

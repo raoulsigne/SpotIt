@@ -217,6 +217,10 @@ public class DetailSpot extends Fragment {
             ;
             String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
             final File file = new File(dossier + File.separator + spot.getPhotokey() + ".jpg");
+
+            if (!file.exists())
+                chargement_image(spot.getPhotokey());
+
             Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
 
             // Get height or width of screen at runtime
@@ -444,6 +448,62 @@ public class DetailSpot extends Fragment {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
         intent.setPackage("com.google.android.apps.maps");
         getActivity().startActivity(intent);
+    }
+
+    public void chargement_image(String photokey){
+        String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
+        final File file = new File(dossier + File.separator + photokey + ".jpg");
+
+        AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
+        final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
+        barProgressDialog.setTitle("Telechargement du spot ...");
+        barProgressDialog.setMessage("Opération en progression ...");
+        barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
+        barProgressDialog.setProgress(0);
+        barProgressDialog.setMax(100);
+        barProgressDialog.show();
+        int transfertId = aws_tools.download(file, photokey);
+        TransferUtility transferUtility = aws_tools.getTransferUtility();
+        TransferObserver observer = transferUtility.getTransferById(transfertId);
+        observer.setTransferListener(new TransferListener() {
+
+            @Override
+            public void onStateChanged(int id, TransferState state) {
+                // do something
+            }
+
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                int rapport = (int) (bytesCurrent * 100);
+                if (bytesTotal != 0) {
+                    rapport /= bytesTotal;
+                    barProgressDialog.setProgress(rapport);
+                    if (rapport == 100) {
+                        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+
+                        // Get height or width of screen at runtime
+                        Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
+                        Point size = new Point();
+                        display.getSize(size);
+                        int width = size.x;
+                        //reduce the photo dimension keeping the ratio so that it'll fit in the imageview
+                        int nh = (int) (bitmap.getHeight() * (Double.valueOf(width) / bitmap.getWidth()));
+                        Bitmap scaled = Bitmap.createScaledBitmap(bitmap, width, nh, true);
+                        //define the image source of the imageview
+                        imgspot.setImageBitmap(scaled);
+                        barProgressDialog.dismiss();
+                    }
+                }else
+                    barProgressDialog.dismiss();
+            }
+
+            @Override
+            public void onError(int id, Exception ex) {
+                // do something
+                barProgressDialog.dismiss();
+            }
+
+        });
     }
 }
 

@@ -193,7 +193,10 @@ public class Add_Friend extends Fragment implements FriendCallback{
         lvfriends.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mListener.onLoadFriend(users.get(position));
+                if (friends.contains(users.get(position).getPseudo()))
+                    mListener.onLoadFriend(users.get(position));
+                else
+                    Toast.makeText(getActivity(), "You are not yet friend", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -217,7 +220,10 @@ public class Add_Friend extends Fragment implements FriendCallback{
                 sendrequest(index);
                 return true;
             case R.id.viewprofile:
-                mListener.onLoadFriend(users.get(index));
+                if (friends.contains(users.get(index).getPseudo()))
+                    mListener.onLoadFriend(users.get(index));
+                else
+                    Toast.makeText(getActivity(), "You are not yet friend", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onContextItemSelected(item);

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -31,6 +32,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.Utilisateur;
@@ -388,7 +390,14 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
 
     @Override
     public void letsgo(int position) {
-        Toast.makeText(getActivity(),"Let's go " + position, Toast.LENGTH_SHORT).show();
+
+        String uri = "";
+        uri = String.format(Locale.ENGLISH, "google.navigation:q=%f,%f&mode=d,w,b", Double.valueOf(spots.get(position).getLatitude()),
+                Double.valueOf(spots.get(position).getLongitude()));
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+        getActivity().startActivity(intent);
+
     }
 }
 

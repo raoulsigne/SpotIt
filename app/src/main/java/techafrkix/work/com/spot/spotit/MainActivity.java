@@ -1,10 +1,8 @@
 package techafrkix.work.com.spot.spotit;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -13,9 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -33,10 +29,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.facebook.appevents.AppEventsLogger;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -51,8 +43,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import me.leolin.shortcutbadger.ShortcutBadger;
 import techafrkix.work.com.spot.bd.Spot;
-import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
 import techafrkix.work.com.spot.bd.Utilisateur;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
@@ -151,7 +143,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         groupeAccount = (LinearLayout)findViewById(R.id.groupeAccount);
 
         notif_count = (Button) findViewById(R.id.notif_count);
-        notif_count.setVisibility(View.INVISIBLE);
+        if (Integer.parseInt(notif_count.getText().toString()) == 0)
+            notif_count.setVisibility(View.INVISIBLE);
 
         fgAccueil = new MapsActivity();
         fgSpots = new ListeSpots();
@@ -753,6 +746,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             case MENU_ACTIF_NOTIFICATION:
                 notif_count.setText(String.valueOf(0));
                 notif_count.setVisibility(View.INVISIBLE);
+                ShortcutBadger.applyCount(getApplicationContext(), 0);
 
                 //traitement de l'action lors du click
                 try {
@@ -873,6 +867,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         notif_count.setVisibility(View.VISIBLE);
         notif_count.setText(String.valueOf(Integer.parseInt(notif_count.getText().toString()) + 1));
+
+        ShortcutBadger.applyCount(getApplicationContext(), Integer.parseInt(notif_count.getText().toString()) + 1);
     }
 
     @Override

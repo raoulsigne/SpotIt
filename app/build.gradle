@@ -8,8 +8,8 @@ android {
         applicationId "techafrkix.work.com.spot.spotit"
         minSdkVersion 16
         targetSdkVersion 24
-        versionCode 2
-        versionName "1.1"
+        versionCode 3
+        versionName "1.2.1"
         multiDexEnabled true
     }
     buildTypes {
@@ -48,4 +48,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-gcm:8.4.0'
     compile 'com.google.android.gms:play-services-auth:8.4.0'
     compile 'com.android.support:recyclerview-v7:24.0.0'
+
+    //badge on app icon
+    compile 'me.leolin:ShortcutBadger:1.1.8@aar'
 }

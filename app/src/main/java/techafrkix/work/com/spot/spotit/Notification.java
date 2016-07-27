@@ -235,7 +235,6 @@ public class Notification extends Fragment {
             View rowView= inflater.inflate(R.layout.notification_item, null, true);
 
             final ImageView imgProfile = (ImageView) rowView.findViewById(R.id.item_profile);
-            TextView txttitre = (TextView) rowView.findViewById(R.id.txtTitre_notif);
             TextView txtdescription = (TextView) rowView.findViewById(R.id.txtDescription_notif);
             TextView txtdate = (TextView) rowView.findViewById(R.id.txtDate_notif);
 
@@ -308,7 +307,6 @@ public class Notification extends Fragment {
                 }
             }
 
-            txttitre.setText("Titre");
             txtdescription.setText(notifications[position].getDescription());
             txtdate.setText(notifications[position].getCreated());
 

@@ -13,6 +13,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.content.pm.PackageManager;
@@ -105,6 +106,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
     private EditText findspot;
 
     private ImageButton myspot;
+
+    DownloadSpotsTask task;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -391,35 +394,39 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
                 geohash.setLong_hash(long_hash);
                 geohash.setLong_bits(geohash.getLong_hash() * geohash.LONG_DIGIT);
                 geohash.encoder();
-                Thread t = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        spots = server.find_spots(geohash.neighbours_1(geohash.getHash()));
-                    }
-                });
 
-                t.start(); // spawn thread
-                try {
-                    t.join();
-                    if (spots != null) {
-                        //afficher le nombre de spots
-                        int n = spots.size();
-                        if (n <= 1)
-                            txtmyspot.setText(n + " Spot");
-                        else
-                            txtmyspot.setText(n + " Spots");
-                        for (Spot s : spots) {
-                            mMyMarkersArray.add(new MyMarker(s.getDate(), s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude())));
-                        }
-                    } else
-                        Log.i("test", "spot null");
-                    if (type == 0)
-                        plotMarkers(mMyMarkersArray);
-                    else
-                        plotMarkers_1(mMyMarkersArray);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                task = new DownloadSpotsTask();
+                task.execute(geohash.neighbours_1(geohash.getHash()));
+
+//                Thread t = new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        spots = server.find_spots(geohash.neighbours_1(geohash.getHash()));
+//                    }
+//                });
+//
+//                t.start(); // spawn thread
+//                try {
+//                    t.join();
+//                    if (spots != null) {
+//                        //afficher le nombre de spots
+//                        int n = spots.size();
+//                        if (n <= 1)
+//                            txtmyspot.setText(n + " Spot");
+//                        else
+//                            txtmyspot.setText(n + " Spots");
+//                        for (Spot s : spots) {
+//                            mMyMarkersArray.add(new MyMarker(s.getDate(), s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude())));
+//                        }
+//                    } else
+//                        Log.i("test", "spot null");
+//                    if (type == 0)
+//                        plotMarkers(mMyMarkersArray);
+//                    else
+//                        plotMarkers_1(mMyMarkersArray);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
             }
         }
     }
@@ -598,6 +605,42 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
     public static boolean isNetworkAvailable(final Context context) {
         final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
         return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
+    }
+
+    private class DownloadSpotsTask extends AsyncTask<String[], Integer, Long> {
+
+        @Override
+        protected Long doInBackground(String[]... hashs) {
+            int count = hashs.length;
+            long totalSize = 0;
+            for (int i = 0; i < count; i++) {
+                spots = server.find_spots(hashs[i]);
+
+                // Escape early if cancel() is called
+                if (isCancelled()) break;
+            }
+            return totalSize;
+        }
+
+        protected void onProgressUpdate(Integer... progress) {
+
+        }
+
+        protected void onPostExecute(Long result) {
+            if (spots != null) {
+                //afficher le nombre de spots
+                int n = spots.size();
+                if (n <= 1)
+                    txtmyspot.setText(n + " Spot");
+                else
+                    txtmyspot.setText(n + " Spots");
+                for (Spot s : spots) {
+                    mMyMarkersArray.add(new MyMarker(s.getDate(), s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude())));
+                }
+            } else
+                Log.i("test", "spot null");
+            plotMarkers_1(mMyMarkersArray);
+        }
     }
 }
 

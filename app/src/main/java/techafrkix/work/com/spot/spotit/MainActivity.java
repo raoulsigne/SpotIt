@@ -318,6 +318,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 case REQUEST_IMAGE_CAPTURE:
                     Bundle extras = data.getExtras();
                     Bitmap imageBitmap = (Bitmap) extras.get("data");
+                    imageBitmap = Bitmap.createScaledBitmap(imageBitmap, 800, 800, true);
                     final String temps = profile.get(SessionManager.KEY_ID) + "_" + String.valueOf(System.currentTimeMillis());
                     File file = new File(getApplicationContext().getFilesDir().getPath() + "/SpotItPictures/" + temps + ".jpg");
                     try {

@@ -94,19 +94,21 @@ public class AWS_Tools {
 
             @Override
             public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                int rapport = (int)(bytesCurrent * 100);
-                rapport /= bytesTotal;
-                Log.i("upload","pourcentage "+rapport+ " variable statique "+RAPPORT_PROGRESSION);
-                //Display percentage transfered to user
-                barProgressDialog.setProgress(rapport);
-                if (rapport == MAX_VALUE) {
-                    if (RAPPORT_PROGRESSION == 0) {
-                        RAPPORT_PROGRESSION = 1;
-                        barProgressDialog.dismiss();
-                        Toast.makeText(context, "Opération terminée", Toast.LENGTH_SHORT).show();
-                        Intent mainintent = new Intent(context, MainActivity.class);
-                        ((Activity) context).finish();
-                        context.startActivity(mainintent);
+                if (bytesTotal != 0) {
+                    int rapport = (int) (bytesCurrent * 100);
+                    rapport /= bytesTotal;
+                    Log.i("upload", "pourcentage " + rapport + " variable statique " + RAPPORT_PROGRESSION);
+                    //Display percentage transfered to user
+                    barProgressDialog.setProgress(rapport);
+                    if (rapport == MAX_VALUE) {
+                        if (RAPPORT_PROGRESSION == 0) {
+                            RAPPORT_PROGRESSION = 1;
+                            barProgressDialog.dismiss();
+                            Toast.makeText(context, "Opération terminée", Toast.LENGTH_SHORT).show();
+                            Intent mainintent = new Intent(context, MainActivity.class);
+                            ((Activity) context).finish();
+                            context.startActivity(mainintent);
+                        }
                     }
                 }
             }

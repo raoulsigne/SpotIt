@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/mainblue">
+    android:background="@color/myblue">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -19,44 +19,62 @@
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="50dp"
-                android:background="@drawable/logospotitblue"/>
+                android:background="@drawable/logospotitblue112"/>
+
+            <TextView
+                android:id="@+id/titre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/app_name"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="10dp"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                android:layout_below="@+id/imageView3"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_marginTop="15dp"
                 android:text="@string/slogan_2"
                 android:textColor="#FFFFFF"
                 android:textAlignment="center"
                 android:textSize="18sp"
-                android:textStyle="bold"
                 android:id="@+id/textView3"
-                android:layout_below="@+id/imageView3"
+                android:layout_below="@+id/titre"
                 android:layout_centerHorizontal="true" />
 
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_height="40dp"
-                android:inputType="textEmailAddress"
-                android:ems="10"
-                android:id="@+id/editText2"
+            <LinearLayout
+                android:id="@+id/blocedition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/button_white"
                 android:layout_below="@+id/textView3"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="40dp"
-                android:background="#FFFFFF"
-                android:textSize="15sp"
-                android:padding="10dp"
-                android:hint="Email"/>
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginTop="10dp">
 
-            <RelativeLayout android:layout_width="match_parent"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_height="40dp"
-                android:id="@+id/bloc_pwd"
-                android:layout_below="@+id/editText2" >
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:inputType="textEmailAddress"
+                    android:id="@+id/editText2"
+                    android:background="#FFFFFF"
+                    android:textSize="14sp"
+                    android:padding="10dp"
+                    android:hint="Email"/>
+
+                <View
+                    android:id="@+id/line"
+                    android:layout_width="match_parent"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_height="1dip"
+                    android:background="@color/separator"/>
 
                 <EditText
                     android:layout_width="match_parent"
@@ -71,25 +89,16 @@
                     android:textSize="15sp"
                     android:radius="5dp"/>
 
-                <Switch
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Show"
-                    android:id="@+id/switch_pwd"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true" />
-
-            </RelativeLayout>
+            </LinearLayout>
 
             <Button
                 android:layout_width="match_parent"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_height="35dp"
                 android:text="Log in"
                 android:id="@+id/btnConnexion"
-                android:layout_below="@+id/bloc_pwd"
+                android:layout_below="@+id/blocedition"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp"
                 android:textAllCaps="false"
@@ -100,39 +109,35 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_below="@+id/btnConnexion"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
+                android:layout_height="35dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="50dp"
                 android:radius="5dp"
                 android:layout_centerHorizontal="true"
                 android:background="@drawable/fb_button">
 
                 <ImageView
                     android:id="@+id/imageView5"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="10dp"
-                    android:src="@drawable/facebook" />
+                    android:src="@drawable/facebook1" />
 
                 <com.facebook.login.widget.LoginButton
                     android:id="@+id/login_button"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="12sp"
+                    android:layout_height="40dp"
                     android:layout_toEndOf="@+id/imageView5"
                     android:layout_toRightOf="@+id/imageView5"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginBottom="2dp"
-                    android:paddingBottom="12sp"
-                    android:textSize="18sp"
+                    android:layout_centerVertical="true"
+                    android:textSize="15sp"
                     android:textStyle="bold"
                     android:textColor="@color/mainblue"
-                    android:radius="5dp"
                     android:background="@color/blanc"/>
 
             </RelativeLayout>

@@ -1,161 +1,124 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_width="fill_parent" android:layout_height="fill_parent"
+    android:id="@+id/layoutContainer" android:orientation="horizontal">
+    <RelativeLayout
+        android:layout_width="0dip"
+        android:layout_height="fill_parent"
+        android:layout_weight="0.025">
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="0dip"
+        android:layout_height="fill_parent"
+        android:layout_weight="0.95">
 
-    <LinearLayout
-        android:id="@+id/my_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="center_horizontal"
-        android:layout_weight="1"
-        android:background="@drawable/custom_bar"
-        android:orientation="horizontal">
-
+        <!-- This is the part that's 70% of the total width. I'm inserting a LinearLayout and buttons.-->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <ImageButton
-                android:id="@+id/imgHome"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/world" />
-
-            <TextView
-                android:id="@+id/txtHome"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="4dp"
-                android:text="Home"
-                android:textAlignment="center"
-                android:textSize="10sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_centerInParent="true"
             android:orientation="vertical">
 
-            <ImageButton
-                android:id="@+id/imgList"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/user" />
+            <Button
+                android:text="Button1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+            </Button>
+            <Button
+                android:text="Button2"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+            </Button>
+            <Button
+                android:text="Button3"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+            </Button>
 
-            <TextView
-                android:id="@+id/txtSpots"
+            <EditText
+                android:id="@+id/pseudo"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="4dp"
-                android:text="Social"
-                android:textAlignment="center"
-                android:textSize="10sp" />
-        </LinearLayout>
+                android:background="#FFFFFF"
+                android:ems="10"
+                android:hint="Peudo"
+                android:padding="10dp"
+                android:radius="5dp"
+                android:singleLine="true"
+                android:textSize="14sp"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <ImageButton
-                android:id="@+id/imgAdd"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/spot" />
-
-            <TextView
-                android:id="@+id/txtAdd"
+            <View
+                android:id="@+id/line2"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="4dp"
-                android:text="New spot"
-                android:textAlignment="center"
-                android:textSize="10sp" />
-        </LinearLayout>
+                android:layout_height="1dip"
+                android:background="@color/separator"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <RelativeLayout android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ImageButton
-                    android:id="@+id/imgDisconnect"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/bell" />
-
-                <Button android:id="@+id/notif_count"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_alignTop="@id/imgDisconnect"
-                    android:layout_alignRight="@id/imgDisconnect"
-                    android:background="@drawable/shape_notification"
-                    android:text="0"
-                    android:textSize="16sp"
-                    android:textColor="@android:color/white"
-                    android:gravity="center"
-                    android:singleLine="true">
-                </Button>
-
-            </RelativeLayout>
-
-            <TextView
-                android:id="@+id/txtLogout"
+            <EditText
+                android:id="@+id/emailadress"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="4dp"
-                android:text="Notifications"
-                android:textAlignment="center"
-                android:textSize="10sp" />
-        </LinearLayout>
+                android:background="#FFFFFF"
+                android:ems="10"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:padding="10dp"
+                android:radius="5dp"
+                android:textSize="14sp"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <ImageButton
-                android:id="@+id/imgAccount"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/setting" />
-
-            <TextView
-                android:id="@+id/txtAccount"
+            <View
+                android:id="@+id/line3"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="4dp"
-                android:text="Account"
-                android:textAlignment="center"
-                android:textSize="10sp" />
-        </LinearLayout>
+                android:layout_height="1dip"
+                android:background="@color/separator"/>
 
-    </LinearLayout>
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="center_horizontal"
+                android:background="#FFFFFF"
+                android:ems="10"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:padding="10dp"
+                android:radius="5dp"
+                android:textSize="14sp"/>
+
+            <View
+                android:id="@+id/line1"
+                android:layout_width="match_parent"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_height="1dip"
+                android:background="@color/separator"/>
+
+            <EditText
+                android:id="@+id/editText"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="center_horizontal"
+                android:background="#FFFFFF"
+                android:ems="10"
+                android:hint="Date of birth"
+                android:inputType="date"
+                android:padding="10dp"
+                android:textSize="14sp"/>
+
+        </LinearLayout>
+        <!-- 70% Width End-->
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="0dip"
+        android:layout_height="fill_parent"
+        android:layout_weight="0.025">
+    </RelativeLayout>
 </LinearLayout>

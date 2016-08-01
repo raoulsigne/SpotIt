@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="65dp"
-        android:background="@drawable/logospotitblue" />
+        android:background="@drawable/logospotitblue112" />
 
     <TextView
         android:layout_width="match_parent"
@@ -20,7 +20,8 @@
         android:text="@string/app_name"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
-        android:textSize="24sp"
+        android:layout_marginTop="10px"
+        android:textSize="25sp"
         android:textStyle="bold" />
 
     <TextView
@@ -30,11 +31,9 @@
         android:layout_gravity="center_horizontal"
         android:text="@string/slogan_2"
         android:textAlignment="center"
-        android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#FFFFFF"
-        android:layout_marginTop="70dp"
-        android:textSize="18sp"
-        android:textStyle="bold"/>
+        android:layout_marginTop="20dp"
+        android:textSize="18sp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -48,24 +47,26 @@
             style="?android:attr/borderlessButtonStyle"
             android:id="@+id/btnLogin"
             android:layout_width="300dp"
-            android:layout_height="45dp"
+            android:layout_height="35dp"
             android:layout_marginTop="0dp"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/button_white"
-            android:text="Log in"
+            android:text="Login"
             android:textAllCaps="false"
+            android:textStyle="bold"
             android:textColor="@color/mainblue"
             android:textSize="16sp" />
 
         <Button
             android:id="@+id/btnSignin"
             android:layout_width="300dp"
-            android:layout_height="45dp"
+            android:layout_height="35dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="10dp"
             android:background="@drawable/button_border"
             android:text="Sign in"
             android:textAllCaps="false"
+            android:textStyle="bold"
             android:textColor="#FFFFFF"
             android:textSize="16sp" />
     </LinearLayout>

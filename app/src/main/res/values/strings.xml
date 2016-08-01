@@ -18,9 +18,10 @@
     <string name="title_activity_main_activitytest">MainActivitytest</string>
     <string name="title_activity_main_activity_test">MainActivityTest</string>
     <string name="slogan_1">&amp; the world is yours</string>
-    <string name="slogan_2">Take and share your favorite spots</string>
-    <string name="policy">By signing, you agree to  </string>
-    <string name="warning">Terms &amp; Privacy</string>
+    <string name="slogan_2">Share your favorite spots</string>
+    <string name="titre_inscription">Sign in to share your favorite spots</string>
+    <string name="policy">By signin, you agree to our</string>
+    <string name="warning">  <u>Terms &amp; Privacy</u></string>
     <string name="title_spot">DETAIL DU SPOT</string>
     <string name="title_activity_accueil">Accueil</string>
 

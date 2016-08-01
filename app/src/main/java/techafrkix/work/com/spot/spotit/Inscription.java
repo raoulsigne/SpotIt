@@ -24,6 +24,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -59,7 +60,6 @@ public class Inscription extends AppCompatActivity {
 
     public static  final  String _TO_CONCAT = "cs457syu89iuer8poier787";
     protected EditText pseudo, email, password, date;
-    Switch switch_pwd;
     LoginButton fbSignin;
     Button signin;
     ProgressDialog progress;
@@ -84,6 +84,8 @@ public class Inscription extends AppCompatActivity {
     private Utilisateur utilisateur;
     String s_pseudo, sdate;
 
+    private TextView policy;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,9 +107,8 @@ public class Inscription extends AppCompatActivity {
         email = (EditText)findViewById(R.id.emailadress);
         password = (EditText)findViewById(R.id.password);
         date = (EditText)findViewById(R.id.editText);
-        switch_pwd = (Switch)findViewById(R.id.switch_pwd);
+        policy = (TextView)findViewById(R.id.textView7);
 
-        switch_pwd.setChecked(false);
         password.setTransformationMethod(new PasswordTransformationMethod());
 
         dbAdapteur = new UtilisateurDBAdapteur(getApplicationContext());
@@ -117,22 +118,6 @@ public class Inscription extends AppCompatActivity {
         progress.setMessage("Please wait response from facebook...");
         progress.setIndeterminate(false);
         progress.setCancelable(false);
-        switch_pwd.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView,
-                                         boolean isChecked) {
-                if (isChecked) {
-                    // The toggle is enabled
-                    password.setTransformationMethod(null);
-                    switch_pwd.setText("Hide");
-                } else {
-                    // The toggle is disabled
-                    password.setTransformationMethod(new PasswordTransformationMethod());
-                    switch_pwd.setText("Show");
-                }
-            }
-        });
 
         date.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {

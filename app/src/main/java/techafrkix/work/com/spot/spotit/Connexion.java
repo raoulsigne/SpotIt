@@ -52,7 +52,6 @@ public class Connexion extends AppCompatActivity {
     private AccessTokenTracker fbTracker;
     CallbackManager callbackManager;
     EditText email, password;
-    Switch switch_pwd;
 
     GoogleCloudMessaging gcm;
     String regId;
@@ -94,26 +93,6 @@ public class Connexion extends AppCompatActivity {
 
         final Intent itwelcome = new Intent(this,Welcome.class);
         dbAdapteur = new UtilisateurDBAdapteur(getApplicationContext());
-
-        switch_pwd = (Switch)findViewById(R.id.switch_pwd);
-        switch_pwd.setChecked(false);
-
-        switch_pwd.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView,
-                                         boolean isChecked) {
-                if (isChecked) {
-                    // The toggle is enabled
-                    password.setTransformationMethod(null);
-                    switch_pwd.setText("Hide");
-                } else {
-                    // The toggle is disabled
-                    password.setTransformationMethod(new PasswordTransformationMethod());
-                    switch_pwd.setText("Show");
-                }
-            }
-        });
 
         String parent = getIntent().getExtras().getString("caller");
         if (isLoggedIn()) {

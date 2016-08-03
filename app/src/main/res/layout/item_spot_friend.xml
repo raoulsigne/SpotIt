@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/blanc">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -55,7 +56,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
-                android:background="@drawable/navigation" />
+                android:background="@drawable/let_go" />
 
             <TextView
                 android:id="@+id/txtLetsgo"
@@ -78,7 +79,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
-                android:background="@drawable/chat" />
+                android:background="@drawable/chat1" />
 
             <TextView
                 android:id="@+id/txtComments"

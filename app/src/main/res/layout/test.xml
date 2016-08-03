@@ -1,124 +1,64 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent" android:layout_height="fill_parent"
-    android:id="@+id/layoutContainer" android:orientation="horizontal">
-    <RelativeLayout
-        android:layout_width="0dip"
-        android:layout_height="fill_parent"
-        android:layout_weight="0.025">
-    </RelativeLayout>
-    <RelativeLayout
-        android:layout_width="0dip"
-        android:layout_height="fill_parent"
-        android:layout_weight="0.95">
+    android:id="@+id/layoutContainer" android:orientation="vertical">
 
-        <!-- This is the part that's 70% of the total width. I'm inserting a LinearLayout and buttons.-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:gravity="bottom"
+        android:paddingBottom="25dp">
+
         <LinearLayout
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_marginLeft="10dp"
             android:orientation="vertical">
 
-            <Button
-                android:text="Button1"
-                android:layout_width="fill_parent"
+            <TextView
+                android:id="@+id/txtMySpot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/badge"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:text=" Spots"
+                android:textAlignment="center"
+                android:textColor="@color/blanc"
+                android:textSize="12sp"
+                android:elevation="15dp" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            </Button>
-            <Button
-                android:text="Button2"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content">
-            </Button>
-            <Button
-                android:text="Button3"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content">
-            </Button>
 
-            <EditText
-                android:id="@+id/pseudo"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_gravity="center_horizontal"
-                android:background="#FFFFFF"
-                android:ems="10"
-                android:hint="Peudo"
-                android:padding="10dp"
-                android:radius="5dp"
-                android:singleLine="true"
-                android:textSize="14sp"/>
+                <ImageView
+                    android:id="@+id/imgMySpots"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:padding="10dp"
+                    android:src="@drawable/play_button"
+                    android:background="@drawable/round_button_white"
+                    android:elevation="15dp"/>
 
-            <View
-                android:id="@+id/line2"
-                android:layout_width="match_parent"
-                android:layout_marginLeft="40dp"
-                android:layout_marginRight="40dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_height="1dip"
-                android:background="@color/separator"/>
+                <ImageView
+                    android:id="@+id/imgLocateMe"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:padding="10dp"
+                    android:src="@drawable/gps_signal"
+                    android:background="@drawable/round_button_blue"
+                    android:layout_marginRight="10dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:elevation="15dp"/>
 
-            <EditText
-                android:id="@+id/emailadress"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_gravity="center_horizontal"
-                android:background="#FFFFFF"
-                android:ems="10"
-                android:hint="Email"
-                android:inputType="textEmailAddress"
-                android:padding="10dp"
-                android:radius="5dp"
-                android:textSize="14sp"/>
-
-            <View
-                android:id="@+id/line3"
-                android:layout_width="match_parent"
-                android:layout_marginLeft="40dp"
-                android:layout_marginRight="40dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_height="1dip"
-                android:background="@color/separator"/>
-
-            <EditText
-                android:id="@+id/password"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_gravity="center_horizontal"
-                android:background="#FFFFFF"
-                android:ems="10"
-                android:hint="Password"
-                android:inputType="textPassword"
-                android:padding="10dp"
-                android:radius="5dp"
-                android:textSize="14sp"/>
-
-            <View
-                android:id="@+id/line1"
-                android:layout_width="match_parent"
-                android:layout_marginLeft="40dp"
-                android:layout_marginRight="40dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_height="1dip"
-                android:background="@color/separator"/>
-
-            <EditText
-                android:id="@+id/editText"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_gravity="center_horizontal"
-                android:background="#FFFFFF"
-                android:ems="10"
-                android:hint="Date of birth"
-                android:inputType="date"
-                android:padding="10dp"
-                android:textSize="14sp"/>
+            </RelativeLayout>
 
         </LinearLayout>
-        <!-- 70% Width End-->
+    </RelativeLayout>
 
-    </RelativeLayout>
-    <RelativeLayout
-        android:layout_width="0dip"
-        android:layout_height="fill_parent"
-        android:layout_weight="0.025">
-    </RelativeLayout>
 </LinearLayout>

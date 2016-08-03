@@ -129,6 +129,9 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
         txtfriend = (TextView)view.findViewById(R.id.txtFriends_friend);
         listspots = (ListView) view.findViewById(R.id.listView);
 
+        listspots.setDivider(null);
+        listspots.setDividerHeight(0);
+
         if (friend != null){
             txtpseudo.setText(friend.getPseudo());
             txtspots.setText(friend.getNbspot() + " spots | " + friend.getNbrespot() + " respots");

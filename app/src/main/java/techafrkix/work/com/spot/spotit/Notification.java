@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -114,7 +115,8 @@ public class Notification extends Fragment {
         notification = new techafrkix.work.com.spot.bd.Notification();
 
         listview_notif = (ListView)view.findViewById(R.id.listnotifications);
-
+        listview_notif.setDivider(null);
+        listview_notif.setDividerHeight(0);
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -307,7 +309,13 @@ public class Notification extends Fragment {
                 }
             }
 
-            txtdescription.setText(notifications[position].getDescription());
+            String[] chaines = notifications[position].getDescription().split(" ");
+            StringBuilder string = new StringBuilder();
+            string.append("<b>" + chaines[0] + "</b>");
+            for (int i=1; i<chaines.length; i++)
+                string.append(" " + chaines[i]);
+
+            txtdescription.setText(Html.fromHtml(string.toString()));
             txtdate.setText(notifications[position].getCreated());
 
             return rowView;

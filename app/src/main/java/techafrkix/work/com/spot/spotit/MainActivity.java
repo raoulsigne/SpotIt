@@ -784,11 +784,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
                 imgNotification.setBackground(getResources().getDrawable(R.drawable.bell));
                 imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
-                txtHome.setTextColor(getResources().getColor(R.color.mainblue));
-                txtSocial.setTextColor(getResources().getColor(R.color.noir));
-                txtNew.setTextColor(getResources().getColor(R.color.noir));
-                txtNotification.setTextColor(getResources().getColor(R.color.noir));
-                txtAccount.setTextColor(getResources().getColor(R.color.noir));
+                txtHome.setTextColor(getResources().getColor(R.color.myblue));
+                txtSocial.setTextColor(getResources().getColor(R.color.titre_menu));
+                txtNew.setTextColor(getResources().getColor(R.color.titre_menu));
+                txtNotification.setTextColor(getResources().getColor(R.color.titre_menu));
+                txtAccount.setTextColor(getResources().getColor(R.color.titre_menu));
 
                 break;
             case MENU_ACTIF_SOCIAL:
@@ -798,11 +798,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
                 imgNotification.setBackground(getResources().getDrawable(R.drawable.bell));
                 imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
-                txtHome.setTextColor(getResources().getColor(R.color.noir));
-                txtSocial.setTextColor(getResources().getColor(R.color.mainblue));
-                txtNew.setTextColor(getResources().getColor(R.color.noir));
-                txtNotification.setTextColor(getResources().getColor(R.color.noir));
-                txtAccount.setTextColor(getResources().getColor(R.color.noir));
+                txtHome.setTextColor(getResources().getColor(R.color.titre_menu));
+                txtSocial.setTextColor(getResources().getColor(R.color.myblue));
+                txtNew.setTextColor(getResources().getColor(R.color.titre_menu));
+                txtNotification.setTextColor(getResources().getColor(R.color.titre_menu));
+                txtAccount.setTextColor(getResources().getColor(R.color.titre_menu));
 
                 break;
 
@@ -813,11 +813,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 imgNew.setBackground(getResources().getDrawable(R.drawable.spot_clicked));
                 imgNotification.setBackground(getResources().getDrawable(R.drawable.bell));
                 imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
-                txtHome.setTextColor(getResources().getColor(R.color.noir));
-                txtSocial.setTextColor(getResources().getColor(R.color.noir));
-                txtNew.setTextColor(getResources().getColor(R.color.mainblue));
-                txtNotification.setTextColor(getResources().getColor(R.color.noir));
-                txtAccount.setTextColor(getResources().getColor(R.color.noir));
+                txtHome.setTextColor(getResources().getColor(R.color.titre_menu));
+                txtSocial.setTextColor(getResources().getColor(R.color.titre_menu));
+                txtNew.setTextColor(getResources().getColor(R.color.myblue));
+                txtNotification.setTextColor(getResources().getColor(R.color.titre_menu));
+                txtAccount.setTextColor(getResources().getColor(R.color.titre_menu));
 
                 break;
             case MENU_ACTIF_NOTIFICATION:
@@ -827,11 +827,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
                 imgNotification.setBackground(getResources().getDrawable(R.drawable.bell_clicked));
                 imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
-                txtHome.setTextColor(getResources().getColor(R.color.noir));
-                txtSocial.setTextColor(getResources().getColor(R.color.noir));
-                txtNew.setTextColor(getResources().getColor(R.color.noir));
-                txtNotification.setTextColor(getResources().getColor(R.color.mainblue));
-                txtAccount.setTextColor(getResources().getColor(R.color.noir));
+                txtHome.setTextColor(getResources().getColor(R.color.titre_menu));
+                txtSocial.setTextColor(getResources().getColor(R.color.titre_menu));
+                txtNew.setTextColor(getResources().getColor(R.color.titre_menu));
+                txtNotification.setTextColor(getResources().getColor(R.color.myblue));
+                txtAccount.setTextColor(getResources().getColor(R.color.titre_menu));
 
                 break;
             case MENU_ACTIF_ACCOUNT:
@@ -841,11 +841,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
                 imgNotification.setBackground(getResources().getDrawable(R.drawable.bell));
                 imgAccount.setBackground(getResources().getDrawable(R.drawable.setting_clicked));
-                txtHome.setTextColor(getResources().getColor(R.color.noir));
-                txtSocial.setTextColor(getResources().getColor(R.color.noir));
-                txtNew.setTextColor(getResources().getColor(R.color.noir));
-                txtNotification.setTextColor(getResources().getColor(R.color.noir));
-                txtAccount.setTextColor(getResources().getColor(R.color.mainblue));
+                txtHome.setTextColor(getResources().getColor(R.color.titre_menu));
+                txtSocial.setTextColor(getResources().getColor(R.color.titre_menu));
+                txtNew.setTextColor(getResources().getColor(R.color.titre_menu));
+                txtNotification.setTextColor(getResources().getColor(R.color.titre_menu));
+                txtAccount.setTextColor(getResources().getColor(R.color.myblue));
 
                 break;
         }

@@ -79,6 +79,9 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
         View view = inflater.inflate(R.layout.activity_liste_spots, container, false);
         listView = (ListView) view.findViewById(R.id.listView);
 
+        listView.setDivider(null);
+        listView.setDividerHeight(0);
+
         offset = 0;
         preLast = 0;
 

@@ -90,7 +90,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
     private ArrayList<MyMarker> mMyMarkersArray = new ArrayList<MyMarker>();
 
     TextView txtModify, txtLogout, txtPseudo, txtSpots, txtFriends, txtmySpots;
-    private ImageButton myspot;
+    private ImageView myspot;
     private de.hdodenhof.circleimageview.CircleImageView imageprofile;
 
     private int total_spot;
@@ -108,7 +108,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         server = new DBServer(getActivity());
         spots = new ArrayList<Spot>();
 
-        myspot = (ImageButton) view.findViewById(R.id.imgMySpots);
+        myspot = (ImageView) view.findViewById(R.id.imgMySpots);
         myspot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -121,7 +121,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         txtPseudo = (TextView) view.findViewById(R.id.txtPseudo);
         txtSpots = (TextView) view.findViewById(R.id.txtSpots);
         txtFriends = (TextView) view.findViewById(R.id.txtFriends);
-        txtmySpots = (TextView) view.findViewById(R.id.txtMySpot);
+        txtmySpots = (TextView) view.findViewById(R.id.txtMySpots);
         imageprofile = (de.hdodenhof.circleimageview.CircleImageView) view.findViewById(R.id.profile_image);
 
         txtModify.setOnClickListener(new View.OnClickListener() {
@@ -448,7 +448,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
     {
         if(markers.size() > 0)
         {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(markers.get(0).getmLatitude(), markers.get(0).getmLongitude()), 10));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(markers.get(0).getmLatitude(), markers.get(0).getmLongitude()), 14));
             for (MyMarker myMarker : markers)
             {
                 // Create user marker with custom icon and other options

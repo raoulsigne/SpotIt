@@ -14,7 +14,9 @@
             android:id="@+id/infos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/blanc">
+            android:paddingTop="20dp"
+            android:paddingBottom="15dp"
+            android:background="@color/myblue">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -24,69 +26,91 @@
 
                 <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/profile_image"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
                     android:layout_marginTop="10dp"
                     android:src="@drawable/profile"
                     android:scaleType="centerCrop"
                     app:civ_border_color="#FF000000"
                     app:civ_border_width="0dp" />
-                <TextView
-                    android:id="@+id/txtmodify"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_gravity="center_horizontal"
-                    android:text="Modify"
-                    android:textStyle="bold"
-                    android:clickable="true"
-                    android:textColor="@color/mainblue"/>
+
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginTop="10dp"
                 android:layout_marginLeft="30dp">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="8dp"
                     android:text="Stephen Curry"
-                    android:textColor="@color/mainblue"
-                    android:textSize="17sp"
+                    android:textColor="@color/blanc"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     android:id="@+id/txtPseudo" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="5dp"
                     android:text="28 spots | 15 respots"
-                    android:textColor="@color/noir"
-                    android:textSize="16sp"
+                    android:textColor="@color/blanc"
+                    android:textSize="14sp"
                     android:id="@+id/txtSpots" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="26 Friends"
-                    android:textColor="@color/noir"
-                    android:textSize="16sp"
+                    android:text="26 friends"
+                    android:textColor="@color/blanc"
+                    android:textSize="14sp"
+                    android:layout_marginTop="5dp"
                     android:id="@+id/txtFriends" />
 
-                <TextView
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="Log out"
-                    android:textColor="#8C8C8C"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:clickable="true"
-                    android:id="@+id/txtlogout" />
+                    android:orientation="horizontal"
+                    android:layout_marginTop="5dp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/edit"/>
+
+                    <TextView
+                        android:id="@+id/txtmodify"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_gravity="center_horizontal"
+                        android:text="change picture"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:clickable="true"
+                        android:textColor="@color/blanc"/>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:background="@drawable/sign_out"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_height="wrap_content"
+                        android:text="log out"
+                        android:textColor="@color/blanc"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:clickable="true"
+                        android:id="@+id/txtlogout" />
+
+                </LinearLayout>
+
             </LinearLayout>
 
         </LinearLayout>
@@ -109,25 +133,34 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="10dp"
                     android:orientation="vertical">
 
-                    <ImageButton
-                        android:id="@+id/imgMySpots"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/play_spot" />
-
                     <TextView
-                        android:id="@+id/txtMySpot"
+                        android:id="@+id/txtMySpots"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="18dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@drawable/badge"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
                         android:text=" Spots"
                         android:textAlignment="center"
-                        android:textColor="@color/mainblue"
-                        android:textSize="15sp" />
-                </LinearLayout>
+                        android:textColor="@color/blanc"
+                        android:textSize="12sp" />
 
+                    <ImageView
+                        android:id="@+id/imgMySpots"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="center"
+                        android:padding="10dp"
+                        android:src="@drawable/play_button"
+                        android:background="@drawable/round_button_white"
+                        android:elevation="15dp"/>
+
+
+                </LinearLayout>
             </RelativeLayout>
         </fragment>
 

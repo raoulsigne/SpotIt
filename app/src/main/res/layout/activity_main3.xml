@@ -46,6 +46,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="4dp"
                 android:text="Home"
+                android:textColor="@color/titre_menu"
                 android:textAlignment="center"
                 android:textSize="10sp" />
         </LinearLayout>
@@ -72,6 +73,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="4dp"
                 android:text="Social"
+                android:textColor="@color/titre_menu"
                 android:textAlignment="center"
                 android:textSize="10sp" />
         </LinearLayout>
@@ -98,6 +100,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="4dp"
                 android:text="New spot"
+                android:textColor="@color/titre_menu"
                 android:textAlignment="center"
                 android:textSize="10sp" />
         </LinearLayout>
@@ -142,6 +145,7 @@
                 android:layout_marginTop="4dp"
                 android:text="Notifications"
                 android:textAlignment="center"
+                android:textColor="@color/titre_menu"
                 android:textSize="10sp" />
         </LinearLayout>
 
@@ -167,6 +171,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="4dp"
                 android:text="Account"
+                android:textColor="@color/titre_menu"
                 android:textAlignment="center"
                 android:textSize="10sp" />
         </LinearLayout>

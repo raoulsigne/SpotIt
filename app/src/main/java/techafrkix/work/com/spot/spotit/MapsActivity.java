@@ -101,11 +101,9 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
     private LatLng middle;
     private int zoomlevel;
 
-    private ImageButton locateme;
+    private ImageView locateme, myspot;
     private TextView txtmyspot;
     private EditText findspot;
-
-    private ImageButton myspot;
 
     DownloadSpotsTask task;
 
@@ -117,8 +115,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
         spots = new ArrayList<Spot>();
         mMarkersHashMap = new HashMap<Marker, MyMarker>();
 
-        locateme = (ImageButton) view.findViewById(R.id.imgLocateMe);
-        myspot = (ImageButton) view.findViewById(R.id.imgMySpots);
+        locateme = (ImageView) view.findViewById(R.id.imgLocateMe);
+        myspot = (ImageView) view.findViewById(R.id.imgMySpots);
         txtmyspot = (TextView) view.findViewById(R.id.txtMySpot);
         findspot = (EditText) view.findViewById(R.id.findspot);
 
@@ -505,7 +503,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
         if (mLastLocation != null) {
             Log.i("map", "Latitude: " + String.valueOf(mLastLocation.getLatitude()) + " Longitude: " +
                     String.valueOf(mLastLocation.getLongitude()));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 14));
             middle = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
 //            displaySpotOnMap(0);
         }

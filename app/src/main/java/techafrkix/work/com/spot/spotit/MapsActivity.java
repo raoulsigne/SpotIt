@@ -84,6 +84,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
     private OnFragmentInteractionListener mListener;
 
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
+    public static final int CALIBRAGE_MAX = 8;
     private static final int MARKER_DIALOG = 2;
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
@@ -378,7 +379,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
     /**
      * afficher les spots sur la carte en utilisant leur coordonnées
      */
-    private void displaySpotOnMap(int type) {
+    private void displaySpotOnMap() {
         //clear other markers on map and inside the list before adding new one
         mMyMarkersArray.clear();
         profile = session.getUserDetails();
@@ -387,7 +388,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
             if (middle.latitude != 0) {
                 geohash = new GeoHash(middle.latitude, middle.longitude);
                 int maxZoomLevel = (int) mMap.getMaxZoomLevel();
-                int long_hash = (int) ((zoomlevel * geohash.LONGUEUR_HASH) / maxZoomLevel);
+                int long_hash = (int) ((zoomlevel * CALIBRAGE_MAX) / maxZoomLevel);
                 Log.i("map", "longueur geohash = " + long_hash);
                 geohash.setLong_hash(long_hash);
                 geohash.setLong_bits(geohash.getLong_hash() * geohash.LONG_DIGIT);
@@ -395,59 +396,11 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
 
                 task = new DownloadSpotsTask();
                 task.execute(geohash.neighbours_1(geohash.getHash()));
-
-//                Thread t = new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        spots = server.find_spots(geohash.neighbours_1(geohash.getHash()));
-//                    }
-//                });
-//
-//                t.start(); // spawn thread
-//                try {
-//                    t.join();
-//                    if (spots != null) {
-//                        //afficher le nombre de spots
-//                        int n = spots.size();
-//                        if (n <= 1)
-//                            txtmyspot.setText(n + " Spot");
-//                        else
-//                            txtmyspot.setText(n + " Spots");
-//                        for (Spot s : spots) {
-//                            mMyMarkersArray.add(new MyMarker(s.getDate(), s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude())));
-//                        }
-//                    } else
-//                        Log.i("test", "spot null");
-//                    if (type == 0)
-//                        plotMarkers(mMyMarkersArray);
-//                    else
-//                        plotMarkers_1(mMyMarkersArray);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
             }
         }
     }
 
     private void plotMarkers(ArrayList<MyMarker> markers) {
-        mMap.clear();
-        if (markers.size() > 0) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
-            for (MyMarker myMarker : markers) {
-                // Create user marker with custom icon and other options
-                MarkerOptions markerOption = new MarkerOptions().position(new LatLng(myMarker.getmLatitude(), myMarker.getmLongitude()));
-                markerOption.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-
-                Marker currentMarker = mMap.addMarker(markerOption);
-                mMarkersHashMap.put(currentMarker, myMarker);
-
-                mMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
-            }
-        }
-    }
-
-    private void plotMarkers_1(ArrayList<MyMarker> markers) {
         mMap.clear();
         if (markers.size() > 0) {
             for (MyMarker myMarker : markers) {
@@ -473,10 +426,10 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
                 Log.i("teste", pos.toString());
                 if (zoom != zoomlevel) {
                     zoomlevel = zoom;
-                    displaySpotOnMap(1);
+                    displaySpotOnMap();
                 }else if (pos != middle){
                     middle = pos;
-                    displaySpotOnMap(1);
+                    displaySpotOnMap();
                 }
             }
         };
@@ -637,7 +590,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
                 }
             } else
                 Log.i("test", "spot null");
-            plotMarkers_1(mMyMarkersArray);
+            plotMarkers(mMyMarkersArray);
         }
     }
 }

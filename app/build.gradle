@@ -51,4 +51,6 @@ dependencies {
 
     //badge on app icon
     compile 'me.leolin:ShortcutBadger:1.1.8@aar'
+
+    compile 'com.theartofdev.edmodo:android-image-cropper:2.2.+'
 }

@@ -1,19 +1,23 @@
 package techafrkix.work.com.spot.spotit;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
@@ -35,13 +39,18 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import me.leolin.shortcutbadger.ShortcutBadger;
 import techafrkix.work.com.spot.bd.Spot;
@@ -49,6 +58,7 @@ import techafrkix.work.com.spot.bd.Utilisateur;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.GeoHash;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.RealPathUtil;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
@@ -75,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     static MainActivity instance;
 
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 3;
+    public static final int REQUEST_ACTION = 11;
 
     public static final int MENU_ACTIF_HOME = 1;
     public static final int MENU_ACTIF_SOCIAL = 2;
@@ -356,6 +367,36 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     }
 
                     break;
+
+                case REQUEST_ACTION:
+
+                    Uri mImageCaptureUri = data.getData();
+                    Intent itcroper = new Intent(getApplicationContext(), CropImageActivity.class);
+
+                    String photo = "";
+                    int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+                    Log.i("test", currentapiVersion + " ");
+                    if (currentapiVersion >= 19)
+                        photo = RealPathUtil.getRealPathFromURI_API19(getApplicationContext(), mImageCaptureUri);
+                    else if (currentapiVersion >= 11 & currentapiVersion <= 18)
+                        photo = RealPathUtil.getRealPathFromURI_API11to18(getApplicationContext(), mImageCaptureUri);
+                    else if (currentapiVersion < 11)
+                        photo = RealPathUtil.getRealPathFromURI_BelowAPI11(getApplicationContext(), mImageCaptureUri);
+
+                    Log.i("parametre", photo);
+                    Bundle bundle1 = new Bundle();
+                    if (mLastLocation != null) {
+                        bundle1.putDouble("longitude", mLastLocation.getLongitude());
+                        bundle1.putDouble("latitude", mLastLocation.getLatitude());
+                    } else {
+                        bundle1.putDouble("longitude", 0);
+                        bundle1.putDouble("latitude", 0);
+                    }
+                    bundle1.putString("photo", photo);
+                    itcroper.putExtras(bundle1);
+                    startActivity(itcroper);
+
+                    break;
             }
         } else {
             Log.i("camera", "retour d'un code d'erreur");
@@ -374,6 +415,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             cursor.moveToFirst();
             return cursor.getString(column_index);
         } catch (Exception e) {
+            Log.e("path", e.getMessage());
             return contentUri.getPath();
         }
     }
@@ -725,6 +767,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 break;
 
             case MENU_ACTIF_NEW:
+                List<Intent> allIntents = new  ArrayList<>();
                 Bundle bundle = new Bundle();
                 //bundle.putString("image", selectedImagePath);
                 if (mLastLocation != null) {
@@ -737,10 +780,23 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     bundle.putDouble("latitude", 0);
                 }
 
-                Intent imagepreview = new Intent(MainActivity.this, TakeSnap.class);
-                imagepreview.putExtras(bundle);
-                // finish();
-                startActivity(imagepreview);
+                Intent cameraIntent = new Intent(MainActivity.this, TakeSnap.class);
+                cameraIntent.putExtras(bundle);
+                allIntents.add(cameraIntent);
+
+                Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT, null);
+                galleryIntent.setType("image/*");
+                galleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                galleryIntent.putExtras(bundle);
+                //allIntents.add(galleryIntent);
+
+                Intent chooser = new Intent(Intent.ACTION_CHOOSER);
+                chooser.putExtra(Intent.EXTRA_INTENT, galleryIntent);
+                chooser.putExtra(Intent.EXTRA_TITLE, "Choose an action");
+
+                chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, allIntents.toArray(new Parcelable[allIntents.size()]));
+                startActivityForResult(chooser, REQUEST_ACTION);
+
 
                 break;
 

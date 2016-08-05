@@ -41,7 +41,10 @@ dependencies {
     compile 'com.amazonaws:aws-android-sdk-core:2.+'
     compile 'com.amazonaws:aws-android-sdk-cognito:2.+'
     compile 'com.amazonaws:aws-android-sdk-s3:2.+'
+
     compile 'de.hdodenhof:circleimageview:2.0.0'
+    compile 'com.mikhaellopez:circularimageview:3.0.2'
+
     compile 'com.beardedhen:androidbootstrap:2.3.0'
     compile 'com.google.android.gms:play-services-ads:8.4.0'
     compile 'com.google.android.gms:play-services-identity:8.4.0'

@@ -8,12 +8,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -23,17 +21,14 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.security.spec.ECField;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import techafrkix.work.com.spot.bd.Commentaire;
 import techafrkix.work.com.spot.bd.MaBaseOpenHelper;
-import techafrkix.work.com.spot.bd.Notification;
+import techafrkix.work.com.spot.bd.NotificationEntity;
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
 import techafrkix.work.com.spot.bd.Tag;
@@ -1718,9 +1713,9 @@ public class DBServer {
      * @param user_id id dudit utilisateur
      * @return retoune une liste d'objet de type notification ou null en cas d'echec
      */
-    public ArrayList<Notification> notifications_user(int user_id) {
-        ArrayList<Notification> notifications = new ArrayList<>();
-        Notification notification = new Notification();
+    public ArrayList<NotificationEntity> notifications_user(int user_id) {
+        ArrayList<NotificationEntity> notificationEntities = new ArrayList<>();
+        NotificationEntity notificationEntity = new NotificationEntity();
 
         try {
             ContentValues values = new ContentValues();
@@ -1748,28 +1743,28 @@ public class DBServer {
                     JSONArray jArr = json.getJSONArray("data");
                     for (int i = 0; i < jArr.length(); i++) {
                         JSONObject json2 = jArr.getJSONObject(i);
-                        notification = new Notification();
+                        notificationEntity = new NotificationEntity();
 
-                        notification.setId((int) json2.get("id"));
-                        notification.setUser_id((int) json2.get("user_id"));
-                        notification.setTypenotification_id((int) json2.get("typenotification_id"));
-                        notification.setCreated(convert_date((String) json2.get("created")));
-                        notification.setData((String) json2.get("data"));
+                        notificationEntity.setId((int) json2.get("id"));
+                        notificationEntity.setUser_id((int) json2.get("user_id"));
+                        notificationEntity.setTypenotification_id((int) json2.get("typenotification_id"));
+                        notificationEntity.setCreated(convert_date((String) json2.get("created")));
+                        notificationEntity.setData((String) json2.get("data"));
                         try {
-                            notification.setSender_id((int) json2.get("sender_id"));
+                            notificationEntity.setSender_id((int) json2.get("sender_id"));
                         }catch (ClassCastException e){
                             Log.e(TAG, e.getMessage());
                         }
-                        notification.setDescription((String) json2.get("description"));
+                        notificationEntity.setDescription((String) json2.get("description"));
                         try {
-                            notification.setPhotosender((String) json2.get("photosender"));
+                            notificationEntity.setPhotosender((String) json2.get("photosender"));
                         }catch (ClassCastException e){
                             Log.e(TAG, e.getMessage());
                         }
 
-                        notifications.add(notification);
+                        notificationEntities.add(notificationEntity);
                     }
-                    return notifications;
+                    return notificationEntities;
                 } else {
                     builder.append("statut = " + json.getString("statut"));
                     builder.append("errcode = " + json.getString("errcode"));
@@ -2060,7 +2055,7 @@ public class DBServer {
      * @param date date from server
      * @return string représentant la date au format à aficher
      */
-    public String convert_date(String date) {
+    public String convert_date1(String date) {
         String resultat = "";
         String[] tableau = date.split("T");
         String[] tab1 = tableau[1].split("\\.");
@@ -2073,6 +2068,34 @@ public class DBServer {
         datec.set(Calendar.MONTH, Integer.valueOf(tab2[1]) - 1);
         datec.set(Calendar.DAY_OF_MONTH, Integer.valueOf(tab2[2]));
         resultat = sdf.format(datec.getTime()) + " - " + tab3[0] + "h" + tab3[1];
+
+        return resultat;
+    }
+
+    public String convert_date(String date) {
+        String resultat = "";
+        String[] tableau = date.split("T");
+        String[] tab1 = tableau[1].split("\\.");
+        String[] tab2 = tableau[0].split("-");
+        String[] tab3 = tab1[0].split(":");
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy");
+        Calendar datec = Calendar.getInstance();
+        int daynumber = datec.get(Calendar.DAY_OF_WEEK);
+        int weeknumber = datec.get(Calendar.WEEK_OF_MONTH);
+        int monthnumber = datec.get(Calendar.MONTH);
+
+        datec.set(Calendar.YEAR, Integer.valueOf(tab2[0]));
+        datec.set(Calendar.MONTH, Integer.valueOf(tab2[1]) - 1);
+        datec.set(Calendar.DAY_OF_MONTH, Integer.valueOf(tab2[2]));
+        int daynumber1 = datec.get(Calendar.DAY_OF_WEEK);
+        int weeknumber1 = datec.get(Calendar.WEEK_OF_MONTH);
+        int monthnumber1 = datec.get(Calendar.MONTH);
+
+        if ((monthnumber == monthnumber1) & (weeknumber == weeknumber1) & ((daynumber - daynumber1) == 1))
+            resultat = "hier à " + tab3[0] + "h" + tab3[1];
+        else
+            resultat = sdf.format(datec.getTime()) + " - " + tab3[0] + "h" + tab3[1];
 
         return resultat;
     }

@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="@color/blanc">
+        android:background="@color/myblue">
 
         <LinearLayout
             android:id="@+id/infos"
@@ -41,7 +41,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Stephen Curry"
-                    android:textColor="@color/mainblue"
+                    android:textColor="@color/blanc"
                     android:textSize="17sp"
                     android:textStyle="bold" />
 
@@ -50,6 +50,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
+                    android:textColor="@color/blanc"
                     android:text="28 spots | 15 respots" />
 
                 <TextView
@@ -57,6 +58,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
+                    android:textColor="@color/blanc"
                     android:text="26 Friends" />
 
             </LinearLayout>
@@ -81,7 +83,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="10dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -89,6 +91,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="18dp"
                         android:layout_marginBottom="2dp"
+                        android:gravity="center"
                         android:background="@drawable/badge"
                         android:paddingLeft="5dp"
                         android:paddingRight="5dp"
@@ -102,6 +105,7 @@
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:layout_gravity="center"
+                        android:gravity="center"
                         android:padding="10dp"
                         android:src="@drawable/play_button"
                         android:background="@drawable/round_button_white"

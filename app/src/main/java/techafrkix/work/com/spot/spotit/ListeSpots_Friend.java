@@ -38,7 +38,6 @@ import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.Utilisateur;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
-import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
 
 /**
@@ -121,7 +120,7 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
         server = new DBServer(getActivity());
 
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_liste_spots__friend, container, false);
+        View view = inflater.inflate(R.layout.fragment_liste_spots_friend, container, false);
 
         imgprofile = (ImageView) view.findViewById(R.id.item_profile);
         txtpseudo = (TextView)view.findViewById(R.id.txtPseudo_friend);

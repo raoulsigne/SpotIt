@@ -1,18 +1,15 @@
 package techafrkix.work.com.spot.spotit;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.location.Location;
@@ -39,14 +36,10 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         GoogleApiClient.OnConnectionFailedListener, FragmentAccueil.OnFragmentInteractionListener, Account.OnFragmentInteractionListener,
         MapsActivity.OnFragmentInteractionListener, ListeSpots.OnFragmentInteractionListener, DetailSpot.OnFragmentInteractionListener,
         Search.OnFragmentInteractionListener, Add_Friend.OnFragmentInteractionListener, Account_Friend.OnFragmentInteractionListener,
-        ListeSpots_Friend.OnFragmentInteractionListener, techafrkix.work.com.spot.spotit.Notification.OnFragmentInteractionListener {
+        ListeSpots_Friend.OnFragmentInteractionListener, NotificationActivity.OnFragmentInteractionListener {
 
     static final int REQUEST_IMAGE_CAPTURE = 10;
 
@@ -79,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     Add_Friend fgAddfrient;
     Account_Friend fgFriendAcount;
     ListeSpots_Friend fgSpots_friend;
-    Notification fgNotification;
+    NotificationActivity fgNotificationActivity;
     FragmentTransaction ft;
 
     static MainActivity instance;
@@ -165,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         fgAddfrient = new Add_Friend();
         fgFriendAcount = new Account_Friend();
         fgSpots_friend = new ListeSpots_Friend();
-        fgNotification = new Notification();
+        fgNotificationActivity = new NotificationActivity();
 
         FragmentTransaction ft;
         geoHash = new GeoHash();
@@ -329,7 +322,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 case REQUEST_IMAGE_CAPTURE:
                     Bundle extras = data.getExtras();
                     Bitmap imageBitmap = (Bitmap) extras.get("data");
-                    imageBitmap = Bitmap.createScaledBitmap(imageBitmap, 800, 800, true);
+                    //imageBitmap = Bitmap.createScaledBitmap(imageBitmap, 400, 400, true);
                     final String temps = profile.get(SessionManager.KEY_ID) + "_" + String.valueOf(System.currentTimeMillis());
                     File file = new File(getApplicationContext().getFilesDir().getPath() + "/SpotItPictures/" + temps + ".jpg");
                     try {
@@ -507,7 +500,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             //GPS Enabled
             Log.i("GPS", "GPS Enabled: ");
         } else {
-            new AlertDialog.Builder(this).setTitle("Notification").setMessage("Vous devez activé le GPS!")
+            new AlertDialog.Builder(this).setTitle("NotificationActivity").setMessage("Vous devez activé le GPS!")
                     .setPositiveButton("D'accord", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -555,7 +548,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    new AlertDialog.Builder(this).setTitle("Notification").setMessage("Vous ne pouvez faire des spots que lorsque la camera est accessible!")
+                    new AlertDialog.Builder(this).setTitle("NotificationActivity").setMessage("Vous ne pouvez faire des spots que lorsque la camera est accessible!")
                             .setPositiveButton("D'accord", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -580,7 +573,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    new AlertDialog.Builder(this).setTitle("Notification").setMessage("Nous avons besoin de stocker les photos!")
+                    new AlertDialog.Builder(this).setTitle("NotificationActivity").setMessage("Nous avons besoin de stocker les photos!")
                             .setPositiveButton("D'accord", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -808,7 +801,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 //traitement de l'action lors du click
                 try {
                     getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container, fgNotification, "NOTIFICATION")
+                            .replace(R.id.container, fgNotificationActivity, "NOTIFICATION")
                             .commit();
                 } catch (Exception e) {
                     Log.e("fragment", e.getMessage());

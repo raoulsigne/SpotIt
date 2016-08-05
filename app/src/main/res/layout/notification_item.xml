@@ -24,7 +24,8 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_gravity="center"
-                android:layout_marginLeft="10dp"/>
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/users"/>
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -40,19 +41,33 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
-                    android:text="Description de la notification"
+                    android:text="Description de la notificationEntity"
                     android:textSize="14sp"
                     android:textColor="#333"/>
 
-                <TextView
-                    android:id="@+id/txtDate_notif"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Vendredi le 26-07-16"
-                    android:layout_alignParentBottom="true"
-                    android:textSize="13sp"
-                    android:textColor="#767676"
-                    android:paddingBottom="5dp"/>
+                    android:layout_alignParentBottom="true">
+
+                    <ImageView
+                        android:id="@+id/icon_notif"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/notif_icon"
+                        android:layout_marginRight="5dp"/>
+                    <TextView
+                        android:id="@+id/txtDate_notif"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_gravity="center"
+                        android:text="Vendredi le 26-07-16"
+                        android:textSize="13sp"
+                        android:textColor="#767676"
+                        android:paddingBottom="5dp"/>
+
+                </LinearLayout>
 
             </RelativeLayout>
         </LinearLayout>

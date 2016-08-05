@@ -14,6 +14,8 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
+import techafrkix.work.com.spot.bd.NotificationEntity;
+
 /**
  * Created by techafrkix0 on 29/06/2016.
  */
@@ -110,8 +112,8 @@ public class GcmIntentService extends IntentService {
 
         mBuilder.setContentIntent(contentIntent);
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
-        Log.d(TAG, "Notification ID = " + NOTIFICATION_ID);
-        Log.d(TAG, "Notification sent successfully.");
+        Log.d(TAG, "NotificationActivity ID = " + NOTIFICATION_ID);
+        Log.d(TAG, "NotificationActivity sent successfully.");
     }
 
     /**
@@ -122,7 +124,7 @@ public class GcmIntentService extends IntentService {
         Log.i(TAG, "Preparing to send notification with message...: " + extras.toString());
         // On crée un objet Message à partir des informations récupérées dans
         // le flux JSON du message envoyé par l'application server
-        techafrkix.work.com.spot.bd.Notification msg = extractMessageFromExtra(extras);
+        NotificationEntity msg = extractMessageFromExtra(extras);
         // On associe notre notification à une Activity. Ici c'est l'activity
         // qui affiche le message à l'utilisateur
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
@@ -136,7 +138,7 @@ public class GcmIntentService extends IntentService {
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.logospotitblue)
                         .setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.logospotitblue))
-                        .setContentTitle("Notification from Spot It")
+                        .setContentTitle("NotificationActivity from Spot It")
                         .setStyle(new NotificationCompat.InboxStyle()
                                 .addLine(msg.getDescription())
                                 .addLine(msg.getCreated()))
@@ -146,7 +148,7 @@ public class GcmIntentService extends IntentService {
 
         mBuilder.setContentIntent(contentIntent);
         mNotificationManager.notify(msg.getId(), mBuilder.build());
-        Log.i(TAG, "Notification sent successfully.");
+        Log.i(TAG, "NotificationActivity sent successfully.");
     }
 
     /**
@@ -155,14 +157,14 @@ public class GcmIntentService extends IntentService {
      * @param extras l'objet contenant les informations du message.
      * @return le message
      */
-    private techafrkix.work.com.spot.bd.Notification extractMessageFromExtra(Bundle extras) {
+    private NotificationEntity extractMessageFromExtra(Bundle extras) {
 
-        techafrkix.work.com.spot.bd.Notification notification = null;
+        NotificationEntity notificationEntity = null;
         if (extras != null) {
-            notification = new techafrkix.work.com.spot.bd.Notification();
+            notificationEntity = new NotificationEntity();
             final String id = extras.getString(_ID);
             try {
-                notification.setId(Integer.parseInt(id));
+                notificationEntity.setId(Integer.parseInt(id));
             } catch (NumberFormatException nfe) {
                 Log.e(TAG, "error : le message n'a pas un identifiant valide. "+ nfe.getMessage());
                 nfe.printStackTrace();
@@ -170,7 +172,7 @@ public class GcmIntentService extends IntentService {
 
             final String userid = extras.getString(_USER_ID);
             try {
-                notification.setUser_id(Integer.parseInt(userid));
+                notificationEntity.setUser_id(Integer.parseInt(userid));
             } catch (NumberFormatException nfe) {
                 Log.e(TAG, "error : l'id de l'utilisateur concerné est non valide. "+ nfe.getMessage());
                 nfe.printStackTrace();
@@ -178,15 +180,15 @@ public class GcmIntentService extends IntentService {
 
             final String typeid = extras.getString(_TYPE_ID);
             try {
-                notification.setTypenotification_id(Integer.parseInt(typeid));
+                notificationEntity.setTypenotification_id(Integer.parseInt(typeid));
             } catch (NumberFormatException nfe) {
-                Log.e(TAG, "error : l'id du type de la notification n'est valide. "+ nfe.getMessage());
+                Log.e(TAG, "error : l'id du type de la notificationEntity n'est valide. "+ nfe.getMessage());
                 nfe.printStackTrace();
             }
 
             final String dateTime = extras.getString(_DATE_CREATION);
             try {
-                notification.setCreated(dateTime);
+                notificationEntity.setCreated(dateTime);
             } catch (NumberFormatException nfe) {
                 Log.e(TAG, "error : le message n'a pas une date valide. "+ nfe.getMessage());
                 nfe.printStackTrace();
@@ -194,7 +196,7 @@ public class GcmIntentService extends IntentService {
 
             final String data = extras.getString(_DATA);
             try {
-                notification.setData(data);
+                notificationEntity.setData(data);
             } catch (NumberFormatException nfe) {
                 Log.e(TAG, "error : le champ data n'est pas valide. "+ nfe.getMessage());
                 nfe.printStackTrace();
@@ -202,15 +204,15 @@ public class GcmIntentService extends IntentService {
 
             final String senderid = extras.getString(_SENDER_ID);
             try {
-                notification.setSender_id(Integer.parseInt(senderid));
+                notificationEntity.setSender_id(Integer.parseInt(senderid));
             } catch (NumberFormatException nfe) {
-                Log.e(TAG, "error : l'id de l'utilisateur ayant envoyé la notification n'est valide. "+ nfe.getMessage());
+                Log.e(TAG, "error : l'id de l'utilisateur ayant envoyé la notificationEntity n'est valide. "+ nfe.getMessage());
                 nfe.printStackTrace();
             }
 
             final String description = extras.getString(_DESCRIPTION);
             try {
-                notification.setDescription(description);
+                notificationEntity.setDescription(description);
             } catch (NumberFormatException nfe) {
                 Log.e(TAG, "error : le champ description n'est pas valide. "+ nfe.getMessage());
                 nfe.printStackTrace();
@@ -218,7 +220,7 @@ public class GcmIntentService extends IntentService {
 
             final String photosender = extras.getString(_PHOTOSENDER);
             try {
-                notification.setPhotosender(photosender);
+                notificationEntity.setPhotosender(photosender);
             } catch (NumberFormatException nfe) {
                 Log.e(TAG, "error : le champ photosender n'est pas valide. "+ nfe.getMessage());
                 nfe.printStackTrace();
@@ -226,7 +228,7 @@ public class GcmIntentService extends IntentService {
         }
         Log.d(TAG, "extractMessageFromExtra - fin");
 
-        return notification;
+        return notificationEntity;
     }
 
     // Send an Intent with an action named "custom-event-name". The Intent sent should

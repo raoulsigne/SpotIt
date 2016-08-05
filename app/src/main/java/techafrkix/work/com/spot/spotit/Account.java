@@ -45,6 +45,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -91,7 +92,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
 
     TextView txtModify, txtLogout, txtPseudo, txtSpots, txtFriends, txtmySpots;
     private ImageView myspot;
-    private de.hdodenhof.circleimageview.CircleImageView imageprofile;
+    private CircularImageView imageprofile;
 
     private int total_spot;
 
@@ -122,7 +123,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         txtSpots = (TextView) view.findViewById(R.id.txtSpots);
         txtFriends = (TextView) view.findViewById(R.id.txtFriends);
         txtmySpots = (TextView) view.findViewById(R.id.txtMySpots);
-        imageprofile = (de.hdodenhof.circleimageview.CircleImageView) view.findViewById(R.id.profile_image);
+        imageprofile = (CircularImageView) view.findViewById(R.id.profile_image);
 
         txtModify.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -93,6 +93,12 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
                 mAdapterCallback.detail(position);
             }
         });
+        spotPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAdapterCallback.detail(position);
+            }
+        });
         txtletsgo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

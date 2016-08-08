@@ -323,19 +323,19 @@ public class NotificationActivity extends Fragment {
 
             switch (notificationEntities[position].getTypenotification_id()){
                 case TYPE_NEW_SPOT:
-                    icon.setImageResource(R.drawable.notif_spot);
+                    icon.setImageResource(R.drawable.spot_icon);
                     break;
 
                 case TYPE_FRIENDSHIP:
-                    icon.setImageResource(R.drawable.notif_friendrequest);
+                    icon.setImageResource(R.drawable.friend_request_icon);
                     break;
 
                 case TYPE_COMMENT:
-                    icon.setImageResource(R.drawable.notif_comment);
+                    icon.setImageResource(R.drawable.comment_icon);
                     break;
 
                 case TYPE_RESPOT:
-                    icon.setImageResource(R.drawable.notif_respot);
+                    icon.setImageResource(R.drawable.spot_icon);
                     break;
             }
 

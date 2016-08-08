@@ -95,6 +95,9 @@ public class Connexion extends AppCompatActivity {
         dbAdapteur = new UtilisateurDBAdapteur(getApplicationContext());
 
         String parent = getIntent().getExtras().getString("caller");
+
+        registerDevice_2();
+
         if (isLoggedIn()) {
             if (parent.compareTo("Accueil") == 0) {
                 registerDevice();
@@ -171,7 +174,19 @@ public class Connexion extends AppCompatActivity {
                                                         // Use user real data
                                                         session.createLoginSession(utilisateur.getPseudo(), utilisateur.getEmail(), utilisateur.getId(),
                                                                 utilisateur.getNbspot(), utilisateur.getNbrespot(), 0, utilisateur.getPhoto());
-                                                        session.storeRegistrationId(utilisateur.getAndroidid());
+
+                                                        if (regId == utilisateur.getAndroidid())
+                                                            session.storeRegistrationId(utilisateur.getAndroidid());
+                                                        else if (regId != null & regId != " "){
+                                                            session.storeRegistrationId(regId);
+                                                            Thread t2 = new Thread(new Runnable() {
+                                                                @Override
+                                                                public void run() {
+                                                                    server.set_device_id(utilisateur.getId(), regId);
+                                                                }});
+
+                                                            t2.start(); // spawn thread
+                                                        }
 
                                                         startActivity(itwelcome); // déjà enregistré on démarre l'activité Welcome
                                                     }
@@ -359,15 +374,40 @@ public class Connexion extends AppCompatActivity {
                         gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
                     }
                     regId = gcm.register(getApplicationContext().getResources().getString(R.string.GCM_PROJECT_NUMBER_NUMBER));
+                    Log.i("GCM: ", regId);
                     if (!TextUtils.equals(regId, profile.get(SessionManager.KEY_REGISTRATION_ID))){
-                        Log.i("GCM: ", "Differentes valeurs de android id");
+                        Log.i("GCM: ", "Differentes valeurs de android id ");
                         server.set_device_id(Integer.valueOf(profile.get(SessionManager.KEY_ID)), regId);
                         session.storeRegistrationId(regId);
                     }else
                         Log.i("GCM: ", "Identiques valeurs de android id");
+
                     Log.i("GCM: ", "1 " + regId);
                     Log.i("GCM: ", "2 " + profile.get(SessionManager.KEY_REGISTRATION_ID));
 
+                    msg = "Terminal enregistré, register ID=" + regId;
+                    // On enregistre le registerId dans les SharedPreferences
+                    Log.i("GCM: ", msg);
+                } catch (IOException ex) {
+                    msg = "Error :" + ex.getMessage();
+                    Log.e("GCM Error: ", msg);
+                }
+                return msg;
+            }
+        }.execute(null, null, null);
+    }
+
+    /** * Cette méthode permet l'enregistrement du terminal */
+    private void registerDevice_2() {
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                String msg = "";
+                try {
+                    if (gcm == null) {
+                        gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
+                    }
+                    regId = gcm.register(getApplicationContext().getResources().getString(R.string.GCM_PROJECT_NUMBER_NUMBER));
                     msg = "Terminal enregistré, register ID=" + regId;
                     // On enregistre le registerId dans les SharedPreferences
                     Log.i("GCM: ", msg);

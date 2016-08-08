@@ -55,6 +55,8 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
     private static final String ARG_PARAM2 = "param2";
     private static final String ARG_PARAM3 = "friend";
 
+    public static final int PORTION_TELECHARGEABLE = 10;
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -280,13 +282,12 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                tampon = server.find_spot_user(friend.getId(), offset, offset + 10);
-                for (Spot s :
-                        tampon) {
+                tampon = server.find_spot_user(friend.getId(), offset, offset + PORTION_TELECHARGEABLE);
+                for (Spot s : tampon) {
                     spots.add(s);
                 }
                 //set the value of the offset that will be use next time
-                offset += 10; //session.putOffset(offset + 10);
+                offset += PORTION_TELECHARGEABLE; //session.putOffset(offset + 10);
                 Log.i("test", spots.toString());
             }});
 
@@ -308,6 +309,9 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
                 barProgressDialog.setMax(spots.size());
                 barProgressDialog.show();
 
+                // get listview current position - used to maintain scroll position
+                final int currentPosition = offset - PORTION_TELECHARGEABLE;
+
                 for (final Spot s : spots) {
                     final File file = new File(dossier+ File.separator  + s.getPhotokey() + ".jpg");
                     if (file.exists()) {
@@ -320,6 +324,8 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
                             adapter = new SpotFriendAdapter(getActivity(), spots, spotsimages, this);
                             // Attach the adapter to a ListView
                             listspots.setAdapter(adapter);
+                            // Setting new scroll position
+                            listspots.setSelectionFromTop(currentPosition, 0);
                         }
                     } else {
                         Log.i("file", "file doesn't exists");
@@ -349,8 +355,8 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
                                 }
                                 if (barProgressDialog.getProgress() == spots.size()) {
                                     barProgressDialog.dismiss();
-                                    // get listview current position - used to maintain scroll position
-                                    int currentPosition = listspots.getFirstVisiblePosition();
+//                                    // get listview current position - used to maintain scroll position
+//                                    int currentPosition = listspots.getFirstVisiblePosition();
 
                                     // Create the adapter to convert the array to views
                                     adapter = new SpotFriendAdapter(getActivity(), spots, spotsimages, ListeSpots_Friend.this);
@@ -358,7 +364,7 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
                                     listspots.setAdapter(adapter);
 
                                     // Setting new scroll position
-                                    listspots.setSelectionFromTop(currentPosition + 1, 0);
+                                    listspots.setSelectionFromTop(currentPosition, 0);
                                 }
                             }
 
@@ -450,6 +456,12 @@ class SpotFriendAdapter extends ArrayAdapter<Spot> {
         txtletsgo = (TextView)convertView.findViewById(R.id.txtLetsgo);
         txtshare = (TextView)convertView.findViewById(R.id.txtShare);
         txtcomment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAdapterCallback.detail(position);
+            }
+        });
+        spotPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mAdapterCallback.detail(position);

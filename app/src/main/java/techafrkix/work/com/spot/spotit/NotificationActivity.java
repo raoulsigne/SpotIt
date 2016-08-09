@@ -5,6 +5,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.LightingColorFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -50,9 +53,8 @@ public class NotificationActivity extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     public static final int TYPE_FRIENDSHIP = 1;
-    public static final int TYPE_NEW_SPOT = 11;
-    public static final int TYPE_RESPOT = 12;
-    public static final int TYPE_COMMENT = 22;
+    public static final int TYPE_SPOT = 11;
+    public static final int TYPE_COMMENT = 71;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -156,7 +158,7 @@ public class NotificationActivity extends Fragment {
                         ((MainActivity)getActivity()).setAciveTab(MainActivity.MENU_ACTIF_SOCIAL);
                         break;
 
-                    case TYPE_NEW_SPOT:
+                    case TYPE_SPOT:
                         DetailSpot fgDetailspot = new DetailSpot();
                         Bundle args = new Bundle();
                         spot = new Spot();
@@ -169,6 +171,33 @@ public class NotificationActivity extends Fragment {
                         t.start(); // spawn thread
                         try{
                             t.join();
+
+                            if (spot != null){
+                                args.putSerializable("spot", spot);
+                                fgDetailspot.setArguments(args);
+                                getActivity().getSupportFragmentManager().beginTransaction()
+                                        .replace(R.id.container, fgDetailspot, "DETAIL")
+                                        .commit();
+
+                            }
+                        }catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+
+                    case TYPE_COMMENT:
+                        fgDetailspot = new DetailSpot();
+                        args = new Bundle();
+                        spot = new Spot();
+                        Thread t1 = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                spot = server.find_spot(notificationEntity.getIdspot());
+                            }});
+
+                        t1.start(); // spawn thread
+                        try{
+                            t1.join();
 
                             if (spot != null){
                                 args.putSerializable("spot", spot);
@@ -321,21 +350,25 @@ public class NotificationActivity extends Fragment {
             txtdescription.setText(Html.fromHtml(string.toString()));
             txtdate.setText(notificationEntities[position].getCreated());
 
+            ColorFilter filter;
+
             switch (notificationEntities[position].getTypenotification_id()){
-                case TYPE_NEW_SPOT:
+                case TYPE_SPOT:
+                    // filter = new LightingColorFilter( Color.rgb(243, 156, 18), Color.rgb(243, 156, 18));
                     icon.setImageResource(R.drawable.spot_icon);
+                    // icon.setColorFilter(filter);
                     break;
 
                 case TYPE_FRIENDSHIP:
-                    icon.setImageResource(R.drawable.friend_request_icon);
+                    // filter = new LightingColorFilter( Color.rgb(243, 156, 18), Color.rgb(243, 156, 18));
+                    icon.setImageResource(R.drawable.friendrequest_icon);
+                    // icon.setColorFilter(filter);
                     break;
 
                 case TYPE_COMMENT:
-                    icon.setImageResource(R.drawable.comment_icon);
-                    break;
-
-                case TYPE_RESPOT:
-                    icon.setImageResource(R.drawable.spot_icon);
+                    filter = new LightingColorFilter( Color.rgb(243, 156, 18), Color.rgb(243, 156, 18));
+                    icon.setImageResource(R.drawable.comment_icon1);
+                    icon.setColorFilter(filter);
                     break;
             }
 

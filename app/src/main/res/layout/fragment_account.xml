@@ -78,8 +78,8 @@
                     android:layout_marginTop="5dp">
 
                     <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
                         android:background="@drawable/edit"/>
 
                     <TextView
@@ -95,9 +95,9 @@
                         android:textColor="@color/blanc"/>
 
                     <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:layout_marginLeft="20dp"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:layout_marginLeft="10dp"
                         android:background="@drawable/sign_out"/>
 
                     <TextView
@@ -154,8 +154,8 @@
 
                     <ImageView
                         android:id="@+id/imgMySpots"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:padding="10dp"

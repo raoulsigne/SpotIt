@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     ImageButton imgHome, imgSocial, imgNew, imgNotification, imgAccount;
     TextView txtHome, txtSocial, txtNew, txtNotification, txtAccount;
-    Button notif_count;
+    TextView notif_count;
     LinearLayout groupeHome, groupeSocial, groupeNewspot, groupeNotification, groupeAccount;
 
     int menuactif;
@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         groupeNotification = (LinearLayout)findViewById(R.id.groupeNotification);
         groupeAccount = (LinearLayout)findViewById(R.id.groupeAccount);
 
-        notif_count = (Button) findViewById(R.id.notif_count);
+        notif_count = (TextView) findViewById(R.id.notif_count);
         if (Integer.parseInt(notif_count.getText().toString()) == 0)
             notif_count.setVisibility(View.INVISIBLE);
 

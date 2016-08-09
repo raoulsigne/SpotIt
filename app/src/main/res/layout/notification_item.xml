@@ -25,6 +25,7 @@
                 android:layout_height="70dp"
                 android:layout_gravity="center"
                 android:layout_marginLeft="10dp"
+                android:scaleType="centerCrop"
                 android:src="@drawable/users"/>
 
             <RelativeLayout
@@ -55,7 +56,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/notif_icon"
-                        android:layout_marginRight="5dp"/>
+                        android:layout_marginRight="5dp"
+                        android:paddingBottom="5dp"/>
                     <TextView
                         android:id="@+id/txtDate_notif"
                         android:layout_width="wrap_content"

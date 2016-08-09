@@ -85,7 +85,7 @@ public class NotificationEntity implements Serializable{
         this.photosender = photosender;
     }
 
-    public NotificationEntity(int id, int user_id, int typenotification_id, String created, String data, int sender_id, String descrription,
+    public NotificationEntity(int id, int user_id, int typenotification_id, String created, String data, int sender_id, String description,
                               String photosender) {
         this.id = id;
         this.user_id = user_id;
@@ -93,7 +93,7 @@ public class NotificationEntity implements Serializable{
         this.created = created;
         this.data = data;
         this.sender_id = sender_id;
-        this.description = descrription;
+        this.description = description;
         this.photosender = photosender;
     }
 

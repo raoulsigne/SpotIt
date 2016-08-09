@@ -53,7 +53,7 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:24.0.0'
 
     //badge on app icon
-    compile 'me.leolin:ShortcutBadger:1.1.8@aar'
+    compile 'me.leolin:ShortcutBadger:1.1.4@aar'
 
     compile 'com.theartofdev.edmodo:android-image-cropper:2.2.+'
 }

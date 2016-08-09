@@ -104,7 +104,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/chat1" />
+                android:background="@drawable/chat" />
 
             <TextView
                 android:id="@+id/txtComments"

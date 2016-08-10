@@ -89,8 +89,6 @@ public class DetailSpot_New extends AppCompatActivity {
 
         imgspot.setImageBitmap(BitmapFactory.decodeFile(imagepath));
 
-//        edtTags.addTextChangedListener(new MyTextWatcher(edtTags));
-
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

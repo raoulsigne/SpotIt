@@ -102,6 +102,7 @@ public class Connexion extends AppCompatActivity {
             if (parent.compareTo("Accueil") == 0) {
                 registerDevice();
                 startActivity(itwelcome);
+                finish();
             }
             else {
                 session.logoutUser();
@@ -189,6 +190,7 @@ public class Connexion extends AppCompatActivity {
                                                         }
 
                                                         startActivity(itwelcome); // déjà enregistré on démarre l'activité Welcome
+                                                        finish();
                                                     }
                                                     else { // on demande à l'utilisateur d'entrer ses identifiants pour l'en créer un compte
                                                         new AlertDialog.Builder(Connexion.this)
@@ -250,6 +252,7 @@ public class Connexion extends AppCompatActivity {
                                                                                         0, 0, 0, "");
 
                                                                                 startActivity(itwelcome);
+                                                                                finish();
                                                                             } else {
                                                                                 Log.i("BD", "nouvel utilisateur non enregistré");
                                                                             }
@@ -320,6 +323,7 @@ public class Connexion extends AppCompatActivity {
                             session.storeRegistrationId(utilisateur.getAndroidid());
 
                             startActivity(itwelcome);
+                            finish();
                         } else {
                             Log.i("BD", "utilisateur non connecté");
                             password.setText("");

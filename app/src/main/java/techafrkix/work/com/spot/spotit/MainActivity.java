@@ -681,7 +681,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onDisconnect() {
         session.logoutUser();
-        Intent itdeconnect = new Intent(getApplicationContext(), Connexion.class);
+        Intent itdeconnect = new Intent(getApplicationContext(), Accueil.class);
         itdeconnect.putExtra("caller", "Main");
         itdeconnect.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK); //add flags to spot all others activities
         vidercache();

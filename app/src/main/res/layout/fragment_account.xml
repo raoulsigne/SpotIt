@@ -11,11 +11,43 @@
         android:orientation="vertical">
 
         <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/custom_bar"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/edtFindspot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/custom_edittext"
+                android:hint="search friend"
+                android:padding="10dp"
+                android:textSize="17sp" />
+
+            <Button
+                android:id="@+id/btnLaunch"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginRight="10dp"
+                android:background="@color/blanc"
+                android:text="Launch"
+                android:textAllCaps="false"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/infos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="20dp"
-            android:paddingBottom="15dp"
+            android:paddingTop="15dp"
+            android:paddingBottom="10dp"
             android:background="@color/myblue">
 
             <LinearLayout
@@ -36,82 +68,233 @@
                     app:civ_border_color="#FF000000"
                     app:civ_border_width="0dp" />
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Stephen"
+                    android:textAlignment="center"
+                    android:textColor="@color/blanc"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:id="@+id/txtPseudo" />
+
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginLeft="20dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Stephen Curry"
-                    android:textColor="@color/blanc"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:id="@+id/txtPseudo" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="28 spots | 15 respots"
-                    android:textColor="@color/blanc"
-                    android:textSize="14sp"
-                    android:id="@+id/txtSpots" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="26 friends"
-                    android:textColor="@color/blanc"
-                    android:textSize="14sp"
-                    android:layout_marginTop="5dp"
-                    android:id="@+id/txtFriends" />
+                android:layout_marginLeft="30dp">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="28"
+                            android:textColor="@color/blanc"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textAlignment="center"
+                            android:id="@+id/txtSpots" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="4dp"
+                            android:text="spots"
+                            android:textColor="@color/blanc"
+                            android:textAlignment="center"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="28"
+                            android:textColor="@color/blanc"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textAlignment="center"
+                            android:id="@+id/txtRespots" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="4dp"
+                            android:text="respots"
+                            android:textColor="@color/blanc"
+                            android:textAlignment="center"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="28"
+                            android:textColor="@color/blanc"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textAlignment="center"
+                            android:id="@+id/txtFriends" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="4dp"
+                            android:text="friends"
+                            android:textColor="@color/blanc"
+                            android:textAlignment="center"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_gravity="bottom"
-                    android:layout_marginTop="5dp">
+                    android:gravity="center"
+                    android:layout_marginTop="15dp">
 
-                    <ImageView
-                        android:layout_width="14dp"
-                        android:layout_height="14dp"
-                        android:background="@drawable/edit"/>
-
-                    <TextView
-                        android:id="@+id/txtmodify"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
+                    <Button
+                        android:id="@+id/btnmodify"
+                        android:layout_width="200dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/button_border"
                         android:text="change picture"
-                        android:textSize="14sp"
+                        android:textAllCaps="false"
                         android:textStyle="bold"
-                        android:clickable="true"
-                        android:textColor="@color/blanc"/>
-
-                    <ImageView
-                        android:layout_width="14dp"
-                        android:layout_height="14dp"
-                        android:layout_marginLeft="10dp"
-                        android:background="@drawable/sign_out"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:layout_height="wrap_content"
-                        android:text="log out"
-                        android:textColor="@color/blanc"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:clickable="true"
-                        android:id="@+id/txtlogout" />
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp" />
 
                 </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:background="@drawable/custom_bar"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/groupeHome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/imgMapHome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/homeaccount" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/groupeNewspot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/imgListSpot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/listspot" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/groupeNotification"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <RelativeLayout android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageButton
+                        android:id="@+id/imgNotification"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/notification" />
+
+                    <TextView android:id="@+id/notif_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignRight="@id/imgNotification"
+                        android:layout_marginLeft="10dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:background="@drawable/badge_red"
+                        android:text="0"
+                        android:textSize="12sp"
+                        android:textColor="@android:color/white"
+                        android:textAlignment="center"
+                        android:gravity="center"
+                        android:singleLine="true">
+                    </TextView>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/groupeAccount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/imgOption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/optionaccount" />
 
             </LinearLayout>
 

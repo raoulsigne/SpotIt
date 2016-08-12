@@ -9,15 +9,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -64,8 +61,8 @@ public class Add_Friend extends Fragment implements FriendCallback{
     private String mParam2;
 
     private ListView lvfriends;
-    private EditText edtFindspot;
-    private Button btnLaunch;
+//    private EditText edtFindspot;
+//    private Button btnLaunch;
 
     private DBServer server;
     private ArrayList<String> friends;
@@ -112,10 +109,10 @@ public class Add_Friend extends Fragment implements FriendCallback{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_add__friend, container, false);
-        edtFindspot = (EditText) view.findViewById(R.id.edtFindspot);
+        View view = inflater.inflate(R.layout.fragment_add_friend, container, false);
+//        edtFindspot = (EditText) view.findViewById(R.id.edtFindspot);
         lvfriends = (ListView) view.findViewById(R.id.friends);
-        btnLaunch = (Button)view.findViewById(R.id.btnLaunch);
+//        btnLaunch = (Button)view.findViewById(R.id.btnLaunch);
 
         registerForContextMenu(lvfriends);
 
@@ -154,41 +151,41 @@ public class Add_Friend extends Fragment implements FriendCallback{
             e.printStackTrace();
         }
 
-        btnLaunch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final String cle = edtFindspot.getText().toString();
-                View view = getActivity().getCurrentFocus();
-                if (view != null) {
-                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                }
-                if (!TextUtils.isEmpty(cle)) {
-                    Thread t = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            users = server.getUsers_by_pseudo(cle);
-                        }
-                    });
-
-                    t.start(); // spawn thread
-                    try {
-                        t.join();
-                        if (users != null) {
-                            String[] items = new String[users.size()];
-                            for (int i = 0; i < users.size(); i++)
-                                items[i] = users.get(i).getPseudo();
-                            Log.i("test", items.toString());
-                            CustomList_Search adapter = new CustomList_Search(getActivity(), items, cle, Add_Friend.this);
-                            lvfriends.invalidate();
-                            lvfriends.setAdapter(adapter);
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
+//        btnLaunch.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                final String cle = edtFindspot.getText().toString();
+//                View view = getActivity().getCurrentFocus();
+//                if (view != null) {
+//                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+//                }
+//                if (!TextUtils.isEmpty(cle)) {
+//                    Thread t = new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            users = server.getUsers_by_pseudo(cle);
+//                        }
+//                    });
+//
+//                    t.start(); // spawn thread
+//                    try {
+//                        t.join();
+//                        if (users != null) {
+//                            String[] items = new String[users.size()];
+//                            for (int i = 0; i < users.size(); i++)
+//                                items[i] = users.get(i).getPseudo();
+//                            Log.i("test", items.toString());
+//                            CustomList_Search adapter = new CustomList_Search(getActivity(), items, cle, Add_Friend.this);
+//                            lvfriends.invalidate();
+//                            lvfriends.setAdapter(adapter);
+//                        }
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        });
 
         lvfriends.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

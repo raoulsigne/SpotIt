@@ -10,6 +10,9 @@ import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.LightingColorFilter;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.net.Uri;
@@ -17,6 +20,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -64,7 +68,8 @@ import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
  * {@link Account.OnFragmentInteractionListener} interface
  * to handle interaction events.
  */
-public class Account extends Fragment implements OnMapReadyCallback, LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleMap.OnMapLoadedCallback {
+public class Account extends Fragment implements OnMapReadyCallback, LocationListener, GoogleApiClient.ConnectionCallbacks,
+        GoogleMap.OnMapLoadedCallback {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -90,11 +95,19 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
     private HashMap<Marker, MyMarker> mMarkersHashMap;
     private ArrayList<MyMarker> mMyMarkersArray = new ArrayList<MyMarker>();
 
-    TextView txtModify, txtLogout, txtPseudo, txtSpots, txtFriends, txtmySpots;
+    TextView txtPseudo, txtSpots, txtRespots, txtFriends, txtmySpots;
+    Button btnmodify;
+    private ImageView imghome, imglist, imgnotification, imgoption;
+
     private ImageView myspot;
     private CircularImageView imageprofile;
+    TextView notif_count;
 
     private int total_spot;
+
+    private Add_Friend fgAddfrient;
+    private NotificationActivity fgNotificationActivity;
+    private SpotUser fgSpotuser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -109,6 +122,10 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         server = new DBServer(getActivity());
         spots = new ArrayList<Spot>();
 
+        fgAddfrient = new Add_Friend();
+        fgNotificationActivity = new NotificationActivity();
+        fgSpotuser = new SpotUser();
+
         myspot = (ImageView) view.findViewById(R.id.imgMySpots);
         myspot.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,31 +134,68 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
             }
         });
 
-        txtModify = (TextView) view.findViewById(R.id.txtmodify);
-        txtLogout = (TextView) view.findViewById(R.id.txtlogout);
+        btnmodify = (Button) view.findViewById(R.id.btnmodify);
         txtPseudo = (TextView) view.findViewById(R.id.txtPseudo);
         txtSpots = (TextView) view.findViewById(R.id.txtSpots);
+        txtRespots = (TextView)view.findViewById(R.id.txtRespots);
         txtFriends = (TextView) view.findViewById(R.id.txtFriends);
+
+        imghome = (ImageView)view.findViewById(R.id.imgMapHome);
+        imglist = (ImageView)view.findViewById(R.id.imgListSpot);
+        imgnotification = (ImageView)view.findViewById(R.id.imgNotification);
+        imgoption = (ImageView)view.findViewById(R.id.imgOption);
+
         txtmySpots = (TextView) view.findViewById(R.id.txtMySpots);
         imageprofile = (CircularImageView) view.findViewById(R.id.profile_image);
 
-        txtModify.setOnClickListener(new View.OnClickListener() {
+        notif_count = (TextView) view.findViewById(R.id.notif_count);
+        if (Integer.parseInt(notif_count.getText().toString()) == 0)
+            notif_count.setVisibility(View.INVISIBLE);
+
+        btnmodify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mListener.onSetPhoto();
             }
         });
-        txtLogout.setOnClickListener(new View.OnClickListener() {
+
+        imghome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onDisconnect();
+                getChildFragmentManager().beginTransaction()
+                        .replace(R.id.mymap, fgSpotuser, "SPOT")
+                        .commit();
+            }
+        });
+        imglist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getChildFragmentManager().beginTransaction()
+                        .replace(R.id.mymap, fgAddfrient, "FRIEND")
+                        .commit();
+            }
+        });
+        imgnotification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getChildFragmentManager().beginTransaction()
+                        .replace(R.id.mymap, fgNotificationActivity, "NOTIFICATION")
+                        .commit();
+            }
+        });
+        imgoption.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
 
+
         profile = session.getUserDetails();
         txtPseudo.setText(profile.get(SessionManager.KEY_NAME));
-        txtSpots.setText(profile.get(SessionManager.KEY_SPOT) + " spots" + " | " + profile.get(SessionManager.KEY_RESPOT) + " respots");
-        txtFriends.setText(profile.get(SessionManager.KEY_FRIENDS) + " Friends");
+        txtSpots.setText(profile.get(SessionManager.KEY_SPOT));
+        txtRespots.setText(profile.get(SessionManager.KEY_RESPOT));
+        txtFriends.setText(profile.get(SessionManager.KEY_FRIENDS));
         total_spot = Integer.valueOf(profile.get(SessionManager.KEY_SPOT)) + Integer.valueOf(profile.get(SessionManager.KEY_RESPOT));
         if (total_spot <= 1)
             txtmySpots.setText(total_spot + " Spot");
@@ -388,6 +442,22 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
                 .build();
     }
 
+    @Override
+    public void onDestroyView() {
+
+        try{
+            FragmentTransaction transaction = getChildFragmentManager()
+                    .beginTransaction();
+
+            transaction.remove(fgAddfrient);
+            transaction.remove(fgNotificationActivity);
+
+            transaction.commit();
+        }catch(Exception e){
+        }
+
+        super.onDestroyView();
+    }
 
     @Override
     public void onLocationChanged(Location location) {
@@ -464,6 +534,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
             }
         }
     }
+
 
     public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter
     {

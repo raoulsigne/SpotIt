@@ -6,19 +6,6 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <TextView
-        android:id="@+id/titre"
-        android:paddingBottom="8dp"
-        android:paddingTop="33dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:text="Notifications"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:textColor="@color/blanc"
-        android:background="@color/myblue" />
-
     <ListView
         android:id="@+id/listnotifications"
         android:layout_width="match_parent"
@@ -28,3 +15,17 @@
     </ListView>
 
 </RelativeLayout>
+
+
+<!--<TextView-->
+<!--android:id="@+id/titre"-->
+<!--android:paddingBottom="8dp"-->
+<!--android:paddingTop="33dp"-->
+<!--android:layout_width="match_parent"-->
+<!--android:layout_height="wrap_content"-->
+<!--android:textAlignment="center"-->
+<!--android:text="Notifications"-->
+<!--android:textStyle="bold"-->
+<!--android:textSize="16sp"-->
+<!--android:textColor="@color/blanc"-->
+<!--android:background="@color/myblue" />-->

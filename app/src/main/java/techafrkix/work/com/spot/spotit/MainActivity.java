@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         GoogleApiClient.OnConnectionFailedListener, FragmentAccueil.OnFragmentInteractionListener, Account.OnFragmentInteractionListener,
         MapsActivity.OnFragmentInteractionListener, ListeSpots.OnFragmentInteractionListener, DetailSpot.OnFragmentInteractionListener,
         Search.OnFragmentInteractionListener, Add_Friend.OnFragmentInteractionListener, Account_Friend.OnFragmentInteractionListener,
-        ListeSpots_Friend.OnFragmentInteractionListener, NotificationActivity.OnFragmentInteractionListener {
+        ListeSpots_Friend.OnFragmentInteractionListener, NotificationActivity.OnFragmentInteractionListener, SpotUser.OnFragmentInteractionListener {
 
     static final int REQUEST_IMAGE_CAPTURE = 10;
 
@@ -69,10 +69,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     Account fgAccount;
     DetailSpot fgDetailspot;
     Search fgSearch;
-    Add_Friend fgAddfrient;
+//    Add_Friend fgAddfrient;
     Account_Friend fgFriendAcount;
     ListeSpots_Friend fgSpots_friend;
-    NotificationActivity fgNotificationActivity;
+//    NotificationActivity fgNotificationActivity;
     FragmentTransaction ft;
 
     static MainActivity instance;
@@ -99,10 +99,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private HashMap<String, String> profile;
     private DBServer server;
 
-    ImageButton imgHome, imgSocial, imgNew, imgNotification, imgAccount;
-    TextView txtHome, txtSocial, txtNew, txtNotification, txtAccount;
-    TextView notif_count;
-    LinearLayout groupeHome, groupeSocial, groupeNewspot, groupeNotification, groupeAccount;
+    ImageButton imgHome, imgNew, imgAccount;
+    TextView txtHome, txtNew, txtAccount;
+//    TextView notif_count;
+    LinearLayout groupeHome, groupeNewspot, groupeAccount;
 
     int menuactif;
     int resultat;
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main3);
+        setContentView(R.layout.activity_main);
 
         // Register to receive messages.
         // We are registering an observer (mMessageReceiver) to receive Intents
@@ -131,34 +131,28 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         profile = session.getUserDetails();
 
         imgHome = (ImageButton) findViewById(R.id.imgHome);
-        imgSocial = (ImageButton) findViewById(R.id.imgList);
         imgNew = (ImageButton) findViewById(R.id.imgAdd);
-        imgNotification = (ImageButton) findViewById(R.id.imgDisconnect);
         imgAccount = (ImageButton) findViewById(R.id.imgAccount);
         txtHome = (TextView) findViewById(R.id.txtHome);
-        txtSocial = (TextView) findViewById(R.id.txtSpots);
         txtNew = (TextView) findViewById(R.id.txtAdd);
-        txtNotification = (TextView) findViewById(R.id.txtLogout);
         txtAccount = (TextView) findViewById(R.id.txtAccount);
         groupeHome = (LinearLayout)findViewById(R.id.groupeHome);
-        groupeSocial = (LinearLayout)findViewById(R.id.groupeSocial);
         groupeNewspot = (LinearLayout)findViewById(R.id.groupeNewspot);
-        groupeNotification = (LinearLayout)findViewById(R.id.groupeNotification);
         groupeAccount = (LinearLayout)findViewById(R.id.groupeAccount);
 
-        notif_count = (TextView) findViewById(R.id.notif_count);
-        if (Integer.parseInt(notif_count.getText().toString()) == 0)
-            notif_count.setVisibility(View.INVISIBLE);
+//        notif_count = (TextView) findViewById(R.id.notif_count);
+//        if (Integer.parseInt(notif_count.getText().toString()) == 0)
+//            notif_count.setVisibility(View.INVISIBLE);
 
         fgAccueil = new MapsActivity();
         fgSpots = new ListeSpots();
         fgAccount = new Account();
         fgDetailspot = new DetailSpot();
         fgSearch = new Search();
-        fgAddfrient = new Add_Friend();
+//        fgAddfrient = new Add_Friend();
         fgFriendAcount = new Account_Friend();
         fgSpots_friend = new ListeSpots_Friend();
-        fgNotificationActivity = new NotificationActivity();
+//        fgNotificationActivity = new NotificationActivity();
 
         FragmentTransaction ft;
         geoHash = new GeoHash();
@@ -202,29 +196,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             }
         });
 
-        imgSocial.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //changement des couleurs des widgets
-                setAciveTab(MENU_ACTIF_SOCIAL);
-
-                //traitement de l'action lors du click
-                startFragment(MENU_ACTIF_SOCIAL);
-            }
-
-        });
-        groupeSocial.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //changement des couleurs des widgets
-                setAciveTab(MENU_ACTIF_SOCIAL);
-
-                //traitement de l'action lors du click
-                startFragment(MENU_ACTIF_SOCIAL);
-            }
-
-        });
-
         imgNew.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -243,25 +214,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                 //traitement de l'action lors du click
                 startFragment(MENU_ACTIF_NEW);
-            }
-        });
-
-        imgNotification.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //changement des couleurs des widgets
-                setAciveTab(MENU_ACTIF_NOTIFICATION);
-
-                startFragment(MENU_ACTIF_NOTIFICATION);
-            }
-        });
-        groupeNotification.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //changement des couleurs des widgets
-                setAciveTab(MENU_ACTIF_NOTIFICATION);
-
-                startFragment(MENU_ACTIF_NOTIFICATION);
             }
         });
 
@@ -358,36 +310,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     } catch (Exception e) {
                         Log.e("file", e.getMessage());
                     }
-
-                    break;
-
-                case REQUEST_ACTION:
-
-                    Uri mImageCaptureUri = data.getData();
-                    Intent itcroper = new Intent(getApplicationContext(), CropImageActivity.class);
-
-                    String photo = "";
-                    int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-                    Log.i("test", currentapiVersion + " ");
-                    if (currentapiVersion >= 19)
-                        photo = RealPathUtil.getRealPathFromURI_API19(getApplicationContext(), mImageCaptureUri);
-                    else if (currentapiVersion >= 11 & currentapiVersion <= 18)
-                        photo = RealPathUtil.getRealPathFromURI_API11to18(getApplicationContext(), mImageCaptureUri);
-                    else if (currentapiVersion < 11)
-                        photo = RealPathUtil.getRealPathFromURI_BelowAPI11(getApplicationContext(), mImageCaptureUri);
-
-                    Log.i("parametre", photo);
-                    Bundle bundle1 = new Bundle();
-                    if (mLastLocation != null) {
-                        bundle1.putDouble("longitude", mLastLocation.getLongitude());
-                        bundle1.putDouble("latitude", mLastLocation.getLatitude());
-                    } else {
-                        bundle1.putDouble("longitude", 0);
-                        bundle1.putDouble("latitude", 0);
-                    }
-                    bundle1.putString("photo", photo);
-                    itcroper.putExtras(bundle1);
-                    startActivity(itcroper);
 
                     break;
             }
@@ -747,65 +669,26 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 }
 
                 break;
-            case MENU_ACTIF_SOCIAL:
-                try {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container, fgAddfrient, "ADD_FRIEND")
-                            .commit();
-                    menuactif = MENU_ACTIF_SOCIAL;
-                } catch (Exception e) {
-                    Log.e("fragment", e.getMessage());
-                }
-
-                break;
 
             case MENU_ACTIF_NEW:
-                List<Intent> allIntents = new  ArrayList<>();
+
                 Bundle bundle = new Bundle();
-                //bundle.putString("image", selectedImagePath);
+                bundle.putString("image", selectedImagePath);
                 if (mLastLocation != null) {
                     Log.i("location", "location not null");
                     bundle.putDouble("longitude", mLastLocation.getLongitude());
                     bundle.putDouble("latitude", mLastLocation.getLatitude());
-                } else {
+                }else {
                     Log.i("location", "your location is null");
                     bundle.putDouble("longitude", 0);
                     bundle.putDouble("latitude", 0);
                 }
 
-                Intent cameraIntent = new Intent(MainActivity.this, TakeSnap.class);
-                cameraIntent.putExtras(bundle);
-                allIntents.add(cameraIntent);
+                Intent imagepreview = new Intent(MainActivity.this,TakeSnap.class);
+                imagepreview.putExtras(bundle);
+                // finish();
+                startActivity(imagepreview);
 
-                Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT, null);
-                galleryIntent.setType("image/*");
-                galleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
-                galleryIntent.putExtras(bundle);
-                //allIntents.add(galleryIntent);
-
-                Intent chooser = new Intent(Intent.ACTION_CHOOSER);
-                chooser.putExtra(Intent.EXTRA_INTENT, galleryIntent);
-                chooser.putExtra(Intent.EXTRA_TITLE, "Choose an action");
-
-                chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, allIntents.toArray(new Parcelable[allIntents.size()]));
-                startActivityForResult(chooser, REQUEST_ACTION);
-
-
-                break;
-
-            case MENU_ACTIF_NOTIFICATION:
-                notif_count.setText(String.valueOf(0));
-                notif_count.setVisibility(View.INVISIBLE);
-                ShortcutBadger.applyCount(getApplicationContext(), 0);
-
-                //traitement de l'action lors du click
-                try {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container, fgNotificationActivity, "NOTIFICATION")
-                            .commit();
-                } catch (Exception e) {
-                    Log.e("fragment", e.getMessage());
-                }
 
                 break;
 
@@ -829,28 +712,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             case MENU_ACTIF_HOME:
 
                 imgHome.setBackground(getResources().getDrawable(R.drawable.world_clicked));
-                imgSocial.setBackground(getResources().getDrawable(R.drawable.user));
                 imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
-                imgNotification.setBackground(getResources().getDrawable(R.drawable.bell));
                 imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
                 txtHome.setTextColor(getResources().getColor(R.color.myblue));
-                txtSocial.setTextColor(getResources().getColor(R.color.titre_menu));
                 txtNew.setTextColor(getResources().getColor(R.color.titre_menu));
-                txtNotification.setTextColor(getResources().getColor(R.color.titre_menu));
                 txtAccount.setTextColor(getResources().getColor(R.color.titre_menu));
 
                 break;
             case MENU_ACTIF_SOCIAL:
 
                 imgHome.setBackground(getResources().getDrawable(R.drawable.world));
-                imgSocial.setBackground(getResources().getDrawable(R.drawable.user_clicked));
                 imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
-                imgNotification.setBackground(getResources().getDrawable(R.drawable.bell));
                 imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
                 txtHome.setTextColor(getResources().getColor(R.color.titre_menu));
-                txtSocial.setTextColor(getResources().getColor(R.color.myblue));
                 txtNew.setTextColor(getResources().getColor(R.color.titre_menu));
-                txtNotification.setTextColor(getResources().getColor(R.color.titre_menu));
                 txtAccount.setTextColor(getResources().getColor(R.color.titre_menu));
 
                 break;
@@ -858,42 +733,30 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             case MENU_ACTIF_NEW:
 
                 imgHome.setBackground(getResources().getDrawable(R.drawable.world));
-                imgSocial.setBackground(getResources().getDrawable(R.drawable.user));
                 imgNew.setBackground(getResources().getDrawable(R.drawable.spot_clicked));
-                imgNotification.setBackground(getResources().getDrawable(R.drawable.bell));
                 imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
                 txtHome.setTextColor(getResources().getColor(R.color.titre_menu));
-                txtSocial.setTextColor(getResources().getColor(R.color.titre_menu));
                 txtNew.setTextColor(getResources().getColor(R.color.myblue));
-                txtNotification.setTextColor(getResources().getColor(R.color.titre_menu));
                 txtAccount.setTextColor(getResources().getColor(R.color.titre_menu));
 
                 break;
             case MENU_ACTIF_NOTIFICATION:
 
                 imgHome.setBackground(getResources().getDrawable(R.drawable.world));
-                imgSocial.setBackground(getResources().getDrawable(R.drawable.user));
                 imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
-                imgNotification.setBackground(getResources().getDrawable(R.drawable.bell_clicked));
                 imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
                 txtHome.setTextColor(getResources().getColor(R.color.titre_menu));
-                txtSocial.setTextColor(getResources().getColor(R.color.titre_menu));
                 txtNew.setTextColor(getResources().getColor(R.color.titre_menu));
-                txtNotification.setTextColor(getResources().getColor(R.color.myblue));
                 txtAccount.setTextColor(getResources().getColor(R.color.titre_menu));
 
                 break;
             case MENU_ACTIF_ACCOUNT:
 
                 imgHome.setBackground(getResources().getDrawable(R.drawable.world));
-                imgSocial.setBackground(getResources().getDrawable(R.drawable.user));
                 imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
-                imgNotification.setBackground(getResources().getDrawable(R.drawable.bell));
                 imgAccount.setBackground(getResources().getDrawable(R.drawable.setting_clicked));
                 txtHome.setTextColor(getResources().getColor(R.color.titre_menu));
-                txtSocial.setTextColor(getResources().getColor(R.color.titre_menu));
                 txtNew.setTextColor(getResources().getColor(R.color.titre_menu));
-                txtNotification.setTextColor(getResources().getColor(R.color.titre_menu));
                 txtAccount.setTextColor(getResources().getColor(R.color.myblue));
 
                 break;
@@ -908,18 +771,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             // Get extra data included in the Intent
             String message = intent.getStringExtra("message");
             Log.i("localbroadcast", "Got notification: " + message);
-            updatenotif_count();
+//            updatenotif_count();
         }
     };
 
-    public void updatenotif_count() {
-        Log.i("localbroadcast", "new notif increment the number");
-
-        notif_count.setVisibility(View.VISIBLE);
-        notif_count.setText(String.valueOf(Integer.parseInt(notif_count.getText().toString()) + 1));
-
-        ShortcutBadger.applyCount(getApplicationContext(), Integer.parseInt(notif_count.getText().toString()) + 1);
-    }
+//    public void updatenotif_count() {
+//        Log.i("localbroadcast", "new notif increment the number");
+//
+//        notif_count.setVisibility(View.VISIBLE);
+//        notif_count.setText(String.valueOf(Integer.parseInt(notif_count.getText().toString()) + 1));
+//
+//        ShortcutBadger.applyCount(getApplicationContext(), Integer.parseInt(notif_count.getText().toString()) + 1);
+//    }
 
     @Override
     protected void onDestroy() {

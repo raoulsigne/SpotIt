@@ -159,9 +159,13 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
             }
         });
 
+        //default active tab
+        setAciveTab(1);
+
         imghome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setAciveTab(1);
                 getChildFragmentManager().beginTransaction()
                         .replace(R.id.mymap, fgSpotuser, "SPOT")
                         .commit();
@@ -170,6 +174,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         imglist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setAciveTab(2);
                 getChildFragmentManager().beginTransaction()
                         .replace(R.id.mymap, fgAddfrient, "FRIEND")
                         .commit();
@@ -178,6 +183,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         imgnotification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setAciveTab(3);
                 getChildFragmentManager().beginTransaction()
                         .replace(R.id.mymap, fgNotificationActivity, "NOTIFICATION")
                         .commit();
@@ -186,7 +192,8 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         imgoption.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                setAciveTab(4);
+                mListener.onLoadOption();
             }
         });
 
@@ -429,6 +436,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         void onLoadSpot();
         void onDisconnect();
         void onSetPhoto();
+        void onLoadOption();
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -532,6 +540,45 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
 
                 mMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
             }
+        }
+    }
+
+
+    public void setAciveTab(int menu){
+        switch (menu){
+            case 1:
+
+                imghome.setBackground(getResources().getDrawable(R.drawable.home_account_clicked));
+                imglist.setBackground(getResources().getDrawable(R.drawable.listspot));
+                imgnotification.setBackground(getResources().getDrawable(R.drawable.notification));
+                imgoption.setBackground(getResources().getDrawable(R.drawable.optionaccount));
+
+                break;
+            case 2:
+
+                imghome.setBackground(getResources().getDrawable(R.drawable.homeaccount));
+                imglist.setBackground(getResources().getDrawable(R.drawable.list_clicked));
+                imgnotification.setBackground(getResources().getDrawable(R.drawable.notification));
+                imgoption.setBackground(getResources().getDrawable(R.drawable.optionaccount));
+
+                break;
+
+            case 3:
+
+                imghome.setBackground(getResources().getDrawable(R.drawable.homeaccount));
+                imglist.setBackground(getResources().getDrawable(R.drawable.listspot));
+                imgnotification.setBackground(getResources().getDrawable(R.drawable.bell_clicked1));
+                imgoption.setBackground(getResources().getDrawable(R.drawable.optionaccount));
+
+                break;
+            case 4:
+
+                imghome.setBackground(getResources().getDrawable(R.drawable.homeaccount));
+                imglist.setBackground(getResources().getDrawable(R.drawable.listspot));
+                imgnotification.setBackground(getResources().getDrawable(R.drawable.notification));
+                imgoption.setBackground(getResources().getDrawable(R.drawable.option_clicked));
+
+                break;
         }
     }
 

@@ -33,10 +33,8 @@ dependencies {
 
     //circular imageview
 
-    
-
     //badge on app icon
-    
+
     compile 'com.android.support:appcompat-v7:24.0.0'
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     compile 'com.google.android.gms:play-services:8.4.0'

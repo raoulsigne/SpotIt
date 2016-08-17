@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.facebook.login.LoginManager;
+
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.ArrayList;
@@ -31,6 +33,14 @@ public class Accueil extends AppCompatActivity {
         signin = (Button)findViewById(R.id.btnSignin);
 
         //actions des boutons qui consistent à ouvrir les activités respectivent
+        try {
+            String parent = getIntent().getExtras().getString("caller");
+            if (parent.compareTo("Main") == 0) {
+                LoginManager.getInstance().logOut();
+            }
+        }catch (Exception e){
+            Log.e("error", e.getMessage());
+        }
 
         //fenetre de connexion
         login.setOnClickListener(new View.OnClickListener() {

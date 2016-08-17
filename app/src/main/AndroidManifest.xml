@@ -82,11 +82,7 @@
         <activity
             android:name=".Accueil"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            
         </activity>
         <activity android:name=".Inscription" />
         <activity android:name=".DetailSpot_New" />
@@ -128,7 +124,14 @@
 
         <service android:name=".GcmIntentService" />
 
-        <activity android:name=".CropImageActivity"></activity>
+        <activity android:name=".CropImageActivity" />
+        <activity android:name=".WelcomeActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

@@ -270,6 +270,7 @@ public class SessionManager {
      * Clear session details
      * */
     public void logoutUser(){
+        editor.putBoolean(IS_LOGIN, false);
         // Clearing all data from Shared Preferences
         editor.clear();
         editor.commit();

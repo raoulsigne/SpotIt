@@ -42,6 +42,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import me.leolin.shortcutbadger.ShortcutBadger;
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.Utilisateur;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         MapsActivity.OnFragmentInteractionListener, ListeSpots.OnFragmentInteractionListener, DetailSpot.OnFragmentInteractionListener,
         Search.OnFragmentInteractionListener, Add_Friend.OnFragmentInteractionListener, Account_Friend.OnFragmentInteractionListener,
         ListeSpots_Friend.OnFragmentInteractionListener, NotificationActivity.OnFragmentInteractionListener, SpotUser.OnFragmentInteractionListener,
-        UserSettings.OnFragmentInteractionListener{
+        UserSettings.OnFragmentInteractionListener, ShowInformation.OnFragmentInteractionListener{
 
     static final int REQUEST_IMAGE_CAPTURE = 10;
 
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     DetailSpot fgDetailspot;
     Search fgSearch;
     UserSettings fgUserSettings;
+    ShowInformation fgInformation;
 //    Add_Friend fgAddfrient;
     Account_Friend fgFriendAcount;
     ListeSpots_Friend fgSpots_friend;
@@ -98,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     ImageButton imgHome, imgNew, imgAccount;
     TextView txtHome, txtNew, txtAccount;
-//    TextView notif_count;
+    TextView notif_count;
     LinearLayout groupeHome, groupeNewspot, groupeAccount;
 
     int menuactif;
@@ -137,9 +139,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         groupeNewspot = (LinearLayout)findViewById(R.id.groupeNewspot);
         groupeAccount = (LinearLayout)findViewById(R.id.groupeAccount);
 
-//        notif_count = (TextView) findViewById(R.id.notif_count);
-//        if (Integer.parseInt(notif_count.getText().toString()) == 0)
-//            notif_count.setVisibility(View.INVISIBLE);
+        notif_count = (TextView) findViewById(R.id.notif_count);
+        if (Integer.parseInt(notif_count.getText().toString()) == 0)
+            notif_count.setVisibility(View.INVISIBLE);
 
         fgAccueil = new MapsActivity();
         fgSpots = new ListeSpots();
@@ -147,6 +149,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         fgDetailspot = new DetailSpot();
         fgSearch = new Search();
         fgUserSettings = new UserSettings();
+        fgInformation = new ShowInformation();
 //        fgAddfrient = new Add_Friend();
         fgFriendAcount = new Account_Friend();
         fgSpots_friend = new ListeSpots_Friend();
@@ -575,6 +578,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     @Override
+    public void onLoadInformation(int i) {
+        try {
+            Bundle args = new Bundle();
+            args.putInt("id", i);
+            fgInformation.setArguments(args);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, fgInformation, "INFOS")
+                    .commit();
+        } catch (Exception e) {
+            Log.e("fragment", e.getMessage());
+        }
+    }
+
+    @Override
     public void onLetsGo() {
 
     }
@@ -665,6 +682,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
+    @Override
+    public void onLoadAccount() {
+        //changement des couleurs des widgets
+        setAciveTab(MENU_ACTIF_ACCOUNT);
+
+        //traitement de l'action lors du click
+        startFragment(MENU_ACTIF_ACCOUNT);
+    }
+
+    @Override
+    public void onDeleteNotification() {
+        notif_count.setVisibility(View.INVISIBLE);
+        notif_count.setText(String.valueOf(0));
+    }
+
     public void startFragment(int menu){
         switch (menu){
             case MENU_ACTIF_HOME:
@@ -703,6 +735,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             case MENU_ACTIF_ACCOUNT:
                 try {
+                    Bundle args = new Bundle();
+                    args.putInt("notif_count", Integer.parseInt(notif_count.getText().toString()));
+                    fgAccount.setArguments(args);
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.container, fgAccount, "ACCOUNT")
                             .commit();
@@ -779,19 +814,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         public void onReceive(Context context, Intent intent) {
             // Get extra data included in the Intent
             String message = intent.getStringExtra("message");
-            Log.i("localbroadcast", "Got notification: " + message);
-//            updatenotif_count();
+            Log.i("localbroadcast", " main Got notification: " + message);
+            updatenotif_count();
         }
     };
 
-//    public void updatenotif_count() {
-//        Log.i("localbroadcast", "new notif increment the number");
-//
-//        notif_count.setVisibility(View.VISIBLE);
-//        notif_count.setText(String.valueOf(Integer.parseInt(notif_count.getText().toString()) + 1));
-//
-//        ShortcutBadger.applyCount(getApplicationContext(), Integer.parseInt(notif_count.getText().toString()) + 1);
-//    }
+    public void updatenotif_count() {
+        Log.i("localbroadcast", "new notif increment the number");
+
+        notif_count.setVisibility(View.VISIBLE);
+        notif_count.setText(String.valueOf(Integer.parseInt(notif_count.getText().toString()) + 1));
+
+        ShortcutBadger.applyCount(getApplicationContext(), Integer.parseInt(fgAccount.notif_count.getText().toString()) + 1);
+    }
 
     @Override
     protected void onDestroy() {

@@ -122,7 +122,8 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".GcmIntentService" />
+        <service android:name=".GcmIntentService"
+            android:enabled="true"/>
 
         <activity android:name=".CropImageActivity" />
         <activity android:name=".WelcomeActivity">

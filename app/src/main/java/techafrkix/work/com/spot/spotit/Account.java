@@ -3,9 +3,11 @@ package techafrkix.work.com.spot.spotit;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -21,12 +23,17 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -55,7 +62,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import me.leolin.shortcutbadger.ShortcutBadger;
 import techafrkix.work.com.spot.bd.Spot;
+import techafrkix.work.com.spot.bd.Utilisateur;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.MyMarker;
@@ -95,19 +104,27 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
     private HashMap<Marker, MyMarker> mMarkersHashMap;
     private ArrayList<MyMarker> mMyMarkersArray = new ArrayList<MyMarker>();
 
-    TextView txtPseudo, txtSpots, txtRespots, txtFriends, txtmySpots;
-    Button btnmodify;
+    private TextView txtPseudo, txtSpots, txtRespots, txtFriends, txtmySpots;
+    private Button btnmodify;
+    private EditText searchfriend;
     private ImageView imghome, imglist, imgnotification, imgoption;
 
     private ImageView myspot;
     private CircularImageView imageprofile;
     TextView notif_count;
+    private int notifs;
 
     private int total_spot;
 
     private Add_Friend fgAddfrient;
     private NotificationActivity fgNotificationActivity;
     private SpotUser fgSpotuser;
+    private ArrayList<Utilisateur> users;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -115,12 +132,19 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_account, container, false);
 
+        notifs = 0;
+        // Session class instance
+        if (getArguments() != null) {
+            notifs = getArguments().getInt("notif_count");
+        }
+
         // Session class instance
         session = new SessionManager(getActivity());
         profile = new HashMap<>();
         mMarkersHashMap = new HashMap<Marker, MyMarker>();
         server = new DBServer(getActivity());
         spots = new ArrayList<Spot>();
+        users = new ArrayList<>();
 
         fgAddfrient = new Add_Friend();
         fgNotificationActivity = new NotificationActivity();
@@ -137,13 +161,15 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         btnmodify = (Button) view.findViewById(R.id.btnmodify);
         txtPseudo = (TextView) view.findViewById(R.id.txtPseudo);
         txtSpots = (TextView) view.findViewById(R.id.txtSpots);
-        txtRespots = (TextView)view.findViewById(R.id.txtRespots);
+        txtRespots = (TextView) view.findViewById(R.id.txtRespots);
         txtFriends = (TextView) view.findViewById(R.id.txtFriends);
 
-        imghome = (ImageView)view.findViewById(R.id.imgMapHome);
-        imglist = (ImageView)view.findViewById(R.id.imgListSpot);
-        imgnotification = (ImageView)view.findViewById(R.id.imgNotification);
-        imgoption = (ImageView)view.findViewById(R.id.imgOption);
+        searchfriend = (EditText) view.findViewById(R.id.edtsearchfriend);
+
+        imghome = (ImageView) view.findViewById(R.id.imgMapHome);
+        imglist = (ImageView) view.findViewById(R.id.imgListSpot);
+        imgnotification = (ImageView) view.findViewById(R.id.imgNotification);
+        imgoption = (ImageView) view.findViewById(R.id.imgOption);
 
         txtmySpots = (TextView) view.findViewById(R.id.txtMySpots);
         imageprofile = (CircularImageView) view.findViewById(R.id.profile_image);
@@ -151,6 +177,10 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         notif_count = (TextView) view.findViewById(R.id.notif_count);
         if (Integer.parseInt(notif_count.getText().toString()) == 0)
             notif_count.setVisibility(View.INVISIBLE);
+        if (notifs != 0) {
+            notif_count.setVisibility(View.VISIBLE);
+            notif_count.setText(String.valueOf(notifs+""));
+        }
 
         btnmodify.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -175,6 +205,11 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
             @Override
             public void onClick(View v) {
                 setAciveTab(2);
+                getChildFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+                fgAddfrient = new Add_Friend();
+                Bundle args = new Bundle();
+                args.putInt("type", 0);
+                fgAddfrient.setArguments(args);
                 getChildFragmentManager().beginTransaction()
                         .replace(R.id.mymap, fgAddfrient, "FRIEND")
                         .commit();
@@ -184,6 +219,10 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
             @Override
             public void onClick(View v) {
                 setAciveTab(3);
+                notif_count.setVisibility(View.INVISIBLE);
+                notif_count.setText("0");
+                notifs = 0;
+                mListener.onDeleteNotification();
                 getChildFragmentManager().beginTransaction()
                         .replace(R.id.mymap, fgNotificationActivity, "NOTIFICATION")
                         .commit();
@@ -197,6 +236,67 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
             }
         });
 
+        searchfriend.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (event.getRawX() >= (searchfriend.getRight() - searchfriend.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        // your action here
+                        searchfriend.setText("");
+                        View view = getActivity().getCurrentFocus();
+                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        return true;
+                    }
+                }
+
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (event.getRawX() <= (searchfriend.getCompoundDrawables()[DRAWABLE_LEFT].getBounds().width())) {
+                        // your action here
+                        final String cle = searchfriend.getText().toString();
+                        searchfriend.setText("");
+                        View view = getActivity().getCurrentFocus();
+                        if (view != null) {
+                            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        }
+                        if (!TextUtils.isEmpty(cle)) {
+                            Thread t = new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    users = server.getUsers_by_pseudo(cle);
+                                }
+                            });
+
+                            t.start(); // spawn thread
+                            try {
+                                t.join();
+                                if (users != null) {
+                                    setAciveTab(0);
+                                    getChildFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+                                    fgAddfrient = new Add_Friend();
+                                    Bundle args = new Bundle();
+                                    args.putInt("type", 1);
+                                    args.putSerializable("users", users);
+                                    args.putString("cle", cle);
+                                    fgAddfrient.setArguments(args);
+                                    getChildFragmentManager().beginTransaction().replace(R.id.mymap, fgAddfrient, "FRIEND").commit();
+                                }
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
 
         profile = session.getUserDetails();
         txtPseudo.setText(profile.get(SessionManager.KEY_NAME));
@@ -248,7 +348,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
                                     imageprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
                                 }
                                 barProgressDialog.setProgress(rapport);
-                            }else{
+                            } else {
                                 barProgressDialog.dismiss();
                             }
                         }
@@ -417,7 +517,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         if (mMap != null) {
             LatLng pos = mMap.getCameraPosition().target;
             Log.i("map", "Pos : " + pos.toString());
-        }else
+        } else
             Log.i("map", "Map is nulle ");
     }
 
@@ -434,9 +534,14 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onLoadSpot();
+
         void onDisconnect();
+
         void onSetPhoto();
+
         void onLoadOption();
+
+        void onDeleteNotification();
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -453,7 +558,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
     @Override
     public void onDestroyView() {
 
-        try{
+        try {
             FragmentTransaction transaction = getChildFragmentManager()
                     .beginTransaction();
 
@@ -461,7 +566,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
             transaction.remove(fgNotificationActivity);
 
             transaction.commit();
-        }catch(Exception e){
+        } catch (Exception e) {
         }
 
         super.onDestroyView();
@@ -498,7 +603,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
     /**
      * afficher les spots sur la carte en utilisant leur coordonnées
      */
-    private void displaySpotOnMap(){
+    private void displaySpotOnMap() {
         //clear other markers on map and inside the list before adding new one
         mMap.clear();
         mMyMarkersArray.clear();
@@ -507,7 +612,8 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
             @Override
             public void run() {
                 spots = server.find_spot_user(Integer.valueOf(profile.get(SessionManager.KEY_ID)), 0, total_spot);
-            }});
+            }
+        });
 
         t.start(); // spawn thread
         try {
@@ -518,18 +624,15 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
                 }
                 plotMarkers(mMyMarkersArray);
             }
-        }catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    private void plotMarkers(ArrayList<MyMarker> markers)
-    {
-        if(markers.size() > 0)
-        {
+    private void plotMarkers(ArrayList<MyMarker> markers) {
+        if (markers.size() > 0) {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(markers.get(0).getmLatitude(), markers.get(0).getmLongitude()), 14));
-            for (MyMarker myMarker : markers)
-            {
+            for (MyMarker myMarker : markers) {
                 // Create user marker with custom icon and other options
                 MarkerOptions markerOption = new MarkerOptions().position(new LatLng(myMarker.getmLatitude(), myMarker.getmLongitude()));
                 markerOption.icon(BitmapDescriptorFactory
@@ -544,8 +647,16 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
     }
 
 
-    public void setAciveTab(int menu){
-        switch (menu){
+    public void setAciveTab(int menu) {
+        switch (menu) {
+            case 0:
+
+                imghome.setBackground(getResources().getDrawable(R.drawable.homeaccount));
+                imglist.setBackground(getResources().getDrawable(R.drawable.listspot));
+                imgnotification.setBackground(getResources().getDrawable(R.drawable.notification));
+                imgoption.setBackground(getResources().getDrawable(R.drawable.optionaccount));
+
+                break;
             case 1:
 
                 imghome.setBackground(getResources().getDrawable(R.drawable.home_account_clicked));
@@ -582,32 +693,35 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         }
     }
 
+    public void updatenotif_count() {
+        Log.i("localbroadcast", "fragment new notif increment the number");
 
-    public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter
-    {
+        notif_count.setVisibility(View.VISIBLE);
+        notif_count.setText(String.valueOf(Integer.parseInt(notif_count.getText().toString()) + 1));
+    }
 
-        public MarkerInfoWindowAdapter()
-        {}
+    public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+
+        public MarkerInfoWindowAdapter() {
+        }
 
         @Override
-        public View getInfoWindow(Marker marker)
-        {
+        public View getInfoWindow(Marker marker) {
             return null;
         }
 
         @Override
-        public View getInfoContents(Marker marker)
-        {
-            View v  = getActivity().getLayoutInflater().inflate(R.layout.infomarker, null);
+        public View getInfoContents(Marker marker) {
+            View v = getActivity().getLayoutInflater().inflate(R.layout.infomarker, null);
 
             final MyMarker myMarker = mMarkersHashMap.get(marker);
 
             final ImageView markerIcon = (ImageView) v.findViewById(R.id.marker_icon);
-            final TextView markerDate = (TextView)v.findViewById(R.id.marker_date);
-            final TextView markerGeohash = (TextView)v.findViewById(R.id.marker_geohash);
+            final TextView markerDate = (TextView) v.findViewById(R.id.marker_date);
+            final TextView markerGeohash = (TextView) v.findViewById(R.id.marker_geohash);
 
 
-            markerIcon.setImageBitmap(BitmapFactory.decodeFile(getActivity().getFilesDir().getPath()+"/Images/"+myMarker.getmIcon()+".jpg"));
+            markerIcon.setImageBitmap(BitmapFactory.decodeFile(getActivity().getFilesDir().getPath() + "/Images/" + myMarker.getmIcon() + ".jpg"));
             markerDate.setText(myMarker.getmDate());
             markerGeohash.setText(myMarker.getmGeohash());
 
@@ -615,7 +729,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         }
     }
 
-    private void showdialogMarker(MyMarker marker, File file){
+    private void showdialogMarker(MyMarker marker, File file) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
@@ -625,9 +739,9 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         final TextView latitude = (TextView) promptView.findViewById(R.id.latitude);
         final TextView longitude = (TextView) promptView.findViewById(R.id.longitude);
         final TextView date = (TextView) promptView.findViewById(R.id.dateSpot);
-        final ImageView imgspot = (ImageView)promptView.findViewById(R.id.imgspot);
-        final Button fermer = (Button)promptView.findViewById(R.id.btnFermer);
-        final Button respoter = (Button)promptView.findViewById(R.id.btnRespoter);
+        final ImageView imgspot = (ImageView) promptView.findViewById(R.id.imgspot);
+        final Button fermer = (Button) promptView.findViewById(R.id.btnFermer);
+        final Button respoter = (Button) promptView.findViewById(R.id.btnRespoter);
 
         latitude.setText(String.valueOf(marker.getmLatitude()));
         longitude.setText(String.valueOf(marker.getmLongitude()));

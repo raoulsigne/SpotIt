@@ -60,4 +60,17 @@
 
     <string name="play_again_desc">To see the welcome slider again, goto Settings -> apps -> welcome slider -> clear data</string>
     <string name="play_again">Play Again</string>
+
+    <string name="loren_ipsum">
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse eleifend dui in turpis lobortis faucibus. Nam vitae bibendum libero, vitae egestas tellus. Aenean sollicitudin nunc nisl. Integer ut turpis in magna pharetra aliquet. Aliquam hendrerit semper elementum. Sed iaculis velit et nulla euismod, sit amet sagittis elit euismod. Vivamus dolor justo, euismod et placerat sed, porttitor sit amet est. Aenean finibus leo vitae nisi tristique, ut varius lacus fermentum. Vestibulum lectus nisl, mollis id mi id, malesuada vestibulum metus. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nam enim quam, accumsan ut sollicitudin sed, auctor et lacus. In in lectus tempor, dictum purus ac, laoreet purus. Nulla facilisi. In nec placerat enim. Maecenas eu eleifend leo. Sed ac dolor ullamcorper, condimentum dolor non, feugiat tortor.
+
+Morbi vel quam ultrices, venenatis urna at, rutrum urna. Phasellus ornare pulvinar felis in efficitur. Nunc vitae consequat mauris. Integer pretium malesuada quam, quis semper eros suscipit sed. Donec ut imperdiet velit. Suspendisse eros tortor, varius at ante a, congue aliquet nisi. Aliquam sodales malesuada arcu ut euismod. Duis vitae pellentesque risus, et venenatis tellus. Etiam in nisi in odio facilisis pretium nec a odio. Integer pulvinar odio eget nibh tempor ultrices. Maecenas laoreet tellus ut mauris vulputate scelerisque.
+
+Quisque efficitur ipsum nisl, et pretium velit imperdiet eget. Praesent interdum tincidunt sapien, vitae dictum tortor rutrum non. Nam in velit nulla. Quisque fringilla justo quis lectus varius, at fermentum quam molestie. Nulla elementum semper sem sed pretium. Vivamus nec augue nunc. Ut erat arcu, lobortis ut purus eget, mattis vestibulum ex. Suspendisse erat nisl, malesuada scelerisque libero eu, finibus facilisis elit. Vestibulum hendrerit eleifend velit. Fusce posuere ac eros imperdiet consectetur. Aenean risus odio, rhoncus ut egestas quis, malesuada id tortor. Quisque sollicitudin vestibulum mauris, viverra egestas metus rutrum vel. Nam dignissim lobortis turpis quis cursus. Morbi faucibus luctus lacinia.
+
+Ut ipsum est, eleifend finibus nulla ut, luctus semper erat. Proin non urna odio. Vivamus eget vulputate sapien. Aenean dictum ante non metus egestas, vitae fringilla ligula condimentum. Curabitur eget elit turpis. Nam ornare lacus magna, sed finibus lorem lobortis ut. Aliquam erat nulla, convallis ac ultrices et, euismod quis nisi. Nunc lacinia, ligula vitae bibendum eleifend, mi metus porttitor ante, sit amet elementum neque tortor sed massa. Maecenas ac ex sem. Cras auctor tincidunt tellus, ullamcorper laoreet nisi hendrerit a. Sed augue sapien, faucibus at gravida non, tincidunt at nisi. In iaculis ut est eget ultricies. Nunc ut risus ex.
+
+Integer sodales finibus sapien nec dictum. In volutpat orci sed lacus placerat, id faucibus augue accumsan. In vel fermentum lorem. Quisque sapien nulla, sagittis a nibh vitae, laoreet semper arcu. Curabitur ut risus nunc. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nulla eu diam aliquam, condimentum libero sed, pharetra nisi.
+    </string>
 </resources>

@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 
@@ -30,7 +32,9 @@ public class UserSettings extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    private TextView txtlogout;
+    private TextView txtlogout, txtprivacy, txtconfidentiality, txtpublicity;
+    private ImageView leftarrow;
+    private ScrollView content;
 
     public UserSettings() {
         // Required empty public constructor
@@ -70,12 +74,47 @@ public class UserSettings extends Fragment {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
         txtlogout = (TextView)view.findViewById(R.id.txtDeconnexion);
+        leftarrow = (ImageView)view.findViewById(R.id.leftarrow);
+        txtpublicity = (TextView)view.findViewById(R.id.txtPublicity);
+        txtconfidentiality = (TextView)view.findViewById(R.id.txtConfidentiality);
+        txtprivacy = (TextView)view.findViewById(R.id.txtPrivacy);
+        content = (ScrollView)view.findViewById(R.id.scrollcontent);
+
         txtlogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mListener.onDisconnect();
             }
         });
+
+        leftarrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onLoadAccount();
+            }
+        });
+
+        txtpublicity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onLoadInformation(0);
+            }
+        });
+
+        txtconfidentiality.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onLoadInformation(1);
+            }
+        });
+
+        txtprivacy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onLoadInformation(2);
+            }
+        });
+
 
         return view;
     }
@@ -118,5 +157,7 @@ public class UserSettings extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
         void onDisconnect();
+        void onLoadAccount();
+        void onLoadInformation(int i);
     }
 }

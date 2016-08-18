@@ -1,46 +1,131 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="techafrkix.work.com.spot.spotit.Account">
+    tools:context="techafrkix.work.com.spot.spotit.MainActivity">
 
-    <!-- TODO: Update blank fragment layout -->
     <LinearLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/my_toolbar"
         android:orientation="vertical">
 
-        <FrameLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
+    </LinearLayout>
 
-            <EditText
-                android:id="@+id/search"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:drawablePadding="8dp"
-                android:paddingLeft="30dp"
-                android:paddingRight="10dp"
-                android:singleLine="true" >
-                <requestFocus />
-            </EditText>
+    <LinearLayout
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="1"
+        android:background="@drawable/custom_bar"
+        android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/searchBtn"
+        <LinearLayout
+            android:id="@+id/groupeHome"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/imgHome"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="left|center_vertical"
-                android:layout_margin="10dp"
-                android:background="@drawable/search" />
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/world" />
 
-            <Button
-                android:id="@+id/delete"
+            <TextView
+                android:id="@+id/txtHome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="4dp"
+                android:text="Home"
+                android:textColor="@color/titre_menu"
+                android:textAlignment="center"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/groupeNewspot"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/imgAdd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right|center_vertical"
-                android:layout_margin="8dp"
-                android:background="@drawable/ic_clear_black_24dp" />
-        </FrameLayout>
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/spot" />
+
+            <TextView
+                android:id="@+id/txtAdd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="4dp"
+                android:text="New spot"
+                android:textColor="@color/titre_menu"
+                android:textAlignment="center"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/groupeAccount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <RelativeLayout android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageButton
+                    android:id="@+id/imgAccount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/setting" />
+
+                <TextView android:id="@+id/notif_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@id/imgAccount"
+                    android:layout_marginLeft="10dp"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:background="@drawable/badge_red"
+                    android:text="0"
+                    android:textSize="12sp"
+                    android:textColor="@android:color/white"
+                    android:textAlignment="center"
+                    android:gravity="center"
+                    android:singleLine="true">
+                </TextView>
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/txtAccount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="4dp"
+                android:text="Account"
+                android:textColor="@color/titre_menu"
+                android:textAlignment="center"
+                android:textSize="10sp" />
+        </LinearLayout>
 
     </LinearLayout>
-</FrameLayout>
+
+</RelativeLayout>

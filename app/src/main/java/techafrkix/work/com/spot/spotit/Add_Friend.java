@@ -53,8 +53,10 @@ import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 public class Add_Friend extends Fragment implements FriendCallback{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_PARAM1 = "users";
+    private static final String ARG_PARAM2 = "type";
+    private int type;
+    private String cle;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -99,9 +101,41 @@ public class Add_Friend extends Fragment implements FriendCallback{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Session class instance
+        session = new SessionManager(getActivity());
+        profile = new HashMap<>();
+        server = new DBServer(getActivity());
+        profile = session.getUserDetails();
+        friends = new ArrayList<>();
+
+        Thread t1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                users = server.getAllFriends(Integer.valueOf(profile.get(SessionManager.KEY_ID)));
+            }
+        });
+
+        t1.start(); // spawn thread
+        try {
+            t1.join();
+
+            if (users != null) {
+                friends = new ArrayList<>();
+                for (int i = 0; i < users.size(); i++) {
+                    if (users.get(i).getStatut() == 1)
+                        friends.add(users.get(i).getPseudo());
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        users = new ArrayList<>();
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            type = getArguments().getInt(ARG_PARAM2);
+            cle = getArguments().getString("cle");
+            users = (ArrayList<Utilisateur>)getArguments().getSerializable(ARG_PARAM1);
         }
     }
 
@@ -116,41 +150,47 @@ public class Add_Friend extends Fragment implements FriendCallback{
 
         registerForContextMenu(lvfriends);
 
-        // Session class instance
-        session = new SessionManager(getActivity());
-        profile = new HashMap<>();
-        server = new DBServer(getActivity());
-        profile = session.getUserDetails();
-        users = new ArrayList<>();
-        friends = new ArrayList<>();
-
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                users = server.getAllFriends(Integer.valueOf(profile.get(SessionManager.KEY_ID))); // amis confirmés
-            }});
-
-        t.start(); // spawn thread
-        try{
-            t.join();
-
-            if (users != null){
-                friends = new ArrayList<>();
-                tampons = new Utilisateur[users.size()];
-                int i = 0;
-                for (i = 0; i < users.size(); i++) {
-                    tampons[i] = users.get(i);
-                    if (users.get(i).getStatut() == 1)
-                        friends.add(users.get(i).getPseudo());
+        if (type == 0) {
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    users = server.getAllFriends(Integer.valueOf(profile.get(SessionManager.KEY_ID)));
                 }
+            });
 
-                CustomList adapter = new CustomList(getActivity(), tampons, Add_Friend.this);
+            t.start(); // spawn thread
+            try {
+                t.join();
+
+                if (users != null) {
+                    friends = new ArrayList<>();
+                    tampons = new Utilisateur[users.size()];
+                    int i = 0;
+                    for (i = 0; i < users.size(); i++) {
+                        tampons[i] = users.get(i);
+                        if (users.get(i).getStatut() == 1)
+                            friends.add(users.get(i).getPseudo());
+                    }
+
+                    CustomList adapter = new CustomList(getActivity(), tampons, Add_Friend.this);
+                    lvfriends.setAdapter(adapter);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        else {
+            if (users != null) {
+                String[] items = new String[users.size()];
+                for (int i = 0; i < users.size(); i++) {
+                    items[i] = users.get(i).getPseudo();
+                }
+                Log.i("test friend 1", friends.toString());
+                CustomList_Search adapter = new CustomList_Search(getActivity(), items, cle, Add_Friend.this);
+                lvfriends.invalidate();
                 lvfriends.setAdapter(adapter);
             }
-        }catch (InterruptedException e) {
-            e.printStackTrace();
         }
-
 //        btnLaunch.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {

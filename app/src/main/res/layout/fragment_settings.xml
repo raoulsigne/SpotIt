@@ -2,24 +2,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/fond_detail"
+    android:background="@color/blanc"
     android:orientation="vertical"
     tools:context=".UserSettings">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/myblue"
-        android:gravity="center_horizontal"
-        android:paddingBottom="5dp"
-        android:paddingTop="15dp"
-        android:text="Parameter"
-        android:textColor="@color/blanc"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:padding="15dp">
+
+        <ImageView
+            android:id="@+id/leftarrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/leftarrow"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:gravity="center_vertical"
+            android:text="Options"
+            android:textColor="@color/noir"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dip"
+        android:layout_gravity="center_horizontal"
+        android:background="@color/separator" />
 
     <ScrollView
+        android:id="@+id/scrollcontent"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -34,7 +52,16 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="15dp"
                 android:text="FRIENDSHIP"
-                android:textSize="14sp" />
+                android:textSize="20sp"
+                android:textColor="@color/noir"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dip"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/separator" />
 
             <LinearLayout
                 android:id="@+id/blocedition"
@@ -42,7 +69,6 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/textView3"
                 android:layout_marginTop="5dp"
-                android:background="@drawable/fb_button"
                 android:orientation="vertical">
 
                 <TextView
@@ -51,16 +77,18 @@
                     android:background="#FFFFFF"
                     android:gravity="center_vertical"
                     android:paddingLeft="20dp"
+                    android:paddingRight="40dp"
                     android:text="Facebook friends"
                     android:textColor="@color/noir"
+                    android:drawableRight="@drawable/face"
                     android:textSize="14sp" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dip"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginLeft="40dp"
-                    android:layout_marginRight="40dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
                     android:background="@color/separator" />
 
                 <TextView
@@ -69,9 +97,19 @@
                     android:background="#FFFFFF"
                     android:gravity="center_vertical"
                     android:paddingLeft="20dp"
+                    android:paddingRight="40dp"
                     android:text="Search friends"
                     android:textColor="@color/noir"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:drawableRight="@drawable/amis"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dip"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:background="@color/separator" />
 
             </LinearLayout>
 
@@ -81,14 +119,22 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="15dp"
                 android:text="PROFILE"
-                android:textSize="14sp" />
+                android:textSize="20sp"
+                android:textColor="@color/noir"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dip"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/separator" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/textView3"
                 android:layout_marginTop="5dp"
-                android:background="@drawable/fb_button"
                 android:orientation="vertical">
 
                 <TextView
@@ -105,8 +151,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dip"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginLeft="40dp"
-                    android:layout_marginRight="40dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
                     android:background="@color/separator" />
 
                 <TextView
@@ -119,6 +165,14 @@
                     android:textColor="@color/noir"
                     android:textSize="14sp" />
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dip"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:background="@color/separator" />
+
             </LinearLayout>
 
             <TextView
@@ -127,17 +181,26 @@
                 android:layout_marginLeft="18dp"
                 android:layout_marginTop="15dp"
                 android:text="PLUBLICITY AND SECURITY"
-                android:textSize="14sp" />
+                android:textSize="20sp"
+                android:textColor="@color/noir"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dip"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/separator" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/textView3"
                 android:layout_marginTop="5dp"
-                android:background="@drawable/fb_button"
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/txtPublicity"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:background="#FFFFFF"
@@ -151,11 +214,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dip"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginLeft="40dp"
-                    android:layout_marginRight="40dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
                     android:background="@color/separator" />
 
                 <TextView
+                    android:id="@+id/txtConfidentiality"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:background="#FFFFFF"
@@ -169,11 +233,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dip"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginLeft="40dp"
-                    android:layout_marginRight="40dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
                     android:background="@color/separator" />
 
                 <TextView
+                    android:id="@+id/txtPrivacy"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:background="#FFFFFF"
@@ -183,6 +248,14 @@
                     android:textColor="@color/noir"
                     android:textSize="14sp" />
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dip"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:background="@color/separator" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -191,7 +264,6 @@
                 android:layout_below="@+id/textView3"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
-                android:background="@drawable/fb_button"
                 android:orientation="vertical">
 
                 <TextView
@@ -204,6 +276,14 @@
                     android:text="Log out"
                     android:textColor="@color/noir"
                     android:textSize="14sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="3dip"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@color/separator" />
 
             </LinearLayout>
         </LinearLayout>

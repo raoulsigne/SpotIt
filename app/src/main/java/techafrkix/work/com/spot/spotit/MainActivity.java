@@ -820,12 +820,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     };
 
     public void updatenotif_count() {
-        Log.i("localbroadcast", "new notif increment the number");
 
         notif_count.setVisibility(View.VISIBLE);
         notif_count.setText(String.valueOf(Integer.parseInt(notif_count.getText().toString()) + 1));
+        Log.i("localbroadcast", "new notif increment the number " + Integer.parseInt(notif_count.getText().toString()));
+        fgAccount.updatenotif_count(Integer.parseInt(notif_count.getText().toString()));
 
-        ShortcutBadger.applyCount(getApplicationContext(), Integer.parseInt(fgAccount.notif_count.getText().toString()) + 1);
+        ShortcutBadger.applyCount(getApplicationContext(), Integer.parseInt(notif_count.getText().toString()) + 1);
     }
 
     @Override

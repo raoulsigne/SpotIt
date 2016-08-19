@@ -693,11 +693,12 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         }
     }
 
-    public void updatenotif_count() {
-        Log.i("localbroadcast", "fragment new notif increment the number");
+    public void updatenotif_count(int i) {
+        Log.i("localbroadcast", "fragment new notif increment the number " + i);
 
         notif_count.setVisibility(View.VISIBLE);
-        notif_count.setText(String.valueOf(Integer.parseInt(notif_count.getText().toString()) + 1));
+        notif_count.setText(String.valueOf(i));
+        notifs = i;
     }
 
     public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {

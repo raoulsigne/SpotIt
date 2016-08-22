@@ -174,7 +174,7 @@ public class Connexion extends AppCompatActivity {
                                                         // For testing i am stroing name, email as follow
                                                         // Use user real data
                                                         session.createLoginSession(utilisateur.getPseudo(), utilisateur.getEmail(), utilisateur.getId(),
-                                                                utilisateur.getNbspot(), utilisateur.getNbrespot(), 0, utilisateur.getPhoto());
+                                                                utilisateur.getNbspot(), utilisateur.getNbrespot(), 0, utilisateur.getPhoto(), DBServer.CONNEXION_FB);
 
                                                         if (regId == utilisateur.getAndroidid())
                                                             session.storeRegistrationId(utilisateur.getAndroidid());
@@ -249,7 +249,7 @@ public class Connexion extends AppCompatActivity {
                                                                                 session.createLoginSession(pseudo, user.getEmail(), USER_ID);
 
                                                                                 session.createLoginSession(user.getPseudo(), user.getEmail(), USER_ID,
-                                                                                        0, 0, 0, "");
+                                                                                        0, 0, 0, "", DBServer.CONNEXION_FB);
 
                                                                                 startActivity(itwelcome);
                                                                                 finish();
@@ -319,7 +319,7 @@ public class Connexion extends AppCompatActivity {
                             // For testing i am stroing name, email as follow
                             // Use user real data
                             session.createLoginSession(utilisateur.getPseudo(), utilisateur.getEmail(), utilisateur.getId(),
-                                    utilisateur.getNbspot(), utilisateur.getNbrespot(), 0, utilisateur.getPhoto());
+                                    utilisateur.getNbspot(), utilisateur.getNbrespot(), 0, utilisateur.getPhoto(), DBServer.CONNEXION_NORMAL);
                             session.storeRegistrationId(utilisateur.getAndroidid());
 
                             startActivity(itwelcome);

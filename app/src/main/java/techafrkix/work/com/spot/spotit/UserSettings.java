@@ -11,6 +11,11 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import java.util.HashMap;
+
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,9 +37,12 @@ public class UserSettings extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    private TextView txtlogout, txtprivacy, txtconfidentiality, txtpublicity;
+    private TextView txtlogout, txtprivacy, txtconfidentiality, txtpublicity, txtchangepassword;
     private ImageView leftarrow;
     private ScrollView content;
+
+    private SessionManager session;
+    private HashMap<String, String> profile;
 
     public UserSettings() {
         // Required empty public constructor
@@ -65,6 +73,10 @@ public class UserSettings extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        session = new SessionManager(getActivity());
+        profile = new HashMap<>();
+        profile = session.getUserDetails();
     }
 
     @Override
@@ -78,6 +90,8 @@ public class UserSettings extends Fragment {
         txtpublicity = (TextView)view.findViewById(R.id.txtPublicity);
         txtconfidentiality = (TextView)view.findViewById(R.id.txtConfidentiality);
         txtprivacy = (TextView)view.findViewById(R.id.txtPrivacy);
+        txtchangepassword=(TextView)view.findViewById(R.id.txtChangePassword);
+
         content = (ScrollView)view.findViewById(R.id.scrollcontent);
 
         txtlogout.setOnClickListener(new View.OnClickListener() {
@@ -115,6 +129,17 @@ public class UserSettings extends Fragment {
             }
         });
 
+        txtchangepassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onChangePassword();
+            }
+        });
+
+        if (Integer.valueOf(profile.get(SessionManager.KEY_TYPE_CONNEXION_ID)) != DBServer.CONNEXION_NORMAL){
+            txtchangepassword.setEnabled(false);
+            txtchangepassword.setTextColor(getActivity().getResources().getColor(R.color.titre_menu));
+        }
 
         return view;
     }
@@ -159,5 +184,6 @@ public class UserSettings extends Fragment {
         void onDisconnect();
         void onLoadAccount();
         void onLoadInformation(int i);
+        void onChangePassword();
     }
 }

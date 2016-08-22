@@ -70,6 +70,9 @@ public class SessionManager {
     // <user Id (make variable public to access from outside)
     public static final String KEY_OFFSET = "offset";
 
+    // type connexion Id (make variable public to access from outside)
+    public static final String KEY_TYPE_CONNEXION_ID = "type_connexion_id";
+
     // Constructor
     public SessionManager(Context context){
 
@@ -110,6 +113,9 @@ public class SessionManager {
         //storing user profile
         editor.putString(KEY_PHOTO, "");
 
+        //storing type connexion in pref
+        editor.putString(KEY_TYPE_CONNEXION_ID, String.valueOf(0));
+
         // Récupération du registerId du terminal ou enregistrement de ce dernier
 //        regId = registerGCM();
 //        if (TextUtils.isEmpty(regId)){
@@ -125,7 +131,7 @@ public class SessionManager {
     /**
      * Create login session
      * */
-    public void createLoginSession(String name, String email, int id, int spot, int respot, int friends, String photo){
+    public void createLoginSession(String name, String email, int id, int spot, int respot, int friends, String photo, int connexionId){
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
 
@@ -152,6 +158,9 @@ public class SessionManager {
 
         //storing offset in pref
         editor.putString(KEY_OFFSET, String.valueOf(0));
+
+        //storing type connexion in pref
+        editor.putString(KEY_TYPE_CONNEXION_ID, String.valueOf(connexionId));
 
         // Récupération du registerId du terminal ou enregistrement de ce dernier
 //        regId = registerGCM();
@@ -253,6 +262,9 @@ public class SessionManager {
 
         // terminal key from GCM
         user.put(KEY_REGISTRATION_ID, pref.getString(KEY_REGISTRATION_ID, null));
+
+        // user type connexion id
+        user.put(KEY_TYPE_CONNEXION_ID, pref.getString(KEY_TYPE_CONNEXION_ID, null));
 
         // return user
         return user;

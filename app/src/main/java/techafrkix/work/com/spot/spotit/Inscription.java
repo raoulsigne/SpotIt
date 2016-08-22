@@ -295,7 +295,7 @@ public class Inscription extends AppCompatActivity {
                                                         // For testing i am stroing name, email as follow
                                                         // Use user real data
                                                         session.createLoginSession(utilisateur.getPseudo(), utilisateur.getEmail(), utilisateur.getId(),
-                                                                utilisateur.getNbspot(), utilisateur.getNbrespot(), 0, utilisateur.getPhoto());
+                                                                utilisateur.getNbspot(), utilisateur.getNbrespot(), 0, utilisateur.getPhoto(), DBServer.CONNEXION_FB);
                                                         session.storeRegistrationId(utilisateur.getAndroidid());
 
                                                         startActivity(itmain); // déjà enregistré on démarre l'activité Welcome

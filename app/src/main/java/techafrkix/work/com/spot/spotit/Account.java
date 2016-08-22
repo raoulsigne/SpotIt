@@ -218,6 +218,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         imgnotification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ShortcutBadger.removeCount(getActivity());
                 setAciveTab(3);
                 notif_count.setVisibility(View.INVISIBLE);
                 notif_count.setText("0");

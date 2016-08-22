@@ -9,9 +9,12 @@ import android.support.multidex.MultiDex;
  */
 public class ParentApplication extends Application {
 
+    protected static boolean isVisible = false;
+
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         MultiDex.install(this);
     }
+
 }

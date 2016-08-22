@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         MapsActivity.OnFragmentInteractionListener, ListeSpots.OnFragmentInteractionListener, DetailSpot.OnFragmentInteractionListener,
         Search.OnFragmentInteractionListener, Add_Friend.OnFragmentInteractionListener, Account_Friend.OnFragmentInteractionListener,
         ListeSpots_Friend.OnFragmentInteractionListener, NotificationActivity.OnFragmentInteractionListener, SpotUser.OnFragmentInteractionListener,
-        UserSettings.OnFragmentInteractionListener, ShowInformation.OnFragmentInteractionListener{
+        UserSettings.OnFragmentInteractionListener, ShowInformation.OnFragmentInteractionListener, ChangePassword.OnFragmentInteractionListener{
 
     static final int REQUEST_IMAGE_CAPTURE = 10;
 
@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     Search fgSearch;
     UserSettings fgUserSettings;
     ShowInformation fgInformation;
+    ChangePassword fgChangePassword;
 //    Add_Friend fgAddfrient;
     Account_Friend fgFriendAcount;
     ListeSpots_Friend fgSpots_friend;
@@ -105,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     int menuactif;
     int resultat;
+    int nb_notification;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 new IntentFilter("custom-event-name"));
 
         instance = this;
+        nb_notification = 0;
 
         // Session class instance
         session = new SessionManager(getApplicationContext());
@@ -150,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         fgSearch = new Search();
         fgUserSettings = new UserSettings();
         fgInformation = new ShowInformation();
+        fgChangePassword = new ChangePassword();
 //        fgAddfrient = new Add_Friend();
         fgFriendAcount = new Account_Friend();
         fgSpots_friend = new ListeSpots_Friend();
@@ -342,6 +346,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         // Logs 'install' and 'app activate' App Events.
         AppEventsLogger.activateApp(this);
+
+        if (nb_notification > 0) {
+            updatenotif_count(nb_notification);
+            nb_notification = 0;
+        }
     }
 
     @Override
@@ -592,6 +601,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     @Override
+    public void onChangePassword() {
+        try {
+            Bundle args = new Bundle();
+            fgChangePassword.setArguments(args);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, fgChangePassword, "CHANGE_PASSWORD")
+                    .commit();
+        } catch (Exception e) {
+            Log.e("fragment", e.getMessage());
+        }
+    }
+
+    @Override
     public void onLetsGo() {
 
     }
@@ -821,12 +843,29 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     public void updatenotif_count() {
 
-        notif_count.setVisibility(View.VISIBLE);
-        notif_count.setText(String.valueOf(Integer.parseInt(notif_count.getText().toString()) + 1));
-        Log.i("localbroadcast", "new notif increment the number " + Integer.parseInt(notif_count.getText().toString()));
-        fgAccount.updatenotif_count(Integer.parseInt(notif_count.getText().toString()));
+        try {
+            nb_notification++;
+            notif_count.setVisibility(View.VISIBLE);
+            notif_count.setText(String.valueOf(Integer.parseInt(notif_count.getText().toString()) + 1));
+            Log.i("localbroadcast", "new notif increment the number " + Integer.parseInt(notif_count.getText().toString()));
+            fgAccount.updatenotif_count(Integer.parseInt(notif_count.getText().toString()));
+            ShortcutBadger.applyCount(getApplicationContext(), Integer.parseInt(notif_count.getText().toString()) + 1);
+        }catch (Exception e){
+            Log.e("notif", e.getMessage());
+        }
 
-        ShortcutBadger.applyCount(getApplicationContext(), Integer.parseInt(notif_count.getText().toString()) + 1);
+    }
+
+    public void updatenotif_count(int number) {
+
+        try {
+            notif_count.setVisibility(View.VISIBLE);
+            notif_count.setText(String.valueOf(number));
+            fgAccount.updatenotif_count(number);
+        }catch (Exception e){
+            Log.e("notif", e.getMessage());
+        }
+
     }
 
     @Override

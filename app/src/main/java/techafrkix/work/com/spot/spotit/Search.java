@@ -33,8 +33,6 @@ public class Search extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    private ListView recentplaces, recentspots;
-
     public Search() {
         // Required empty public constructor
     }
@@ -71,23 +69,6 @@ public class Search extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_search, container, false);
-
-        recentplaces = (ListView) view.findViewById(R.id.recentplaces);
-        recentspots = (ListView) view.findViewById(R.id.recentspots);
-
-        String[] items ={
-                "Safari",
-                "Camera",
-                "Global",
-                "FireFox",
-                "UC Browser",
-                "Android Folder",
-                "VLC Player",
-                "Cold War"
-        };
-        CustomList adapter = new CustomList(getActivity(), items);
-        recentplaces.setAdapter(adapter);
-        recentspots.setAdapter(adapter);
 
         return view;
     }
@@ -131,26 +112,4 @@ public class Search extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public class CustomList extends ArrayAdapter<String>{
-
-        private final Activity context;
-        private final String[] historiques;
-
-        public CustomList(Activity context, String[] historiques) {
-            super(context, R.layout.item, historiques);
-            this.context = context;
-            this.historiques = historiques;
-
-        }
-        @Override
-        public View getView(int position, View view, ViewGroup parent) {
-            LayoutInflater inflater = context.getLayoutInflater();
-            View rowView= inflater.inflate(R.layout.item, null, true);
-            TextView txtTitle = (TextView) rowView.findViewById(R.id.txtrecent);
-
-            txtTitle.setText(historiques[position]);
-
-            return rowView;
-        }
-    }
 }

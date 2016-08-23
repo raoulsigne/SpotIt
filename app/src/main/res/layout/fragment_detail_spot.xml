@@ -20,29 +20,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="5dp"
                 android:scaleType="centerCrop" />
-
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:id="@+id/listes"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:isScrollContainer="true"
-                    android:orientation="horizontal"/>
-
-            </HorizontalScrollView>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
                 android:background="@drawable/custom_bar"
                 android:orientation="horizontal">
 
@@ -71,6 +57,26 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp">
+
+                <LinearLayout
+                    android:id="@+id/listes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:isScrollContainer="true"
+                    android:orientation="horizontal"/>
+
+            </HorizontalScrollView>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -79,14 +85,15 @@
                 android:text="Who can see this spot ?"
                 android:textAlignment="center"
                 android:textColor="#494949"
-                android:textSize="14sp" />
+                android:textSize="15sp"
+                android:textStyle="bold"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
                 android:divider="?android:dividerVertical"
                 android:orientation="horizontal"
                 android:showDividers="middle">
@@ -114,7 +121,8 @@
                         android:layout_marginTop="4dp"
                         android:text="Only me"
                         android:textAlignment="center"
-                        android:textSize="11sp" />
+                        android:textSize="11sp"
+                        android:textColor="@color/titre_menu"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -130,7 +138,7 @@
                         android:layout_height="33dp"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="8dp"
-                        android:background="@drawable/friend" />
+                        android:background="@drawable/friend_clicked" />
 
                     <TextView
                         android:id="@+id/txtAmis"
@@ -140,7 +148,8 @@
                         android:layout_marginTop="4dp"
                         android:text="Friends"
                         android:textAlignment="center"
-                        android:textSize="11sp" />
+                        android:textSize="11sp"
+                        android:textColor="@color/titre_menu"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -166,7 +175,8 @@
                         android:layout_marginTop="4dp"
                         android:text="Publics"
                         android:textAlignment="center"
-                        android:textSize="11sp" />
+                        android:textSize="11sp"
+                        android:textColor="@color/titre_menu"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -175,7 +185,7 @@
                 android:id="@+id/btnValider"
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
+                android:layout_height="35dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="20dp"
                 android:layout_marginLeft="20dp"

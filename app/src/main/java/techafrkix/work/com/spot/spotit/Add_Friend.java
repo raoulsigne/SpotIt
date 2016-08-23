@@ -77,7 +77,7 @@ public class Add_Friend extends Fragment implements FriendCallback{
     private OnFragmentInteractionListener mListener;
 
     public Add_Friend() {
-        // Required empty public constructor
+        // Required empty publics constructor
     }
 
     /**
@@ -193,7 +193,7 @@ public class Add_Friend extends Fragment implements FriendCallback{
         }
 //        btnLaunch.setOnClickListener(new View.OnClickListener() {
 //            @Override
-//            public void onClick(View v) {
+//            publics void onClick(View v) {
 //                final String cle = edtFindspot.getText().toString();
 //                View view = getActivity().getCurrentFocus();
 //                if (view != null) {
@@ -203,7 +203,7 @@ public class Add_Friend extends Fragment implements FriendCallback{
 //                if (!TextUtils.isEmpty(cle)) {
 //                    Thread t = new Thread(new Runnable() {
 //                        @Override
-//                        public void run() {
+//                        publics void run() {
 //                            users = server.getUsers_by_pseudo(cle);
 //                        }
 //                    });

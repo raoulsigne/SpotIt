@@ -74,7 +74,7 @@ public class NotificationActivity extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     public NotificationActivity() {
-        // Required empty public constructor
+        // Required empty publics constructor
     }
 
     /**

@@ -53,7 +53,7 @@ public class DetailSpot_New extends AppCompatActivity {
 
     public static final String V_MOI = "moi";
     public static final String V_FRIEND = "amis";
-    public static final String V_PUBLIC = "public";
+    public static final String V_PUBLIC = "publics";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,11 +115,11 @@ public class DetailSpot_New extends AppCompatActivity {
             public void onClick(View v) {
                 visibilite = V_MOI;
                 txtMoi.setTextColor(getResources().getColor(R.color.myblue));
-                txtAmis.setTextColor(getResources().getColor(R.color.noir));
-                txtPublic.setTextColor(getResources().getColor(R.color.noir));
+                txtAmis.setTextColor(getResources().getColor(R.color.titre_menu));
+                txtPublic.setTextColor(getResources().getColor(R.color.titre_menu));
 
-                vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi_active));
-                vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend));
+                vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi_clicked));
+                vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend_clicked));
                 vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.publics));
             }
         });
@@ -127,11 +127,12 @@ public class DetailSpot_New extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 visibilite = V_FRIEND;
-                txtMoi.setTextColor(getResources().getColor(R.color.noir));
+                txtMoi.setTextColor(getResources().getColor(R.color.titre_menu));
                 txtAmis.setTextColor(getResources().getColor(R.color.myblue));
-                txtPublic.setTextColor(getResources().getColor(R.color.noir));
+                txtPublic.setTextColor(getResources().getColor(R.color.titre_menu));
+
                 vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi));
-                vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend_active));
+                vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friends));
                 vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.publics));
             }
         });
@@ -139,12 +140,13 @@ public class DetailSpot_New extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 visibilite = V_PUBLIC;
-                txtMoi.setTextColor(getResources().getColor(R.color.noir));
-                txtAmis.setTextColor(getResources().getColor(R.color.noir));
+                txtMoi.setTextColor(getResources().getColor(R.color.titre_menu));
+                txtAmis.setTextColor(getResources().getColor(R.color.titre_menu));
                 txtPublic.setTextColor(getResources().getColor(R.color.myblue));
+
                 vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi));
-                vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend));
-                vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.publics_active));
+                vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend_clicked));
+                vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.public_clicked));
             }
         });
 
@@ -206,7 +208,7 @@ public class DetailSpot_New extends AppCompatActivity {
                             }
 
                             vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi));
-                            vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend));
+                            vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend_clicked));
                             vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.publics));
                         }
                         else {

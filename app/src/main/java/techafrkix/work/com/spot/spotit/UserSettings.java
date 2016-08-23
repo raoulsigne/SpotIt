@@ -45,7 +45,7 @@ public class UserSettings extends Fragment {
     private HashMap<String, String> profile;
 
     public UserSettings() {
-        // Required empty public constructor
+        // Required empty publics constructor
     }
 
     /**

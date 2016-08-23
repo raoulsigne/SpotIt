@@ -104,7 +104,7 @@ public class Welcome extends AppCompatActivity {
 //
 //        Thread t = new Thread(new Runnable() {
 //            @Override
-//            public void run() {
+//            publics void run() {
 //                spots = server.find_spot_user(Integer.valueOf(profile.get(SessionManager.KEY_ID)), 0, 10);
 //
 //                server.send_notification(Integer.valueOf(profile.get(SessionManager.KEY_ID)));

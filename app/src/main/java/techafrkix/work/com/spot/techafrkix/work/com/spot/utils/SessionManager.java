@@ -43,13 +43,13 @@ public class SessionManager {
     // All Shared Preferences Keys
     public static final String IS_LOGIN = "IsLoggedIn";
 
-    // User name (make variable public to access from outside)
+    // User name (make variable publics to access from outside)
     public static final String KEY_NAME = "pseudo";
 
-    // Email address (make variable public to access from outside)
+    // Email address (make variable publics to access from outside)
     public static final String KEY_EMAIL = "email";
 
-    // <user Id (make variable public to access from outside)
+    // <user Id (make variable publics to access from outside)
     public static final String KEY_ID = "id";
 
     // user number spot
@@ -67,10 +67,10 @@ public class SessionManager {
     // GCM registration id
     public static final String KEY_REGISTRATION_ID = "gcm_registration_id";
 
-    // <user Id (make variable public to access from outside)
+    // <user Id (make variable publics to access from outside)
     public static final String KEY_OFFSET = "offset";
 
-    // type connexion Id (make variable public to access from outside)
+    // type connexion Id (make variable publics to access from outside)
     public static final String KEY_TYPE_CONNEXION_ID = "type_connexion_id";
 
     // Constructor

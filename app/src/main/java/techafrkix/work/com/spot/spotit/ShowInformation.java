@@ -41,7 +41,7 @@ public class ShowInformation extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     public ShowInformation() {
-        // Required empty public constructor
+        // Required empty publics constructor
     }
 
     /**

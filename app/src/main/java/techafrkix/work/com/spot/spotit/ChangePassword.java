@@ -37,7 +37,7 @@ public class ChangePassword extends Fragment {
     private ImageView leftarrow;
 
     public ChangePassword() {
-        // Required empty public constructor
+        // Required empty publics constructor
     }
 
     /**

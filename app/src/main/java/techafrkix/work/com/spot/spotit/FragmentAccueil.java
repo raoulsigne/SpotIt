@@ -30,7 +30,7 @@ public class FragmentAccueil extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     public FragmentAccueil() {
-        // Required empty public constructor
+        // Required empty publics constructor
     }
 
     /**

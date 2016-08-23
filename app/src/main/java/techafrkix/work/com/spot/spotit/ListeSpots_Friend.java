@@ -82,7 +82,7 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
     private int preLast;
 
     public ListeSpots_Friend() {
-        // Required empty public constructor
+        // Required empty publics constructor
     }
 
     /**

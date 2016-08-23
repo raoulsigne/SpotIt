@@ -11,16 +11,26 @@
         android:layout_marginRight="10dp"
         android:layout_marginBottom="10dp"
         android:layout_centerHorizontal="true"
-        android:background="@color/myblue"
+        android:background="@drawable/button_blue"
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:radius="5dp">
+
+        <ImageView
+            android:id="@+id/clear"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:paddingLeft="5dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/clear" />
 
         <Button
             android:id="@+id/button"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
-            android:background="@color/myblue"
+            android:layout_toEndOf="@+id/clear"
+            android:layout_toRightOf="@+id/clear"
+            android:background="@drawable/button_blue"
             android:minWidth="0dp"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
@@ -29,15 +39,6 @@
             android:textAllCaps="false"
             android:textColor="@color/blanc"
             android:textSize="14sp" />
-
-        <ImageView
-            android:id="@+id/clear"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@+id/button"
-            android:layout_toRightOf="@+id/button"
-            android:src="@drawable/clear_btn" />
 
     </RelativeLayout>
 </LinearLayout>

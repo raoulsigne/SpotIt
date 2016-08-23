@@ -78,7 +78,7 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
     private OnFragmentInteractionListener mListener;
 
     public Account_Friend() {
-        // Required empty public constructor
+        // Required empty publics constructor
     }
 
     /**

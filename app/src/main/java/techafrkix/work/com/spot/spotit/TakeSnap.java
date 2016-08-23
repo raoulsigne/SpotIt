@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -197,18 +198,18 @@ public class TakeSnap extends Activity implements View.OnClickListener{
 
             txtAnnuler = new TextView(context);
             txtAnnuler.setTextColor(getResources().getColor(R.color.blanc));
-            txtAnnuler.setText("Annuler");
+            txtAnnuler.setText("Cancel");
             txtValider = new TextView(context);
             txtValider.setTextColor(getResources().getColor(R.color.blanc));
-            txtValider.setText("Valider");
+            txtValider.setText("  Done");
             linearLayout = new LinearLayout(context);
             linearLayout.setBackgroundColor(getResources().getColor(R.color.fondsnap));
             cameramode = new Button(context);
             cameramode.setBackground(getResources().getDrawable(R.drawable.ic_refresh_white_24dp));
             done = new Button(context);
-            done.setBackground(getResources().getDrawable(R.drawable.ic_done_white_24dp));
+            done.setBackground(getResources().getDrawable(R.drawable.done));
             clear = new Button(context);
-            clear.setBackground(getResources().getDrawable(R.drawable.ic_clear_white_24dp));
+            clear.setBackground(getResources().getDrawable(R.drawable.cancel));
             shutter.setBackground(getResources().getDrawable(R.drawable.round_button));
             addView(shutter);
             addView(done);
@@ -226,8 +227,8 @@ public class TakeSnap extends Activity implements View.OnClickListener{
 
             final PhotoHandler ph = new PhotoHandler(context, mCamera);
 
-//        if (mCamera != null)
-//            mCamera.setDisplayOrientation(90);
+//            if (mCamera != null)
+//                mCamera.setDisplayOrientation(90);
             //on prend une photo
             shutter.setOnClickListener(new OnClickListener() {
                 @Override
@@ -405,10 +406,13 @@ public class TakeSnap extends Activity implements View.OnClickListener{
                             (width + scaledChildWidth) / 2, height);
                     child1.layout(0, 0, 200, 200);
                 } else {
+                    Drawable d = getResources().getDrawable(R.drawable.done);
+                    int pixels_btn = d.getIntrinsicWidth();
+
                     //calcul de la taille des éléments en fonction des pixels (unité dp)
                     final float scale = getContext().getResources().getDisplayMetrics().density;
                     int pixels = (int) (40 * scale + 0.5f);
-                    int pixels_btn = (int) (30 * scale + 0.5f);
+                    //int pixels_btn = (int) (h_done * scale + 0.5f);
                     int padding = (int) (50 * scale + 0.5f);
                     int txt_width = (int) (45 * scale + 0.5f);
 
@@ -419,11 +423,11 @@ public class TakeSnap extends Activity implements View.OnClickListener{
                     //positionnement du bouton shutter
                     child1.layout(width/2-pixels, width+hauteur/2-pixels, width/2+pixels, width+hauteur/2+pixels);
                     //positionnement du bouton valider
-                    child2.layout(padding, width+hauteur/2 - pixels_btn, padding + pixels_btn, width+hauteur/2 + pixels_btn);
+                    child2.layout(padding, width+hauteur/2 - pixels_btn/2, padding + pixels_btn, width+hauteur/2 + pixels_btn/2);
                     //positionnement du texte du bouton valider
                     child6.layout(padding - txt_width/2 + pixels_btn/2, width+hauteur/2 + pixels_btn, padding + txt_width/2 + pixels_btn/2, width+hauteur/2 + 2*pixels_btn);
                     //positionnement du bouton annuler
-                    child3.layout(width - padding - pixels_btn, width+hauteur/2 - pixels_btn, width - padding, width+hauteur/2 + pixels_btn);
+                    child3.layout(width - padding - pixels_btn, width+hauteur/2 - pixels_btn/2, width - padding, width+hauteur/2 + pixels_btn/2);
                     //positionnement du texte du bouton annuler
                     child7.layout(width - padding - pixels_btn - txt_width/2 + pixels_btn/2, width+hauteur/2 + pixels_btn, width - padding + txt_width/2 + pixels_btn/2, width+hauteur/2 + 2*pixels_btn);
                     //positionnement du bouton de changement du mode de la camera

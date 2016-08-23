@@ -34,7 +34,7 @@ public class Search extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     public Search() {
-        // Required empty public constructor
+        // Required empty publics constructor
     }
 
     /**

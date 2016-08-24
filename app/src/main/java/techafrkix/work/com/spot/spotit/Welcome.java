@@ -16,6 +16,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ public class Welcome extends AppCompatActivity {
     private HashMap<String, String> profile;
     private DBServer server;
     private int friends;
+    private LatLng coordonnes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,24 @@ public class Welcome extends AppCompatActivity {
                 Color.WHITE, android.graphics.PorterDuff.Mode.SRC_IN);
 
         profile = session.getUserDetails();
+
+        Thread t3 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                coordonnes = server.get_coordinates("yaounde");
+            }});
+
+        t3.start(); // spawn thread
+        try{
+            t3.join();
+            if (coordonnes != null) {
+                Log.i("goecoding", coordonnes.toString());
+            } else {
+                Log.i("goecoding", "erreur dans la requete");
+            }
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         if (MapsActivity.isNetworkAvailable(this)) {
             loadSpots();  //chargement des spots

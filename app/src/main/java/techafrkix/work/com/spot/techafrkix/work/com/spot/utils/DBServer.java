@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,6 +40,9 @@ import techafrkix.work.com.spot.bd.Utilisateur;
  * Created by techafrkix0 on 23/05/2016.
  */
 public class DBServer {
+
+    private static final String URL_GEOCODING = "https://maps.googleapis.com/maps/api/geocode/json";
+    private static final String GOOGLE_KEY = "AIzaSyAt76Pcfr0uKwMgicAtyksRa6hkXyYKep0";
 
     private static final String BASE_URL = "https://spotitproject.herokuapp.com";
     private static final String API_KEY = "012YEYQS5653278GHQSD234671QSDF26";
@@ -2019,6 +2024,67 @@ public class DBServer {
         }
 
         return result.toString();
+    }
+
+
+    /**
+     * get the coordinates of an address from  google
+     * @param address adress to get coordinates
+     * @return couple of double representing LatLng object
+     */
+    public LatLng get_coordinates(String address) {
+        ArrayList<Spot> spots = new ArrayList<>();
+        LatLng result;
+
+        ContentValues values = new ContentValues();
+        values.put("key", GOOGLE_KEY);
+        values.put("address", address);
+        try {
+            url = new URL(URL_GEOCODING + "?" + getQuery(values));
+            client = (HttpURLConnection) url.openConnection();
+            client.setRequestMethod("GET");
+
+            StringBuilder builder = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                builder.append(line + "\n");
+            }
+            br.close();
+
+            Log.i("goecoding", builder.toString());
+
+            try {
+                JSONObject json = new JSONObject(builder.toString());
+                String statut = (String)json.getString("status");
+                if (statut.compareToIgnoreCase("OK") == 0) {
+                    JSONArray jArr = json.getJSONArray("results");
+                    JSONObject json2 = jArr.getJSONObject(0);
+                    JSONObject json3 = json2.getJSONObject("geometry");
+                    JSONObject json4 = json3.getJSONObject("location");
+                    return new LatLng((double)json4.get("lat"), (double)json4.get("lng"));
+                } else {
+                    return null;
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "JSONException " + e.getMessage());
+                return null;
+            }
+        } catch (MalformedURLException error) {
+            //Handles an incorrectly entered URL
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
+            return null;
+        } catch (SocketTimeoutException error) {
+            //Handles URL access timeout.
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
+            return null;
+        } catch (IOException error) {
+            //Handles input and output errors
+            Log.e(TAG, "IOException " + error.toString());
+            return null;
+        } finally {
+            client.disconnect();
+        }
     }
 
     /**

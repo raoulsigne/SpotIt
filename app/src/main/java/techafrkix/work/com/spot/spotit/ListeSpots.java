@@ -2,8 +2,13 @@ package techafrkix.work.com.spot.spotit;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -29,6 +34,7 @@ import java.util.Locale;
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.RealPathUtil;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
 public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback {
@@ -38,7 +44,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
 
     private ArrayList<Spot> spots;
     private Spot s;
-//    private HashMap<String, Bitmap> spotsimages;
+    //    private HashMap<String, Bitmap> spotsimages;
     private SpotAdapter adapter;
     private ListView listView;
 
@@ -159,8 +165,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                         }
                         //set the value of the offset that will be use next time
                         offset += PORTION_TELECHARGEABLE; //session.putOffset(offset + PORTION_TELECHARGEABLE);
-                        String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
-                        File folder = new File(dossier);
+                        File folder = new File(DBServer.DOSSIER_IMAGE);
                         if (!folder.exists())
                             folder.mkdirs();
 
@@ -176,7 +181,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                             final int currentPosition = offset - PORTION_TELECHARGEABLE;
 
                             for (final Spot s : spots) {
-                                final File file = new File(dossier + File.separator + s.getPhotokey() + ".jpg");
+                                final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + s.getPhotokey() + ".jpg");
                                 if (file.exists()) {
 //                                    spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
                                     barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
@@ -210,7 +215,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                                                     barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
 //                                                    spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
                                                 }
-                                            }else{
+                                            } else {
                                                 barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
                                             }
                                             if (barProgressDialog.getProgress() == spots.size()) {
@@ -246,8 +251,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                 e.printStackTrace();
             }
         } else {
-            final String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
-            final File folder = new File(dossier);
+            final File folder = new File(DBServer.DOSSIER_IMAGE);
             if (!folder.exists())
                 folder.mkdirs();
 
@@ -263,18 +267,13 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                 if (max > spots.size())
                     max = spots.size();
                 barProgressDialog.setMax(2 * (max - offset));
-                // get listview current position - used to maintain scroll position
                 final int currentPosition = offset;
-
                 for (int i = offset; i < max; i++) {
                     s = new Spot();
                     s = spots.get(i);
                     tampon.add(s);
-
-                    //photo du spot
-                    final File file = new File(dossier + File.separator + s.getPhotokey() + ".jpg");
+                    final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + s.getPhotokey() + ".jpg");
                     if (file.exists()) {
-//                        spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
                         barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
 
                         if (barProgressDialog.getProgress() == barProgressDialog.getMax()) {
@@ -296,6 +295,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                             public void onStateChanged(int id, TransferState state) {
                                 // do something
                             }
+
                             @Override
                             public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
                                 int rapport = (int) (bytesCurrent * 100);
@@ -303,9 +303,8 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                                     rapport /= bytesTotal;
                                     if (rapport == 100) {
                                         barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
-//                                        spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
                                     }
-                                }else{
+                                } else {
                                     barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
                                     tampon.remove(s);
                                 }
@@ -325,7 +324,6 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                             public void onError(int id, Exception ex) {
                                 // do something
 //                                barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
-//                                spotsimages.put(s.getPhotokey(), null);
                             }
 
                         });
@@ -333,7 +331,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
 
 
                     //photo de profile du spoteur
-                    final File file1 = new File(dossier + File.separator + s.getPhotouser() + ".jpg");
+                    final File file1 = new File(DBServer.DOSSIER_IMAGE + File.separator + s.getPhotouser() + ".jpg");
                     if (!file1.exists()) {
                         AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
                         int transfertId = aws_tools.download(file1, s.getPhotouser());
@@ -344,6 +342,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                             public void onStateChanged(int id, TransferState state) {
                                 // do something
                             }
+
                             @Override
                             public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
                                 int rapport = (int) (bytesCurrent * 100);
@@ -353,7 +352,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                                         barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
 //                                        spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
                                     }
-                                }else{
+                                } else {
                                     barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
                                 }
                                 if (barProgressDialog.getProgress() == barProgressDialog.getMax()) {
@@ -374,8 +373,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                             }
 
                         });
-                    }
-                    else {
+                    } else {
                         barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
                         if (barProgressDialog.getProgress() == barProgressDialog.getMax()) {
                             barProgressDialog.dismiss();
@@ -428,14 +426,28 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
     public void detail(int position) {
         if (type == 1) {
             mListener.onDetailSpot(spots.get(position));
-        }else {
+        } else {
             mListener.onDetailSpot(tampon.get(position));
         }
     }
 
     @Override
     public void share(int position) {
-        Toast.makeText(getActivity(), "Share " + position, Toast.LENGTH_SHORT).show();
+        Uri uriToImage;
+        if (type == 1) {
+            uriToImage = getImageContentUri(getActivity(), new File(DBServer.DOSSIER_IMAGE + File.separator + spots.get(position).getPhotokey() + ".jpg"));
+        } else {
+            uriToImage = getImageContentUri(getActivity(), new File(DBServer.DOSSIER_IMAGE + File.separator + tampon.get(position).getPhotokey() + ".jpg"));
+        }
+
+        // Open GooglePlay or use the default system picker
+        Log.i("uri", uriToImage.toString());
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
+        sendIntent.setType("image/*");
+        startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_to)));
+
     }
 
     @Override
@@ -445,7 +457,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
         if (type == 1) {
             uri = String.format(Locale.ENGLISH, "google.navigation:q=%f,%f&mode=d,w,b", Double.valueOf(spots.get(position).getLatitude()),
                     Double.valueOf(spots.get(position).getLongitude()));
-        }else {
+        } else {
             uri = String.format(Locale.ENGLISH, "google.navigation:q=%f,%f&mode=d,w,b", Double.valueOf(tampon.get(position).getLatitude()),
                     Double.valueOf(tampon.get(position).getLongitude()));
         }
@@ -467,6 +479,38 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onDetailSpot(Spot spot);
+
         void onLetsGo();
+    }
+
+
+    /**
+     * funcction which help to get uri from image file
+     *
+     * @param context
+     * @param imageFile image to get uri
+     * @return uri representing the requested image uri
+     */
+    public static Uri getImageContentUri(Context context, File imageFile) {
+        String filePath = imageFile.getAbsolutePath();
+        Cursor cursor = context.getContentResolver().query(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Images.Media._ID},
+                MediaStore.Images.Media.DATA + "=? ",
+                new String[]{filePath}, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            int id = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns._ID));
+            cursor.close();
+            return Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "" + id);
+        } else {
+            if (imageFile.exists()) {
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Images.Media.DATA, filePath);
+                return context.getContentResolver().insert(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            } else {
+                return null;
+            }
+        }
     }
 }

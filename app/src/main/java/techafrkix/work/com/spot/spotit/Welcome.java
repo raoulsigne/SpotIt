@@ -1,10 +1,9 @@
 package techafrkix.work.com.spot.spotit;
 
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.os.Environment;
 import android.os.Handler;
-import android.support.v4.content.IntentCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,15 +15,12 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import techafrkix.work.com.spot.bd.Spot;
-import techafrkix.work.com.spot.bd.SpotsDBAdapteur;
-import techafrkix.work.com.spot.bd.Utilisateur;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
@@ -40,7 +36,6 @@ public class Welcome extends AppCompatActivity {
     private HashMap<String, String> profile;
     private DBServer server;
     private int friends;
-    private LatLng coordonnes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,24 +54,6 @@ public class Welcome extends AppCompatActivity {
 
         profile = session.getUserDetails();
 
-        Thread t3 = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                coordonnes = server.get_coordinates("yaounde");
-            }});
-
-        t3.start(); // spawn thread
-        try{
-            t3.join();
-            if (coordonnes != null) {
-                Log.i("goecoding", coordonnes.toString());
-            } else {
-                Log.i("goecoding", "erreur dans la requete");
-            }
-        }catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         if (MapsActivity.isNetworkAvailable(this)) {
             loadSpots();  //chargement des spots
             loadAdditionnalUserInformation(); // chargement  des infos additionnelles
@@ -86,8 +63,7 @@ public class Welcome extends AppCompatActivity {
     }
 
     private void loadAdditionnalUserInformation() {
-        String dossier = getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
-        final File file = new File(dossier + File.separator + profile.get(SessionManager.KEY_PHOTO) + ".jpg");
+        final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + profile.get(SessionManager.KEY_PHOTO) + ".jpg");
         Log.i("moi", profile.get(SessionManager.KEY_PHOTO));
         Thread t = new Thread(new Runnable() {
             @Override
@@ -97,12 +73,6 @@ public class Welcome extends AppCompatActivity {
                     AWS_Tools aws_tools = new AWS_Tools(getApplicationContext());
                     aws_tools.download(file, profile.get(SessionManager.KEY_PHOTO));
                 }
-
-                //set device id
-//                if (profile.get(SessionManager.KEY_REGISTRATION_ID) != null)
-//                    server.set_device_id(Integer.valueOf(profile.get(SessionManager.KEY_ID)), profile.get(SessionManager.KEY_REGISTRATION_ID));
-//                else
-//                    Log.e("GCM", "registration id null");
             }
         });
 
@@ -114,29 +84,6 @@ public class Welcome extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
-    /**
-     * this version is running asynchronously to prevent the system to stuck on it
-     */
-//    private void loadSpots() {
-//
-//        spots = new ArrayList<>();
-//
-//        Thread t = new Thread(new Runnable() {
-//            @Override
-//            publics void run() {
-//                spots = server.find_spot_user(Integer.valueOf(profile.get(SessionManager.KEY_ID)), 0, 10);
-//
-//                server.send_notification(Integer.valueOf(profile.get(SessionManager.KEY_ID)));
-//            }
-//        });
-//
-//        t.start(); // spawn thread
-//
-//        Intent itmain = new Intent(getApplicationContext(), MainActivity.class);
-//        finish();
-//        startActivity(itmain);
-//    }
 
     private void loadSpots() {
 
@@ -156,15 +103,14 @@ public class Welcome extends AppCompatActivity {
                 if (spots.size() > 0) {
                     bar.setVisibility(View.VISIBLE);
                     bar.setMax(spots.size());
-                    String dossier = getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
-                    Log.i("Photo", dossier);
-                    File folder = new File(dossier);
+                    // String dossier = getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
+                    File folder = new File(DBServer.DOSSIER_IMAGE);
                     if (!folder.exists())
                         folder.mkdirs();
 
 
                     for (final Spot s : spots) {
-                        final File file = new File(dossier + File.separator + s.getPhotokey() + ".jpg");
+                        final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + s.getPhotokey() + ".jpg");
                         Log.i("test", file.getAbsolutePath());
                         AWS_Tools aws_tools = new AWS_Tools(getApplicationContext());
                         int transfertId = aws_tools.download(file, s.getPhotokey());

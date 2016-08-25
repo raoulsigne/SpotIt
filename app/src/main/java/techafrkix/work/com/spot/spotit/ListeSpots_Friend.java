@@ -138,8 +138,7 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
             txtspots.setText(friend.getNbspot() + " spots | " + friend.getNbrespot() + " respots");
             txtfriend.setText(friend.getNbfriends() + " friends");
             if (friend.getPhoto() != "") {
-                String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
-                final File file = new File(dossier + File.separator + friend.getPhoto() + ".jpg");
+                final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + friend.getPhoto() + ".jpg");
 
                 if (file.exists()) {
                     imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
@@ -295,8 +294,7 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
         try {
             t.join();
             Log.i("spots", spots.toString());
-            String dossier = getActivity().getApplicationContext().getFilesDir().getPath()+ DBServer.DOSSIER_IMAGE;
-            File folder = new File(dossier);
+            File folder = new File(DBServer.DOSSIER_IMAGE);
             if (!folder.exists())
                 folder.mkdirs();
 
@@ -313,9 +311,9 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
                 final int currentPosition = offset - PORTION_TELECHARGEABLE;
 
                 for (final Spot s : spots) {
-                    final File file = new File(dossier+ File.separator  + s.getPhotokey() + ".jpg");
+                    final File file = new File(DBServer.DOSSIER_IMAGE+ File.separator  + s.getPhotokey() + ".jpg");
                     if (file.exists()) {
-                        Log.i("file", "file exists " + dossier + s.getPhotokey() + ".jpg");
+                        Log.i("file", "file exists " + DBServer.DOSSIER_IMAGE + s.getPhotokey() + ".jpg");
                         spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
                         barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
                         if (barProgressDialog.getProgress() == spots.size()) {
@@ -393,7 +391,14 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
 
     @Override
     public void share(int position) {
-        Toast.makeText(getActivity(),"Share " + position, Toast.LENGTH_SHORT).show();
+        Uri uriToImage = ListeSpots.getImageContentUri(getActivity(), new File(DBServer.DOSSIER_IMAGE + File.separator + spots.get(position).getPhotokey() + ".jpg"));
+
+        Log.i("uri", uriToImage.toString());
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
+        sendIntent.setType("image/*");
+        startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_to)));
     }
 
     @Override

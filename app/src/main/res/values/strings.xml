@@ -61,6 +61,8 @@
     <string name="play_again_desc">To see the welcome slider again, goto Settings -> apps -> welcome slider -> clear data</string>
     <string name="play_again">Play Again</string>
 
+    <string name="send_to">Share image to...</string>
+
     <string name="loren_ipsum">
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse eleifend dui in turpis lobortis faucibus. Nam vitae bibendum libero, vitae egestas tellus. Aenean sollicitudin nunc nisl. Integer ut turpis in magna pharetra aliquet. Aliquam hendrerit semper elementum. Sed iaculis velit et nulla euismod, sit amet sagittis elit euismod. Vivamus dolor justo, euismod et placerat sed, porttitor sit amet est. Aenean finibus leo vitae nisi tristique, ut varius lacus fermentum. Vestibulum lectus nisl, mollis id mi id, malesuada vestibulum metus. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nam enim quam, accumsan ut sollicitudin sed, auctor et lacus. In in lectus tempor, dictum purus ac, laoreet purus. Nulla facilisi. In nec placerat enim. Maecenas eu eleifend leo. Sed ac dolor ullamcorper, condimentum dolor non, feugiat tortor.

@@ -74,7 +74,7 @@ public class DetailSpot extends Fragment {
     EditText edtComment;
     ImageView imgspot, imgprofile;
     ListView listView;
-    TextView txttag, txtdate, txtNbcomments, txtletgo;
+    TextView txttag, txtdate, txtNbcomments, txtletgo, txtshare;
     int resultat;
 
     Spot spot;
@@ -116,6 +116,7 @@ public class DetailSpot extends Fragment {
         txttag = (TextView) view.findViewById(R.id.txtTag);
         txtNbcomments = (TextView) view.findViewById(R.id.txtSpots);
         txtletgo = (TextView) view.findViewById(R.id.txtNavigation);
+        txtshare = (TextView) view.findViewById(R.id.txtshare);
         imgprofile = (ImageView) view.findViewById(R.id.profile_image);
         imgspot = (ImageView) view.findViewById(R.id.imgSpot);
         imgrespot = (ImageButton) view.findViewById(R.id.imgRespot);
@@ -201,6 +202,34 @@ public class DetailSpot extends Fragment {
             }
         });
 
+        imgshare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Uri uriToImage = ListeSpots.getImageContentUri(getActivity(), new File(DBServer.DOSSIER_IMAGE + File.separator + spot.getPhotokey() + ".jpg"));
+
+                Log.i("uri", uriToImage.toString());
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
+                sendIntent.setType("image/*");
+                startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_to)));
+            }
+        });
+
+        txtshare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Uri uriToImage = ListeSpots.getImageContentUri(getActivity(), new File(DBServer.DOSSIER_IMAGE + File.separator + spot.getPhotokey() + ".jpg"));
+
+                Log.i("uri", uriToImage.toString());
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
+                sendIntent.setType("image/*");
+                startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_to)));
+            }
+        });
+
         // Populate the data into the template view using the data object
         try {
             txtdate.setText(spot.getDate());
@@ -214,9 +243,8 @@ public class DetailSpot extends Fragment {
                 }
                 txttag.setText(chainetag.toString());
             }
-            ;
-            String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
-            final File file = new File(dossier + File.separator + spot.getPhotokey() + ".jpg");
+
+            final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + spot.getPhotokey() + ".jpg");
 
             if (!file.exists())
                 chargement_image(spot.getPhotokey());

@@ -142,8 +142,7 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
         });
 
         if (friend.getPhoto() != "") {
-            String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
-            final File file = new File(dossier + File.separator + friend.getPhoto() + ".jpg");
+            final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + friend.getPhoto() + ".jpg");
 
             if (file.exists()) {
                 // marker.showInfoWindow();

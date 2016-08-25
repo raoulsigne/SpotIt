@@ -522,10 +522,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     private void vidercache() {
         // Your directory with files to be deleted
-        String dossier = getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
 
         // go to your directory
-        File fileList = new File(dossier);
+        File fileList = new File(DBServer.DOSSIER_IMAGE);
 
         //check if dir is not null
         if (fileList != null) {

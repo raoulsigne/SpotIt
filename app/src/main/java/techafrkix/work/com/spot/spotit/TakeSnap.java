@@ -616,8 +616,7 @@ public class TakeSnap extends Activity implements View.OnClickListener{
         }
 
         private File getDir() {
-            String dossier = context.getFilesDir().getPath()+ DBServer.DOSSIER_IMAGE;
-            return new File(dossier);
+            return new File(DBServer.DOSSIER_IMAGE);
         }
     }
 

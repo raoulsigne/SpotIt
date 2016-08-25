@@ -2,6 +2,7 @@ package techafrkix.work.com.spot.techafrkix.work.com.spot.utils;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -74,7 +75,7 @@ public class DBServer {
     public static final int CONNEXION_NORMAL = 1;
 
     public static final int SUCCESS = 0;
-    public static final String DOSSIER_IMAGE = "/SpotItPictures/";
+    public static final String DOSSIER_IMAGE = Environment.getExternalStorageDirectory() + "/Pictures/SpotItPictures/";
 
     private static final String TAG = "DBServer";
 

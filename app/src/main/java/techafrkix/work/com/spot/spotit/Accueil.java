@@ -61,7 +61,5 @@ public class Accueil extends AppCompatActivity {
                 startActivity(itSignin);
             }
         });
-
-
     }
 }

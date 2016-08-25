@@ -131,11 +131,8 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
                 spotTag.setText(chainetag.toString());
             }
 
-            final String dossier = context.getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
-            final File folder = new File(dossier);
-
             //photo du spot
-            File file = new File(dossier + File.separator + spot.getPhotokey() + ".jpg");
+            File file = new File(DBServer.DOSSIER_IMAGE + File.separator + spot.getPhotokey() + ".jpg");
             if (file.exists()) {
                 Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
 
@@ -154,7 +151,7 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
             }
 
             //photo de profile du spoteur
-            final File file1 = new File(dossier + File.separator + spot.getPhotouser() + ".jpg");
+            final File file1 = new File(DBServer.DOSSIER_IMAGE + File.separator + spot.getPhotouser() + ".jpg");
             if (file1.exists()) {
                 Bitmap bitmap = BitmapFactory.decodeFile(file1.getAbsolutePath());
                 // marker.showInfoWindow();

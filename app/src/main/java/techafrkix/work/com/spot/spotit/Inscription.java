@@ -185,6 +185,7 @@ public class Inscription extends AppCompatActivity {
                                     // Use user real data
                                     session.createLoginSession(user.getPseudo(), user.getEmail(), USER_ID);
                                     startActivity(itmain);
+                                    finish();
                                 } else {
                                     Log.i("BD", "nouvel utilisateur non enregistré");
                                     Toast.makeText(getApplicationContext(),"Echec de l'enregistrement! vérifier la connexion",Toast.LENGTH_SHORT).show();
@@ -299,6 +300,7 @@ public class Inscription extends AppCompatActivity {
                                                         session.storeRegistrationId(utilisateur.getAndroidid());
 
                                                         startActivity(itmain); // déjà enregistré on démarre l'activité Welcome
+                                                        finish();
                                                     }
                                                     else { // on demande à l'utilisateur d'entrer ses identifiants pour l'en créer un compte
                                                         new AlertDialog.Builder(Inscription.this)
@@ -357,6 +359,7 @@ public class Inscription extends AppCompatActivity {
                                                                                 session.registerGCM();
 
                                                                                 startActivity(itmain);
+                                                                                finish();
                                                                             } else
                                                                                 Log.i("BD", "nouvel utilisateur non enregistré");
                                                                         }catch (InterruptedException e) {

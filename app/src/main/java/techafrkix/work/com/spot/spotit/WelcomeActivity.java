@@ -93,6 +93,7 @@ public class WelcomeActivity extends AppCompatActivity {
         });
 
         btnStart.setVisibility(View.INVISIBLE);
+        btnSkip.setVisibility(View.INVISIBLE);
     }
 
     private void addBottomDots(int currentPage) {
@@ -141,13 +142,13 @@ public class WelcomeActivity extends AppCompatActivity {
             if (position == layouts.length - 1) {
                 // last page. make button text to GOT IT
                 btnNext.setVisibility(View.GONE);
-                btnSkip.setVisibility(View.GONE);
+                // btnSkip.setVisibility(View.GONE);
                 btnStart.setVisibility(View.VISIBLE);
                 dotsLayout.setVisibility(View.GONE);
             } else {
                 // still pages are left
                 btnNext.setVisibility(View.VISIBLE);
-                btnSkip.setVisibility(View.VISIBLE);
+                // btnSkip.setVisibility(View.VISIBLE);
                 btnStart.setVisibility(View.GONE);
                 dotsLayout.setVisibility(View.VISIBLE);
             }

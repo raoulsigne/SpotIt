@@ -354,7 +354,7 @@ public class NotificationActivity extends Fragment {
 
             switch (notificationEntities[position].getTypenotification_id()){
                 case TYPE_SPOT:
-                    // filter = new LightingColorFilter( Color.rgb(243, 156, 18), Color.rgb(243, 156, 18));
+                    // filter = new LightingColorFilter( Color.rgb(0, 112, 192), Color.rgb(0, 112, 192));
                     icon.setImageResource(R.drawable.spot_icon);
                     // icon.setColorFilter(filter);
                     break;

@@ -42,21 +42,26 @@
     <string name="viewprofile">View profile</string>
 
     <string name="title_activity_welcome">Home Screen</string>
-    <string name="next">NEXT</string>
-    <string name="skip">SKIP</string>
-    <string name="start">GOT IT</string>
+    <string name="next">Next</string>
+    <string name="skip">Pass</string>
+    <string name="start">Let\'s spot</string>
 
-    <string name="slide_1_title">Hello Food!</string>
-    <string name="slide_1_desc">The easiest way to order food from your favourite restaurant!</string>
+    <string name="slide_1_title">Spot It!</string>
+    <string name="slide_1_desc">Share yout favorite spot</string>
+    <string name="slide_11_desc">A spot is a located and dated picture</string>
 
-    <string name="slide_2_title">Movie Tickets</string>
-    <string name="slide_2_desc">Book movie tickets for your family and friends!</string>
+    <string name="slide_2_title">Search Spots</string>
+    <string name="slide_2_desc">Search &amp; consult spots all around the world</string>
+    <string name="slide_21_desc">Search spots with tags and localisation Touch spots to consult them</string>
+    <string name="slide_22_desc">Spots are created by the community only</string>
 
-    <string name="slide_3_title">Great Discounts</string>
-    <string name="slide_3_desc">Best discounts on every single service we offer!</string>
+    <string name="slide_3_title">Spot</string>
+    <string name="slide_3_desc">Take a picture of a place to make instantly a new spot</string>
+    <string name="slide_31_desc">Anyplace could be spotted</string>
 
-    <string name="slide_4_title">World Travel</string>
-    <string name="slide_4_desc">Book tickets of any transportation and travel the world!</string>
+    <string name="slide_4_title">Share your Spots</string>
+    <string name="slide_4_desc">Share your spots with your friend or the community</string>
+    <string name="slide_41_desc">You choose the audience for your spots</string>
 
     <string name="play_again_desc">To see the welcome slider again, goto Settings -> apps -> welcome slider -> clear data</string>
     <string name="play_again">Play Again</string>

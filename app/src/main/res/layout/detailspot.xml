@@ -86,7 +86,10 @@
                         android:layout_width="wrap_content"
                         android:layout_gravity="center"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/ovalcamera" />
+                        android:src="@drawable/respot"
+                        android:padding="12dp"
+                        android:background="@drawable/custom_shape"
+                        android:layout_marginBottom="-5dp"/>
 
                     <TextView
                         android:id="@+id/txtMySpot"
@@ -98,8 +101,9 @@
                         android:text="Respot"
                         android:textAlignment="center"
                         android:textColor="@color/blanc"
-                        android:textSize="15sp"
-                        android:background="@drawable/badge"/>
+                        android:textSize="11sp"
+                        android:background="@drawable/badge"
+                        android:layout_marginBottom="5dp"/>
                 </LinearLayout>
 
             </RelativeLayout>

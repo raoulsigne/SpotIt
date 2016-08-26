@@ -5,11 +5,13 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
@@ -38,6 +40,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
@@ -207,12 +210,25 @@ public class DetailSpot extends Fragment {
             public void onClick(View view) {
                 Uri uriToImage = ListeSpots.getImageContentUri(getActivity(), new File(DBServer.DOSSIER_IMAGE + File.separator + spot.getPhotokey() + ".jpg"));
 
-                Log.i("uri", uriToImage.toString());
-                Intent sendIntent = new Intent();
-                sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
-                sendIntent.setType("image/*");
-                startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_to)));
+                List<Intent> targetedShareIntents = new ArrayList<Intent>();
+
+                Intent facebookIntent = getShareIntent("facebook", "spot it", uriToImage);
+                if(facebookIntent != null)
+                    targetedShareIntents.add(facebookIntent);
+
+                Intent twitterIntent = getShareIntent("twitter", "spot it", uriToImage);
+                if(twitterIntent != null)
+                    targetedShareIntents.add(twitterIntent);
+
+                Intent gmailIntent = getShareIntent("gmail", "spot it", uriToImage);
+                if(gmailIntent != null)
+                    targetedShareIntents.add(gmailIntent);
+
+                Intent chooser = Intent.createChooser(targetedShareIntents.remove(0), getResources().getText(R.string.send_to));
+
+                chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
+
+                startActivity(chooser);
             }
         });
 
@@ -221,12 +237,25 @@ public class DetailSpot extends Fragment {
             public void onClick(View view) {
                 Uri uriToImage = ListeSpots.getImageContentUri(getActivity(), new File(DBServer.DOSSIER_IMAGE + File.separator + spot.getPhotokey() + ".jpg"));
 
-                Log.i("uri", uriToImage.toString());
-                Intent sendIntent = new Intent();
-                sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
-                sendIntent.setType("image/*");
-                startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_to)));
+                List<Intent> targetedShareIntents = new ArrayList<Intent>();
+
+                Intent facebookIntent = getShareIntent("facebook", "spot it", uriToImage);
+                if(facebookIntent != null)
+                    targetedShareIntents.add(facebookIntent);
+
+                Intent twitterIntent = getShareIntent("twitter", "spot it", uriToImage);
+                if(twitterIntent != null)
+                    targetedShareIntents.add(twitterIntent);
+
+                Intent gmailIntent = getShareIntent("gmail", "spot it", uriToImage);
+                if(gmailIntent != null)
+                    targetedShareIntents.add(gmailIntent);
+
+                Intent chooser = Intent.createChooser(targetedShareIntents.remove(0), getResources().getText(R.string.send_to));
+
+                chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
+
+                startActivity(chooser);
             }
         });
 
@@ -401,6 +430,34 @@ public class DetailSpot extends Fragment {
         loadComment();
 
         return view;
+    }
+
+    private Intent getShareIntent(String type, String subject, Uri uri)
+    {
+        boolean found = false;
+        Intent share = new Intent(android.content.Intent.ACTION_SEND);
+        share.setType("image/*");
+
+        // gets the list of intents that can be loaded.
+        List<ResolveInfo> resInfo = getActivity().getPackageManager().queryIntentActivities(share, 0);
+        System.out.println("resinfo: " + resInfo);
+        if (!resInfo.isEmpty()){
+            for (ResolveInfo info : resInfo) {
+                if (info.activityInfo.packageName.toLowerCase().contains(type) ||
+                        info.activityInfo.name.toLowerCase().contains(type) ) {
+                    share.putExtra(Intent.EXTRA_SUBJECT,  subject);
+                    share.putExtra(Intent.EXTRA_STREAM,     uri);
+                    share.setPackage(info.activityInfo.packageName);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                return null;
+
+            return share;
+        }
+        return null;
     }
 
     @Override

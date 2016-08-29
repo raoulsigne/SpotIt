@@ -968,6 +968,8 @@ public class DBServer {
                 if (statut == 1) {
                     builder.append("statut = " + json.getString("statut"));
                     builder.append("insertId = " + json.getString("insertId"));
+
+                    return Integer.valueOf(json.getString("insertId"));
                 } else {
                     builder.append("statut = " + json.getString("statut") + "\n");
                     builder.append("errcode = " + json.getString("errcode") + "\n");

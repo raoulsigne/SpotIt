@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private DBServer server;
 
     ImageButton imgHome, imgNew, imgAccount;
-    TextView txtHome, txtNew, txtAccount;
+//    TextView txtHome, txtNew, txtAccount;
     TextView notif_count;
     LinearLayout groupeHome, groupeNewspot, groupeAccount;
 
@@ -135,9 +135,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         imgHome = (ImageButton) findViewById(R.id.imgHome);
         imgNew = (ImageButton) findViewById(R.id.imgAdd);
         imgAccount = (ImageButton) findViewById(R.id.imgAccount);
-        txtHome = (TextView) findViewById(R.id.txtHome);
-        txtNew = (TextView) findViewById(R.id.txtAdd);
-        txtAccount = (TextView) findViewById(R.id.txtAccount);
+        // txtHome = (TextView) findViewById(R.id.txtHome);
+        // txtNew = (TextView) findViewById(R.id.txtAdd);
+        // txtAccount = (TextView) findViewById(R.id.txtAccount);
         groupeHome = (LinearLayout)findViewById(R.id.groupeHome);
         groupeNewspot = (LinearLayout)findViewById(R.id.groupeNewspot);
         groupeAccount = (LinearLayout)findViewById(R.id.groupeAccount);
@@ -168,15 +168,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             mGoogleApiClient.connect();
         } else
             Log.i("Map", "Not connected...");
-
-        //add the main map fragment
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.container, fgAccueil, "ACCUEIL")
-                .commit();
-        menuactif = MENU_ACTIF_HOME;
-        setAciveTab(MENU_ACTIF_HOME);
-
-        CheckEnableGPS();
 
         imgHome.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -244,6 +235,35 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             }
 
         });
+
+        if (getIntent().getExtras() != null) {
+            try {
+                Bundle extras = getIntent().getExtras();
+                Spot spot = new Spot();
+                spot = (Spot) extras.getSerializable("spot");
+                onDetailSpot(spot);
+                setAciveTab(MENU_ACTIF_ACCOUNT);
+
+            } catch (Exception e) {
+                //add the main map fragment
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.container, fgAccueil, "ACCUEIL")
+                        .commit();
+                menuactif = MENU_ACTIF_HOME;
+                setAciveTab(MENU_ACTIF_HOME);
+
+                CheckEnableGPS();
+            }
+        }else {
+            //add the main map fragment
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, fgAccueil, "ACCUEIL")
+                    .commit();
+            menuactif = MENU_ACTIF_HOME;
+            setAciveTab(MENU_ACTIF_HOME);
+
+            CheckEnableGPS();
+        }
     }
 
     public static Context getAppContext() {
@@ -779,9 +799,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 imgHome.setBackground(getResources().getDrawable(R.drawable.world_clicked));
                 imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
                 imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
-                txtHome.setTextColor(getResources().getColor(R.color.myblue));
-                txtNew.setTextColor(getResources().getColor(R.color.titre_menu));
-                txtAccount.setTextColor(getResources().getColor(R.color.titre_menu));
+                // txtHome.setTextColor(getResources().getColor(R.color.myblue));
+                // txtNew.setTextColor(getResources().getColor(R.color.titre_menu));
+                // txtAccount.setTextColor(getResources().getColor(R.color.titre_menu));
 
                 break;
             case MENU_ACTIF_SOCIAL:
@@ -789,9 +809,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 imgHome.setBackground(getResources().getDrawable(R.drawable.world));
                 imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
                 imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
-                txtHome.setTextColor(getResources().getColor(R.color.titre_menu));
-                txtNew.setTextColor(getResources().getColor(R.color.titre_menu));
-                txtAccount.setTextColor(getResources().getColor(R.color.titre_menu));
+                // txtHome.setTextColor(getResources().getColor(R.color.titre_menu));
+                // txtNew.setTextColor(getResources().getColor(R.color.titre_menu));
+                // txtAccount.setTextColor(getResources().getColor(R.color.titre_menu));
 
                 break;
 
@@ -800,9 +820,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 imgHome.setBackground(getResources().getDrawable(R.drawable.world));
                 imgNew.setBackground(getResources().getDrawable(R.drawable.spot_clicked));
                 imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
-                txtHome.setTextColor(getResources().getColor(R.color.titre_menu));
-                txtNew.setTextColor(getResources().getColor(R.color.myblue));
-                txtAccount.setTextColor(getResources().getColor(R.color.titre_menu));
+                // txtHome.setTextColor(getResources().getColor(R.color.titre_menu));
+                // txtNew.setTextColor(getResources().getColor(R.color.myblue));
+                // txtAccount.setTextColor(getResources().getColor(R.color.titre_menu));
 
                 break;
             case MENU_ACTIF_NOTIFICATION:
@@ -810,9 +830,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 imgHome.setBackground(getResources().getDrawable(R.drawable.world));
                 imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
                 imgAccount.setBackground(getResources().getDrawable(R.drawable.setting));
-                txtHome.setTextColor(getResources().getColor(R.color.titre_menu));
-                txtNew.setTextColor(getResources().getColor(R.color.titre_menu));
-                txtAccount.setTextColor(getResources().getColor(R.color.titre_menu));
+                // txtHome.setTextColor(getResources().getColor(R.color.titre_menu));
+                // txtNew.setTextColor(getResources().getColor(R.color.titre_menu));
+                // txtAccount.setTextColor(getResources().getColor(R.color.titre_menu));
 
                 break;
             case MENU_ACTIF_ACCOUNT:
@@ -820,9 +840,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 imgHome.setBackground(getResources().getDrawable(R.drawable.world));
                 imgNew.setBackground(getResources().getDrawable(R.drawable.spot));
                 imgAccount.setBackground(getResources().getDrawable(R.drawable.setting_clicked));
-                txtHome.setTextColor(getResources().getColor(R.color.titre_menu));
-                txtNew.setTextColor(getResources().getColor(R.color.titre_menu));
-                txtAccount.setTextColor(getResources().getColor(R.color.myblue));
+                // txtHome.setTextColor(getResources().getColor(R.color.titre_menu));
+                // txtNew.setTextColor(getResources().getColor(R.color.titre_menu));
+                // txtAccount.setTextColor(getResources().getColor(R.color.myblue));
 
                 break;
         }

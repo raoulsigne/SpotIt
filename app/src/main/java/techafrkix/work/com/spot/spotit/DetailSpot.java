@@ -296,8 +296,7 @@ public class DetailSpot extends Fragment {
 
         if (friend != null) {
             if (friend.getPhoto() != null & friend.getPhoto() != "") {
-                String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
-                final File file = new File(dossier + File.separator + friend.getPhoto() + ".jpg");
+                final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + friend.getPhoto() + ".jpg");
 
                 if (file.exists()) {
                     // marker.showInfoWindow();
@@ -362,8 +361,7 @@ public class DetailSpot extends Fragment {
             }
         }
         else if (spot.getPhotouser() != null & spot.getPhotouser() != "") {
-            String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
-            final File file = new File(dossier + File.separator + spot.getPhotouser() + ".jpg");
+            final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + spot.getPhotouser() + ".jpg");
 
             if (file.exists()) {
                 // marker.showInfoWindow();
@@ -536,8 +534,7 @@ public class DetailSpot extends Fragment {
     }
 
     public void chargement_image(String photokey){
-        String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
-        final File file = new File(dossier + File.separator + photokey + ".jpg");
+        final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + photokey + ".jpg");
 
         AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
         final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
@@ -626,8 +623,7 @@ class CommentAdapter extends ArrayAdapter<Commentaire> {
         txtnom.setText(commentaire.getPseudo());
         txttemps.setText(commentaire.getCreated());
         if (commentaire.getPhotokey() != "") {
-            String dossier = context.getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
-            final File file = new File(dossier + File.separator + commentaire.getPhotokey() + ".jpg");
+            final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + commentaire.getPhotokey() + ".jpg");
 
             if (file.exists()) {
                 photoprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));

@@ -19,7 +19,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="50dp"
-                android:background="@drawable/logospotitblue112"/>
+                android:background="@drawable/wt1"/>
 
             <TextView
                 android:id="@+id/titre"
@@ -129,6 +129,7 @@
                     android:src="@drawable/facebook1" />
 
                 <com.facebook.login.widget.LoginButton
+                    xmlns:facebook="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/login_button"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
@@ -138,7 +139,9 @@
                     android:textSize="15sp"
                     android:textStyle="bold"
                     android:textColor="@color/mainblue"
-                    android:background="@color/blanc"/>
+                    android:background="@color/blanc"
+                    facebook:com_facebook_login_text="Log in with Facebook"
+                    facebook:com_facebook_logout_text="Log out"/>
 
             </RelativeLayout>
 

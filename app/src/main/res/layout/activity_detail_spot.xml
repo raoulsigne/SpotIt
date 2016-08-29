@@ -107,7 +107,7 @@
                         android:layout_height="40dp"
                         android:layout_gravity="center_horizontal"
                         android:id="@+id/visibiliteFriend"
-                        android:background="@drawable/friend"/>
+                        android:background="@drawable/friend_clicked"/>
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

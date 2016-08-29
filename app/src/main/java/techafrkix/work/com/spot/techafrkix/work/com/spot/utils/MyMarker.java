@@ -5,19 +5,21 @@ package techafrkix.work.com.spot.techafrkix.work.com.spot.utils;
  */
 public class MyMarker {
 
+    private int mSpot_ID;
     private String mDate;
     private String mGeohash;
     private String mIcon;
     private Double mLatitude;
     private Double mLongitude;
 
-    public MyMarker(String date, String geohash, String icon, Double latitude, Double longitude)
+    public MyMarker(String date, String geohash, String icon, Double latitude, Double longitude, int spot_id)
     {
         this.mDate = date;
         this.mGeohash = geohash;
         this.mLatitude = latitude;
         this.mLongitude = longitude;
         this.mIcon = icon;
+        this.mSpot_ID = spot_id;
     }
 
     public String getmDate() {
@@ -58,5 +60,13 @@ public class MyMarker {
 
     public void setmLongitude(Double mLongitude) {
         this.mLongitude = mLongitude;
+    }
+
+    public int getmSpot_ID() {
+        return mSpot_ID;
+    }
+
+    public void setmSpot_ID(int mSpot_ID) {
+        this.mSpot_ID = mSpot_ID;
     }
 }

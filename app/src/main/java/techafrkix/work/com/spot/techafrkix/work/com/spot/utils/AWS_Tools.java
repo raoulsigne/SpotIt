@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -26,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.spotit.MainActivity;
 
 /**
@@ -63,6 +65,68 @@ public class AWS_Tools {
 
         //Instantiate TransferUtility
         transferUtility = new TransferUtility(s3, context);
+    }
+
+    public void uploadPhoto(File photo, String OBJECT_KEY, final Spot spot){
+        ObjectMetadata myObjectMetadata = new ObjectMetadata();
+        final ProgressDialog barProgressDialog = new ProgressDialog(context);
+        barProgressDialog.setTitle("Upload on server ...");
+        barProgressDialog.setMessage("In progress ...");
+        barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
+        barProgressDialog.setProgress(0);
+        barProgressDialog.setMax(MAX_VALUE);
+        barProgressDialog.show();
+        //create a map to store user metadata
+        Map<String, String> userMetadata = new HashMap<String,String>();
+
+        //call setUserMetadata on our ObjectMetadata object, passing it our map
+        myObjectMetadata.setUserMetadata(userMetadata);
+        TransferObserver observer = transferUtility.upload(
+                MY_BUCKET,     /* The bucket to upload to */
+                OBJECT_KEY,    /* The key for the uploaded object */
+                photo,        /* The file where the data to upload exists */
+                myObjectMetadata  /* The ObjectMetadata associated with the object*/
+        );
+        observer.setTransferListener(new TransferListener() {
+
+            @Override
+            public void onStateChanged(int id, TransferState state) {
+
+            }
+
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                if (bytesTotal != 0) {
+                    int rapport = (int) (bytesCurrent * 100);
+                    rapport /= bytesTotal;
+                    Log.i("upload", "pourcentage " + rapport + " variable statique " + RAPPORT_PROGRESSION);
+                    //Display percentage transfered to user
+                    barProgressDialog.setProgress(rapport);
+                    if (rapport == MAX_VALUE) {
+                        if (RAPPORT_PROGRESSION == 0) {
+                            RAPPORT_PROGRESSION = 1;
+                            barProgressDialog.dismiss();
+                            Toast.makeText(context, "Opération terminée", Toast.LENGTH_SHORT).show();
+
+                            Bundle args = new Bundle();
+                            args.putSerializable("spot", spot);
+                            Intent mainintent = new Intent(context, MainActivity.class);
+                            mainintent.putExtras(args);
+                            ((Activity) context).finish();
+                            context.startActivity(mainintent);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onError(int id, Exception ex) {
+                // do something
+                barProgressDialog.dismiss();
+                Toast.makeText(context, "Une erreur est survenue", Toast.LENGTH_SHORT).show();
+            }
+
+        });
     }
 
     public void uploadPhoto(File photo, String OBJECT_KEY){

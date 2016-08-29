@@ -1,5 +1,7 @@
 package techafrkix.work.com.spot.spotit;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -76,6 +78,7 @@ public class DetailSpot_New extends AppCompatActivity {
         Log.i("Photo", imagepath);
 
         Button valider = (Button)findViewById(R.id.btnValider);
+        Button annuler = (Button)findViewById(R.id.btnAnnuler);
         final ImageButton vMoi = (ImageButton)findViewById(R.id.visibiliteMoi);
         final ImageButton vFriend = (ImageButton)findViewById(R.id.visibiliteFriend);
         final ImageButton vPublic = (ImageButton)findViewById(R.id.visibilitePublic);
@@ -150,6 +153,15 @@ public class DetailSpot_New extends AppCompatActivity {
             }
         });
 
+        annuler.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent mainintent = new Intent(getApplicationContext(), MainActivity.class);
+                finish();
+                startActivity(mainintent);
+            }
+        });
+
         valider.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -175,6 +187,7 @@ public class DetailSpot_New extends AppCompatActivity {
                     spot.setGeohash(geoHash.getHash());
                     spot.setPhotokey(temps);
                     spot.setUser_id(Integer.valueOf(profile.get(SessionManager.KEY_ID)));
+                    spot.setPhotouser(profile.get(SessionManager.KEY_PHOTO));
 
                     //stockage du spot dans la BD embarqué
                     Thread t = new Thread(new Runnable() {
@@ -186,22 +199,23 @@ public class DetailSpot_New extends AppCompatActivity {
                     t.start(); // spawn thread
                     try {
                         t.join();
-                        if (cle == DBServer.SUCCESS) {
+                        if (cle > -1) {
+                            spot.setId(cle);
                             session.increment_nbspot(); // increment the number of spots
 
                             //stockage de la photo sur le serveur amazon
                             try {
-                                File folder = new File(getApplicationContext().getFilesDir().getPath()+"/SpotItPictures/");
+                                File folder = new File(DBServer.DOSSIER_IMAGE);
                                 if (!folder.exists())
                                     folder.mkdirs();
-                                File file = new File(getApplicationContext().getFilesDir().getPath()+"/SpotItPictures/"+temps+".jpg");
+                                File file = new File(DBServer.DOSSIER_IMAGE + temps + ".jpg");
                                 OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
                                 Bitmap bitmap = BitmapFactory.decodeFile(imagepath);
                                 Bitmap resized = Bitmap.createScaledBitmap(bitmap, 800, 800, true);
                                 resized.compress(Bitmap.CompressFormat.JPEG, 50, os);
                                 os.close();
                                 aws_tools = new AWS_Tools(DetailSpot_New.this);
-                                aws_tools.uploadPhoto(file, temps);
+                                aws_tools.uploadPhoto(file, temps, spot);
                             }catch (Exception e)
                             {
                                 Log.e("file", e.getMessage());

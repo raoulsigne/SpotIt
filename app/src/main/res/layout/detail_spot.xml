@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/address"
             android:text="Latitude"
-            android:textSize="15sp"
+            android:textSize="14sp"
             android:textColor="@color/noir"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"/>
@@ -34,9 +34,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="textStart"
+            android:gravity="start"
             android:layout_toRightOf="@id/address"
             android:id="@+id/latitude"
-            android:textSize="15sp"
+            android:textSize="14sp"
             android:layout_centerVertical="true"/>
     </RelativeLayout>
 
@@ -50,7 +51,7 @@
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:text="Longitude"
-            android:textSize="15sp"
+            android:textSize="14sp"
             android:id="@+id/txtlng"
             android:textColor="@color/noir"
             android:layout_alignParentLeft="true"
@@ -60,8 +61,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="textStart"
+            android:gravity="start"
             android:id="@+id/longitude"
-            android:textSize="15sp"
+            android:textSize="14sp"
             android:layout_toRightOf="@id/txtlng"
             android:layout_centerVertical="true"/>
     </RelativeLayout>
@@ -77,7 +79,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/label"
             android:text="Date"
-            android:textSize="15sp"
+            android:textSize="14sp"
             android:textColor="@color/noir"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"/>
@@ -85,7 +87,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="textStart"
-            android:textSize="15sp"
+            android:gravity="start"
+            android:textSize="14sp"
             android:layout_toRightOf="@id/label"
             android:id="@+id/dateSpot"/>
     </RelativeLayout>
@@ -98,7 +101,7 @@
 
         <Button
             android:layout_width="150dp"
-            android:layout_height="30dp"
+            android:layout_height="25dp"
             android:text="Re-spoter"
             android:id="@+id/btnRespoter"
             android:layout_gravity="center_horizontal"
@@ -106,7 +109,7 @@
             android:alpha="1"
             android:textColor="#FFFFFF"
             android:textAllCaps="false"
-            android:textSize="16sp"
+            android:textSize="12sp"
             style="?android:attr/borderlessButtonStyle"
             android:layout_marginRight="10dp"
             android:layout_alignParentLeft="true"
@@ -114,7 +117,7 @@
 
         <Button
             android:layout_width="150dp"
-            android:layout_height="30dp"
+            android:layout_height="25dp"
             android:text="Fermer"
             android:id="@+id/btnFermer"
             android:layout_gravity="center_horizontal"
@@ -122,7 +125,7 @@
             android:alpha="1"
             android:textColor="#FFFFFF"
             android:textAllCaps="false"
-            android:textSize="16sp"
+            android:textSize="12sp"
             style="?android:attr/borderlessButtonStyle"
             android:layout_alignParentRight="true"/>
 

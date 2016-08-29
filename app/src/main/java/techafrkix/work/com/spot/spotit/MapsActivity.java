@@ -108,6 +108,9 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
 
     DownloadSpotsTask task;
 
+    int resultat;
+    int current_spot_id;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -158,16 +161,15 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
                     Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
                     if (location != null) {
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                                new LatLng(location.getLatitude(), location.getLongitude()), 13));
+                        mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
 
-                        CameraPosition cameraPosition = new CameraPosition.Builder()
-                                .target(new LatLng(location.getLatitude(), location.getLongitude()))      // Sets the center of the map to location user
-                                .zoom(17)                   // Sets the zoom
-                                //.bearing(90)                // Sets the orientation of the camera to east
-                                //.tilt(40)                   // Sets the tilt of the camera to 30 degrees
-                                .build();                   // Creates a CameraPosition from the builder
-                        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+//                        CameraPosition cameraPosition = new CameraPosition.Builder()
+//                                .target(new LatLng(location.getLatitude(), location.getLongitude()))      // Sets the center of the map to location user
+//                                .zoom(17)                   // Sets the zoom
+//                                //.bearing(90)                // Sets the orientation of the camera to east
+//                                //.tilt(40)                   // Sets the tilt of the camera to 30 degrees
+//                                .build();                   // Creates a CameraPosition from the builder
+//                        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
                     } else
                         Log.i("test", "location null");
@@ -237,10 +239,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
         mMap = googleMap;
         mMap.setOnMapLoadedCallback(this);
         UiSettings settings = mMap.getUiSettings();
-//        settings.setCompassEnabled(true);
-//        settings.setIndoorLevelPickerEnabled(true);
-//        settings.setMapToolbarEnabled(true);
-//        settings.setAllGesturesEnabled(true);
         settings.setMyLocationButtonEnabled(false);
 
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -263,8 +261,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
             @Override
             public boolean onMarkerClick(final com.google.android.gms.maps.model.Marker marker) {
                 final MyMarker myMarker = mMarkersHashMap.get(marker);
-                String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
-                final File file = new File(dossier + File.separator + myMarker.getmIcon() + ".jpg");
+                final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + myMarker.getmIcon() + ".jpg");
+                current_spot_id = myMarker.getmSpot_ID();
 
                 if (file.exists()) {
                     // marker.showInfoWindow();
@@ -456,7 +454,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
         if (mLastLocation != null) {
             Log.i("map", "Latitude: " + String.valueOf(mLastLocation.getLatitude()) + " Longitude: " +
                     String.valueOf(mLastLocation.getLongitude()));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 14));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
             middle = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
 //            displaySpotOnMap(0);
         }
@@ -492,35 +490,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
         Log.i("map", "connexion failed");
     }
 
-    public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
-
-        public MarkerInfoWindowAdapter() {
-        }
-
-        @Override
-        public View getInfoWindow(Marker marker) {
-            return null;
-        }
-
-        @Override
-        public View getInfoContents(Marker marker) {
-            View v = getActivity().getLayoutInflater().inflate(R.layout.infomarker, null);
-
-            final MyMarker myMarker = mMarkersHashMap.get(marker);
-
-            final ImageView markerIcon = (ImageView) v.findViewById(R.id.marker_icon);
-            final TextView markerDate = (TextView) v.findViewById(R.id.marker_date);
-            final TextView markerGeohash = (TextView) v.findViewById(R.id.marker_geohash);
-
-
-            markerIcon.setImageBitmap(BitmapFactory.decodeFile(getActivity().getFilesDir().getPath() + "/Images/" + myMarker.getmIcon() + ".jpg"));
-            markerDate.setText(myMarker.getmDate());
-            markerGeohash.setText(myMarker.getmGeohash());
-
-            return v;
-        }
-    }
-
     private void showdialogMarker(MyMarker marker, File file) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
 
@@ -551,11 +520,66 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
             }
         });
 
+        respoter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i("test", current_spot_id+"");
+                if (current_spot_id != Integer.valueOf(profile.get(SessionManager.KEY_ID))) {
+                    Thread t = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            resultat = server.enregistrer_respot(Integer.valueOf(profile.get(SessionManager.KEY_ID)), current_spot_id);
+                        }
+                    });
+
+                    t.start(); // spawn thread
+                    try {
+                        t.join();
+                        if (resultat > 0) {
+                            session.increment_nbrespot(); // incremente le nombre de respots d'un utilisateur
+                            Toast.makeText(getActivity(), "Operation succeed!", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else
+                    Toast.makeText(getActivity(), "You cannot respot your own spot!", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public static boolean isNetworkAvailable(final Context context) {
         final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
         return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
+    }
+
+    public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+
+        public MarkerInfoWindowAdapter() {
+        }
+
+        @Override
+        public View getInfoWindow(Marker marker) {
+            return null;
+        }
+
+        @Override
+        public View getInfoContents(Marker marker) {
+            View v = getActivity().getLayoutInflater().inflate(R.layout.infomarker, null);
+
+            final MyMarker myMarker = mMarkersHashMap.get(marker);
+
+            final ImageView markerIcon = (ImageView) v.findViewById(R.id.marker_icon);
+            final TextView markerDate = (TextView) v.findViewById(R.id.marker_date);
+            final TextView markerGeohash = (TextView) v.findViewById(R.id.marker_geohash);
+
+
+            markerIcon.setImageBitmap(BitmapFactory.decodeFile(getActivity().getFilesDir().getPath() + "/Images/" + myMarker.getmIcon() + ".jpg"));
+            markerDate.setText(myMarker.getmDate());
+            markerGeohash.setText(myMarker.getmGeohash());
+
+            return v;
+        }
     }
 
     private class DownloadSpotsTask extends AsyncTask<String[], Integer, Long> {
@@ -586,7 +610,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
                 else
                     txtmyspot.setText(n + " Spots");
                 for (Spot s : spots) {
-                    mMyMarkersArray.add(new MyMarker(s.getDate(), s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude())));
+                    mMyMarkersArray.add(new MyMarker(s.getDate(), s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()),
+                            Double.valueOf(s.getLongitude()), s.getId()));
                 }
             } else
                 Log.i("test", "spot null");

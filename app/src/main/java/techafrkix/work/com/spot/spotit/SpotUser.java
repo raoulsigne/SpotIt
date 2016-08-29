@@ -370,7 +370,8 @@ public class SpotUser extends Fragment implements OnMapReadyCallback,
             t.join();
             if (spots != null) {
                 for (Spot s : spots) {
-                    mMyMarkersArray.add(new MyMarker(s.getDate(), s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()), Double.valueOf(s.getLongitude())));
+                    mMyMarkersArray.add(new MyMarker(s.getDate(), s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()),
+                            Double.valueOf(s.getLongitude()), s.getId()));
                 }
                 plotMarkers(mMyMarkersArray);
             }

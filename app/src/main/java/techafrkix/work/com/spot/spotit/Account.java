@@ -105,9 +105,9 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
     private ArrayList<MyMarker> mMyMarkersArray = new ArrayList<MyMarker>();
 
     private TextView txtPseudo, txtSpots, txtRespots, txtFriends, txtmySpots;
-    private Button btnmodify;
     private EditText searchfriend;
-    private ImageView imghome, imglist, imgnotification, imgoption;
+    private Button btnoption;
+    private ImageView imghome, imglist, imgnotification;
 
     private ImageView myspot;
     private CircularImageView imageprofile;
@@ -158,18 +158,16 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
             }
         });
 
-        btnmodify = (Button) view.findViewById(R.id.btnmodify);
         txtPseudo = (TextView) view.findViewById(R.id.txtPseudo);
         txtSpots = (TextView) view.findViewById(R.id.txtSpots);
         txtRespots = (TextView) view.findViewById(R.id.txtRespots);
         txtFriends = (TextView) view.findViewById(R.id.txtFriends);
-
+        btnoption = (Button) view.findViewById(R.id.btnoption);
         searchfriend = (EditText) view.findViewById(R.id.edtsearchfriend);
 
         imghome = (ImageView) view.findViewById(R.id.imgMapHome);
         imglist = (ImageView) view.findViewById(R.id.imgListSpot);
         imgnotification = (ImageView) view.findViewById(R.id.imgNotification);
-        imgoption = (ImageView) view.findViewById(R.id.imgOption);
 
         txtmySpots = (TextView) view.findViewById(R.id.txtMySpots);
         imageprofile = (CircularImageView) view.findViewById(R.id.profile_image);
@@ -181,13 +179,6 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
             notif_count.setVisibility(View.VISIBLE);
             notif_count.setText(String.valueOf(notifs+""));
         }
-
-        btnmodify.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.onSetPhoto();
-            }
-        });
 
         //default active tab
         setAciveTab(1);
@@ -229,7 +220,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
                         .commit();
             }
         });
-        imgoption.setOnClickListener(new View.OnClickListener() {
+        btnoption.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setAciveTab(4);
@@ -652,42 +643,42 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
             case 0:
 
                 imghome.setBackground(getResources().getDrawable(R.drawable.homeaccount));
-                imglist.setBackground(getResources().getDrawable(R.drawable.listspot));
+                imglist.setBackground(getResources().getDrawable(R.drawable.friendsaccount));
                 imgnotification.setBackground(getResources().getDrawable(R.drawable.notification));
-                imgoption.setBackground(getResources().getDrawable(R.drawable.optionaccount));
+                // imgoption.setBackground(getResources().getDrawable(R.drawable.optionaccount));
 
                 break;
             case 1:
 
                 imghome.setBackground(getResources().getDrawable(R.drawable.home_account_clicked));
-                imglist.setBackground(getResources().getDrawable(R.drawable.listspot));
+                imglist.setBackground(getResources().getDrawable(R.drawable.friendsaccount));
                 imgnotification.setBackground(getResources().getDrawable(R.drawable.notification));
-                imgoption.setBackground(getResources().getDrawable(R.drawable.optionaccount));
+                // imgoption.setBackground(getResources().getDrawable(R.drawable.optionaccount));
 
                 break;
             case 2:
 
                 imghome.setBackground(getResources().getDrawable(R.drawable.homeaccount));
-                imglist.setBackground(getResources().getDrawable(R.drawable.list_clicked));
+                imglist.setBackground(getResources().getDrawable(R.drawable.friends_clicked));
                 imgnotification.setBackground(getResources().getDrawable(R.drawable.notification));
-                imgoption.setBackground(getResources().getDrawable(R.drawable.optionaccount));
+                // imgoption.setBackground(getResources().getDrawable(R.drawable.optionaccount));
 
                 break;
 
             case 3:
 
                 imghome.setBackground(getResources().getDrawable(R.drawable.homeaccount));
-                imglist.setBackground(getResources().getDrawable(R.drawable.listspot));
+                imglist.setBackground(getResources().getDrawable(R.drawable.friendsaccount));
                 imgnotification.setBackground(getResources().getDrawable(R.drawable.bell_clicked1));
-                imgoption.setBackground(getResources().getDrawable(R.drawable.optionaccount));
+                // imgoption.setBackground(getResources().getDrawable(R.drawable.optionaccount));
 
                 break;
             case 4:
 
                 imghome.setBackground(getResources().getDrawable(R.drawable.homeaccount));
-                imglist.setBackground(getResources().getDrawable(R.drawable.listspot));
+                imglist.setBackground(getResources().getDrawable(R.drawable.friendsaccount));
                 imgnotification.setBackground(getResources().getDrawable(R.drawable.notification));
-                imgoption.setBackground(getResources().getDrawable(R.drawable.option_clicked));
+                // imgoption.setBackground(getResources().getDrawable(R.drawable.option_clicked));
 
                 break;
         }

@@ -177,18 +177,19 @@
                     android:layout_marginTop="15dp">
 
                     <Button
-                        android:id="@+id/btnmodify"
+                        android:id="@+id/btnoption"
                         android:layout_width="wrap_content"
                         android:layout_height="30dp"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="10dp"
                         android:background="@color/fond_detail"
-                        android:text="change picture"
+                        android:text="settings"
                         android:textAllCaps="false"
                         android:textStyle="normal"
                         android:textColor="#555555"
                         android:textSize="16sp"
-                        android:drawableLeft="@drawable/edit"
+                        android:drawableLeft="@drawable/optionaccount"
+                        android:drawablePadding="10dp"
                         android:paddingLeft="20dp"
                         android:paddingRight="20dp"/>
 
@@ -234,7 +235,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:background="@drawable/listspot" />
+                    android:background="@drawable/friendsaccount" />
 
             </LinearLayout>
 
@@ -272,22 +273,6 @@
                     </TextView>
 
                 </RelativeLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/groupeAccount"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <ImageButton
-                    android:id="@+id/imgOption"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:background="@drawable/optionaccount" />
 
             </LinearLayout>
 

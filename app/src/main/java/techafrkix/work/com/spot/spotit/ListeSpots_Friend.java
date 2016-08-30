@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -41,6 +42,7 @@ import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.Utilisateur;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
 
 /**
@@ -464,18 +466,30 @@ class SpotFriendAdapter extends ArrayAdapter<Spot> {
 
     HashMap<String, Bitmap> mapimages;
     private AdapterCallback mAdapterCallback;
+    private Context context;
+    SessionManager session;
+    private HashMap<String, String> profile;
+    private DBServer server;
+    private int resultat;
 
     public SpotFriendAdapter(Context context, ArrayList<Spot> spots, Fragment fg) {
         super(context, 0, spots);
+        this.context = context;
         try {
             this.mAdapterCallback = ((AdapterCallback) fg);
         } catch (ClassCastException e) {
             throw new ClassCastException("Activity must implement AdapterCallback.");
         }
+
+        session = new SessionManager(context);
+        profile = new HashMap<>();
+        profile = session.getUserDetails();
+        server = new DBServer(context);
     }
 
     public SpotFriendAdapter(Context context, ArrayList<Spot> spots, HashMap<String, Bitmap> spotsimages, Fragment fg) {
         super(context, 0, spots);
+        this.context = context;
         mapimages = new HashMap<String, Bitmap>();
         mapimages = spotsimages;
         try {
@@ -483,16 +497,21 @@ class SpotFriendAdapter extends ArrayAdapter<Spot> {
         } catch (ClassCastException e) {
             throw new ClassCastException("Activity must implement AdapterCallback.");
         }
+
+        session = new SessionManager(context);
+        profile = new HashMap<>();
+        profile = session.getUserDetails();
+        server = new DBServer(context);
     }
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         TextView spotDate, spotTag;
-        TextView txtshare, txtcomment, txtletsgo;
+        final ImageButton share, comment, letsgo, like, respot;
         ImageView spotPhoto;
 
         // Get the data item for this position
-        Spot spot = getItem(position);
+        final Spot spot = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_spot_friend, parent, false);
@@ -503,10 +522,13 @@ class SpotFriendAdapter extends ArrayAdapter<Spot> {
         spotTag = (TextView)convertView.findViewById(R.id.txtTag);
         spotPhoto = (ImageView)convertView.findViewById(R.id.imgSpot);
 
-        txtcomment = (TextView)convertView.findViewById(R.id.txtComments);
-        txtletsgo = (TextView)convertView.findViewById(R.id.txtLetsgo);
-        txtshare = (TextView)convertView.findViewById(R.id.txtShare);
-        txtcomment.setOnClickListener(new View.OnClickListener() {
+        like = (ImageButton) convertView.findViewById(R.id.imglike);
+        comment = (ImageButton) convertView.findViewById(R.id.imgchat);
+        respot = (ImageButton) convertView.findViewById(R.id.imgrespot);
+        share = (ImageButton) convertView.findViewById(R.id.imgshare);
+        letsgo = (ImageButton) convertView.findViewById(R.id.imgNavigation);
+
+        comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mAdapterCallback.detail(position);
@@ -518,19 +540,49 @@ class SpotFriendAdapter extends ArrayAdapter<Spot> {
                 mAdapterCallback.detail(position);
             }
         });
-        txtletsgo.setOnClickListener(new View.OnClickListener() {
+        letsgo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mAdapterCallback.letsgo(position);
             }
         });
-        txtshare.setOnClickListener(new View.OnClickListener() {
+        share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mAdapterCallback.share(position);
             }
         });
+        respot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (spot.getUser_id() != Integer.valueOf(profile.get(SessionManager.KEY_ID))) {
+                    Thread t = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            resultat = server.enregistrer_respot(Integer.valueOf(profile.get(SessionManager.KEY_ID)), spot.getId());
+                        }
+                    });
 
+                    t.start(); // spawn thread
+                    try {
+                        t.join();
+                        if (resultat > 0) {
+                            session.increment_nbrespot(); // incremente le nombre de respots d'un utilisateur
+                            Toast.makeText(context, "Operation succeed!", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else
+                    Toast.makeText(context, "You cannot respot your own spot!", Toast.LENGTH_SHORT).show();
+            }
+        });
+        like.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
         // Populate the data into the template view using the data object
         try {
             spotDate.setText(spot.getDate());

@@ -10,13 +10,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@drawable/fb_button"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginTop="10dp">
+        android:padding="30dp">
 
         <EditText
-            android:id="@+id/pseudo"
+            android:id="@+id/edtpseudo"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_gravity="center_horizontal"
@@ -29,16 +26,15 @@
             android:textSize="14sp"/>
 
         <View
-            android:id="@+id/line2"
             android:layout_width="match_parent"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_gravity="center_horizontal"
             android:layout_height="1dip"
             android:background="@color/separator"/>
 
         <EditText
-            android:id="@+id/editText"
+            android:id="@+id/edtdate"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_gravity="center_horizontal"
@@ -49,6 +45,14 @@
             android:padding="10dp"
             android:textSize="14sp"/>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_height="1dip"
+            android:background="@color/separator"/>
+
         <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -56,22 +60,21 @@
             <RadioButton android:id="@+id/radio_pirates"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Masculin"
-                android:onClick="onRadioButtonClicked"/>
+                android:text="Masculin"/>
             <RadioButton android:id="@+id/radio_ninjas"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Feminin"
-                android:onClick="onRadioButtonClicked"/>
+                android:text="Feminin"/>
         </RadioGroup>
 
     </LinearLayout>
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btnvalider"
         android:layout_width="match_parent"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
+        android:layout_marginBottom="20dp"
         android:layout_height="35dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="10dp"

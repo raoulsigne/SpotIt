@@ -37,7 +37,8 @@ public class UserSettings extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    private TextView txtlogout, txtprivacy, txtconfidentiality, txtpublicity, txtchangepassword;
+    private TextView txtlogout, txtprivacy, txtconfidentiality, txtpublicity,
+            txtchangepassword, txtchangepicture;
     private ImageView leftarrow;
     private ScrollView content;
 
@@ -91,6 +92,7 @@ public class UserSettings extends Fragment {
         txtconfidentiality = (TextView)view.findViewById(R.id.txtConfidentiality);
         txtprivacy = (TextView)view.findViewById(R.id.txtPrivacy);
         txtchangepassword=(TextView)view.findViewById(R.id.txtChangePassword);
+        txtchangepicture=(TextView)view.findViewById(R.id.txtChangePicture);
 
         content = (ScrollView)view.findViewById(R.id.scrollcontent);
 
@@ -133,6 +135,13 @@ public class UserSettings extends Fragment {
             @Override
             public void onClick(View view) {
                 mListener.onChangePassword();
+            }
+        });
+
+        txtchangepicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onSetPhoto();
             }
         });
 
@@ -185,5 +194,6 @@ public class UserSettings extends Fragment {
         void onLoadAccount();
         void onLoadInformation(int i);
         void onChangePassword();
+        void onSetPhoto();
     }
 }

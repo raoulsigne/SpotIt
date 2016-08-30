@@ -453,8 +453,16 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
         if(twitterIntent != null)
             targetedShareIntents.add(twitterIntent);
 
+        Intent instagramIntent = getShareIntent("instagram", "spot it", uriToImage);
+        if(instagramIntent != null)
+            targetedShareIntents.add(instagramIntent);
+
+        Intent whatsappIntent = getShareIntent("whatsapp", "spot it", uriToImage);
+        if(instagramIntent != null)
+            targetedShareIntents.add(whatsappIntent);
+
         Intent gmailIntent = getShareIntent("gmail", "spot it", uriToImage);
-        if(gmailIntent != null)
+        if(instagramIntent != null)
             targetedShareIntents.add(gmailIntent);
 
         Intent chooser = Intent.createChooser(targetedShareIntents.remove(0), getResources().getText(R.string.send_to));

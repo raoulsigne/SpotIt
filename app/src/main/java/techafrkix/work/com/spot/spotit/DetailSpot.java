@@ -71,13 +71,12 @@ public class DetailSpot extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
-
-    ImageButton imgrespot, imgshare, imgcomment, imgletgo;
+    private ImageButton share, comment, letsgo, like, respot;
     Button btnpost;
     EditText edtComment;
     ImageView imgspot, imgprofile;
     ListView listView;
-    TextView txttag, txtdate, txtNbcomments, txtletgo, txtshare;
+    TextView txttag, txtdate;
     int resultat;
 
     Spot spot;
@@ -115,27 +114,28 @@ public class DetailSpot extends Fragment {
         server = new DBServer(getActivity());
         commentaires = new ArrayList<>();
 
+        like = (ImageButton) view.findViewById(R.id.imglike);
+        comment = (ImageButton) view.findViewById(R.id.imgchat);
+        respot = (ImageButton) view.findViewById(R.id.imgrespot);
+        share = (ImageButton) view.findViewById(R.id.imgshare);
+        letsgo = (ImageButton) view.findViewById(R.id.imgNavigation);
+
         txtdate = (TextView) view.findViewById(R.id.txtDate);
         txttag = (TextView) view.findViewById(R.id.txtTag);
-        txtNbcomments = (TextView) view.findViewById(R.id.txtSpots);
-        txtletgo = (TextView) view.findViewById(R.id.txtNavigation);
-        txtshare = (TextView) view.findViewById(R.id.txtshare);
         imgprofile = (ImageView) view.findViewById(R.id.profile_image);
         imgspot = (ImageView) view.findViewById(R.id.imgSpot);
-        imgrespot = (ImageButton) view.findViewById(R.id.imgRespot);
-        imgletgo = (ImageButton) view.findViewById(R.id.imgNavigation);
-        imgcomment = (ImageButton) view.findViewById(R.id.imgchat);
-        imgshare = (ImageButton) view.findViewById(R.id.imgshare);
         listView = (ListView) view.findViewById(R.id.listComments);
         btnpost = (Button) view.findViewById(R.id.btnPost);
         edtComment = (EditText) view.findViewById(R.id.edtComment);
 
-        if (spot.getNbcomment() > 1)
-            txtNbcomments.setText(spot.getNbcomment() + " comments");
-        else
-            txtNbcomments.setText(spot.getNbcomment() + " comment");
+        like.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-        imgrespot.setOnClickListener(new View.OnClickListener() {
+            }
+        });
+
+        respot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (spot.getUser_id() != Integer.valueOf(profile.get(SessionManager.KEY_ID))) {
@@ -191,21 +191,14 @@ public class DetailSpot extends Fragment {
             }
         });
 
-        imgletgo.setOnClickListener(new View.OnClickListener() {
+        letsgo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 letsgo();
             }
         });
 
-        txtletgo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                letsgo();
-            }
-        });
-
-        imgshare.setOnClickListener(new View.OnClickListener() {
+        share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Uri uriToImage = ListeSpots.getImageContentUri(getActivity(), new File(DBServer.DOSSIER_IMAGE + File.separator + spot.getPhotokey() + ".jpg"));
@@ -220,32 +213,13 @@ public class DetailSpot extends Fragment {
                 if(twitterIntent != null)
                     targetedShareIntents.add(twitterIntent);
 
-                Intent gmailIntent = getShareIntent("gmail", "spot it", uriToImage);
-                if(gmailIntent != null)
-                    targetedShareIntents.add(gmailIntent);
+                Intent instagramIntent = getShareIntent("instagram", "spot it", uriToImage);
+                if(instagramIntent != null)
+                    targetedShareIntents.add(instagramIntent);
 
-                Intent chooser = Intent.createChooser(targetedShareIntents.remove(0), getResources().getText(R.string.send_to));
-
-                chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
-
-                startActivity(chooser);
-            }
-        });
-
-        txtshare.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Uri uriToImage = ListeSpots.getImageContentUri(getActivity(), new File(DBServer.DOSSIER_IMAGE + File.separator + spot.getPhotokey() + ".jpg"));
-
-                List<Intent> targetedShareIntents = new ArrayList<Intent>();
-
-                Intent facebookIntent = getShareIntent("facebook", "spot it", uriToImage);
-                if(facebookIntent != null)
-                    targetedShareIntents.add(facebookIntent);
-
-                Intent twitterIntent = getShareIntent("twitter", "spot it", uriToImage);
-                if(twitterIntent != null)
-                    targetedShareIntents.add(twitterIntent);
+                Intent whatsappIntent = getShareIntent("whatsapp", "spot it", uriToImage);
+                if(instagramIntent != null)
+                    targetedShareIntents.add(whatsappIntent);
 
                 Intent gmailIntent = getShareIntent("gmail", "spot it", uriToImage);
                 if(gmailIntent != null)
@@ -509,10 +483,6 @@ public class DetailSpot extends Fragment {
                 Log.i("comments", commentaires.toString());
                 adapter = new CommentAdapter(getActivity(), commentaires);
                 listView.setAdapter(adapter);
-                if (commentaires.size() > 1)
-                    txtNbcomments.setText(commentaires.size() + " comments");
-                else
-                    txtNbcomments.setText(commentaires.size() + " comment");
             } else {
                 // Setting new scroll position
                 listView.setSelectionFromTop(0, 0);

@@ -79,8 +79,8 @@
 
             <ImageButton
                 android:id="@+id/imglike"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:background="@drawable/like" />
 
         </LinearLayout>
@@ -95,8 +95,8 @@
 
             <ImageButton
                 android:id="@+id/imgchat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:background="@drawable/chat" />
 
         </LinearLayout>
@@ -111,8 +111,8 @@
 
             <ImageButton
                 android:id="@+id/imgrespot"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:background="@drawable/respots" />
 
         </LinearLayout>
@@ -127,8 +127,8 @@
 
             <ImageButton
                 android:id="@+id/imgshare"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:background="@drawable/share" />
 
         </LinearLayout>
@@ -143,8 +143,8 @@
 
             <ImageButton
                 android:id="@+id/imgNavigation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:background="@drawable/let_go" />
 
         </LinearLayout>

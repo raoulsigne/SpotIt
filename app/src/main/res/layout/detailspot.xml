@@ -73,68 +73,64 @@
                     android:scaleType="centerCrop" />
                 <!--android:background="@drawable/mock_spot"-->
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/imgSpot"
-                    android:layout_marginLeft="15dp"
-                    android:gravity="bottom"
-                    android:orientation="vertical">
+                <!--<LinearLayout-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_alignBottom="@+id/imgSpot"-->
+                    <!--android:layout_marginLeft="15dp"-->
+                    <!--android:gravity="bottom"-->
+                    <!--android:orientation="vertical">-->
 
-                    <ImageButton
-                        android:id="@+id/imgRespot"
-                        android:layout_width="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/respot"
-                        android:padding="12dp"
-                        android:background="@drawable/custom_shape"
-                        android:layout_marginBottom="-5dp"/>
+                    <!--<ImageButton-->
+                        <!--android:id="@+id/imgRespot"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_gravity="center"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:src="@drawable/respot"-->
+                        <!--android:padding="12dp"-->
+                        <!--android:background="@drawable/custom_shape"-->
+                        <!--android:layout_marginBottom="-5dp"/>-->
 
-                    <TextView
-                        android:id="@+id/txtMySpot"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:paddingLeft="5dp"
-                        android:paddingRight="5dp"
-                        android:text="Respot"
-                        android:textAlignment="center"
-                        android:textColor="@color/blanc"
-                        android:textSize="11sp"
-                        android:background="@drawable/badge"
-                        android:layout_marginBottom="5dp"/>
-                </LinearLayout>
+                    <!--<TextView-->
+                        <!--android:id="@+id/txtMySpot"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_gravity="center"-->
+                        <!--android:paddingLeft="5dp"-->
+                        <!--android:paddingRight="5dp"-->
+                        <!--android:text="Respot"-->
+                        <!--android:textAlignment="center"-->
+                        <!--android:textColor="@color/blanc"-->
+                        <!--android:textSize="11sp"-->
+                        <!--android:background="@drawable/badge"-->
+                        <!--android:layout_marginBottom="5dp"/>-->
+                <!--</LinearLayout>-->
 
             </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
+                android:layout_alignParentBottom="true"
+                android:layout_weight="1"
                 android:background="@color/blanc"
                 android:orientation="horizontal">
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:layout_gravity="center"
                     android:orientation="horizontal">
 
                     <ImageButton
-                        android:id="@+id/imgNavigation"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
-                        android:background="@drawable/let_go" />
+                        android:id="@+id/imglike"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/like" />
 
-                    <TextView
-                        android:id="@+id/txtNavigation"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="Let's go"
-                        android:textSize="10sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -142,22 +138,15 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:layout_gravity="center"
                     android:orientation="horizontal">
 
                     <ImageButton
                         android:id="@+id/imgchat"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:background="@drawable/chat" />
 
-                    <TextView
-                        android:id="@+id/txtSpots"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="Comments"
-                        android:textSize="10sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -165,22 +154,47 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/imgrespot"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/respots" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:layout_gravity="center"
                     android:orientation="horizontal">
 
                     <ImageButton
                         android:id="@+id/imgshare"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:background="@drawable/share" />
 
-                    <TextView
-                        android:id="@+id/txtshare"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="Share"
-                        android:textSize="10sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/imgNavigation"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/let_go" />
+
                 </LinearLayout>
 
             </LinearLayout>

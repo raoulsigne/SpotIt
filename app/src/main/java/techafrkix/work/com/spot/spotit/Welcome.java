@@ -111,7 +111,7 @@ public class Welcome extends AppCompatActivity {
 
                     for (final Spot s : spots) {
                         final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + s.getPhotokey() + ".jpg");
-                        Log.i("test", file.getAbsolutePath());
+                        Log.i("dialog", file.getAbsolutePath());
                         AWS_Tools aws_tools = new AWS_Tools(getApplicationContext());
                         int transfertId = aws_tools.download(file, s.getPhotokey());
                         TransferUtility transferUtility = aws_tools.getTransferUtility();

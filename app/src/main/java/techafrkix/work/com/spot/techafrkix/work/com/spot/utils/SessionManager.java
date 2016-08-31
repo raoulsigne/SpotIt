@@ -271,7 +271,7 @@ public class SessionManager {
     }
 
     /**
-     * test if an user is connected
+     * dialog if an user is connected
      * @return true or false depending of the status of user
      */
     public boolean isLogin(){

@@ -216,7 +216,7 @@ public class CropImageActivity extends ActionBarActivity {
     }
 
     /**
-     * Test if we can open the given Android URI to test if permission required error is thrown.<br>
+     * Test if we can open the given Android URI to dialog if permission required error is thrown.<br>
      */
     public boolean isUriRequiresPermissions(Uri uri) {
         try {

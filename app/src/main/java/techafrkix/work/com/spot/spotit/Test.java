@@ -7,7 +7,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -38,7 +37,7 @@ public class Test extends AppCompatActivity implements AdapterCallback {
             public void onClick(View view) {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(Test.this);
                 LayoutInflater inflater = getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.test, null);
+                View dialogView = inflater.inflate(R.layout.dialog, null);
                 dialogBuilder.setView(dialogView);
 
                 edtpseudo = (EditText) dialogView.findViewById(R.id.edtpseudo);

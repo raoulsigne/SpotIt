@@ -292,7 +292,7 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
                 }
                 //set the value of the offset that will be use next time
                 offset += PORTION_TELECHARGEABLE; //session.putOffset(offset + 10);
-                Log.i("test", spots.toString());
+                Log.i("dialog", spots.toString());
             }});
 
         t.start(); // spawn thread

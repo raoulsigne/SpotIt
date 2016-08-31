@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Parcelable;
@@ -14,13 +16,16 @@ import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
@@ -62,17 +67,27 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
     private int preLast;
     private int type;
 
+    private ImageView imgprofile;
+    private TextView txtpseudo;
+    private TextView txtspots;
+    private TextView txtfriend;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         spots = new ArrayList<>();
 
+        // Session class instance
+        session = new SessionManager(getActivity());
+        profile = new HashMap<>();
+        server = new DBServer(getActivity());
+        profile = session.getUserDetails();
+
         if (getArguments() != null) {
             type = (int) getArguments().getInt("type");
-            Log.i("teste", type + " ");
             if (type == 0) {
                 spots = (ArrayList<Spot>) getArguments().getSerializable("spots");
-                Log.i("teste", "test " + spots.toString());
+                Log.i("teste", "dialog " + spots.toString());
             }
         }
     }
@@ -85,7 +100,87 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_liste_spots, container, false);
+        View view;
+        if (type == 1) {
+            view = inflater.inflate(R.layout.activity_liste_spots_user, container, false);
+            imgprofile = (ImageView) view.findViewById(R.id.item_profile);
+            txtpseudo = (TextView)view.findViewById(R.id.txtPseudo_friend);
+            txtspots = (TextView)view.findViewById(R.id.txtSpots_friend);
+            txtfriend = (TextView)view.findViewById(R.id.txtFriends_friend);
+
+            txtpseudo.setText(profile.get(SessionManager.KEY_NAME));
+            txtspots.setText(profile.get(SessionManager.KEY_SPOT) + " spots | " + profile.get(SessionManager.KEY_RESPOT) + " respots");
+            txtfriend.setText(profile.get(SessionManager.KEY_FRIENDS) + " friends");
+
+            if (profile.get(SessionManager.KEY_PHOTO) != null & profile.get(SessionManager.KEY_PHOTO) != "") {
+                Log.i("file", profile.get(SessionManager.KEY_PHOTO));
+                final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + profile.get(SessionManager.KEY_PHOTO) + ".jpg");
+
+                if (file.exists()) {
+                    // marker.showInfoWindow();
+                    imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                } else {
+                    if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
+                        Log.i("file", "file not exists");
+                        AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
+                        final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
+                        barProgressDialog.setTitle("Telechargement du spot ...");
+                        barProgressDialog.setMessage("Opération en progression ...");
+                        barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
+                        barProgressDialog.setProgress(0);
+                        barProgressDialog.setMax(100);
+                        barProgressDialog.show();
+                        int transfertId = aws_tools.download(file, profile.get(SessionManager.KEY_PHOTO));
+                        TransferUtility transferUtility = aws_tools.getTransferUtility();
+                        TransferObserver observer = transferUtility.getTransferById(transfertId);
+                        observer.setTransferListener(new TransferListener() {
+
+                            @Override
+                            public void onStateChanged(int id, TransferState state) {
+                                // do something
+                            }
+
+                            @Override
+                            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                                int rapport = (int) (bytesCurrent * 100);
+                                if (bytesTotal != 0) {
+                                    rapport /= bytesTotal;
+                                    if (rapport == 100) {
+                                        barProgressDialog.dismiss();
+                                        imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                                    }
+                                    barProgressDialog.setProgress(rapport);
+                                } else {
+                                    barProgressDialog.dismiss();
+                                }
+                            }
+
+                            @Override
+                            public void onError(int id, Exception ex) {
+                                // do something
+                                barProgressDialog.dismiss();
+                            }
+
+                        });
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("Spot It:Information")
+                                .setMessage("Vérifiez votre connexion Internet")
+                                .setCancelable(false)
+                                .setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        AlertDialog alert = builder.create();
+                        alert.show();
+                    }
+                }
+            }
+        }
+        else
+            view = inflater.inflate(R.layout.activity_liste_spots, container, false);
+
         listView = (ListView) view.findViewById(R.id.listView);
 
         listView.setDivider(null);
@@ -101,11 +196,6 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
 
         // Adding button to listview at footer
         listView.addFooterView(btnLoadMore);
-
-        // Session class instance
-        session = new SessionManager(getActivity());
-        profile = new HashMap<>();
-        server = new DBServer(getActivity());
 
 //        spotsimages = new HashMap<String, Bitmap>();
         tampon = new ArrayList<>();
@@ -191,7 +281,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                                     if (barProgressDialog.getProgress() == spots.size()) {
                                         barProgressDialog.dismiss();
                                         // Create the adapter to convert the array to views
-                                        adapter = new SpotAdapter(getActivity(), spots, ListeSpots.this);
+                                        adapter = new SpotAdapter(getActivity(), spots, ListeSpots.this, type);
                                         // Attach the adapter to a ListView
                                         listView.setAdapter(adapter);
                                         // Setting new scroll position
@@ -224,7 +314,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                                             if (barProgressDialog.getProgress() == spots.size()) {
                                                 barProgressDialog.dismiss();
                                                 // Create the adapter to convert the array to views
-                                                adapter = new SpotAdapter(getActivity(), spots, ListeSpots.this);
+                                                adapter = new SpotAdapter(getActivity(), spots, ListeSpots.this, type);
                                                 // Attach the adapter to a ListView
                                                 listView.setAdapter(adapter);
                                                 // Setting new scroll position
@@ -282,7 +372,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                         if (barProgressDialog.getProgress() == barProgressDialog.getMax()) {
                             barProgressDialog.dismiss();
                             // Create the adapter to convert the array to views
-                            adapter = new SpotAdapter(getActivity(), tampon, ListeSpots.this);
+                            adapter = new SpotAdapter(getActivity(), tampon, ListeSpots.this, type);
                             // Attach the adapter to a ListView
                             listView.setAdapter(adapter);
                             // Setting new scroll position
@@ -315,7 +405,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                                     barProgressDialog.dismiss();
 
                                     // Create the adapter to convert the array to views
-                                    adapter = new SpotAdapter(getActivity(), tampon, ListeSpots.this);
+                                    adapter = new SpotAdapter(getActivity(), tampon, ListeSpots.this, type);
                                     // Attach the adapter to a ListView
                                     listView.setAdapter(adapter);
                                     // Setting new scroll position
@@ -362,7 +452,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                                     barProgressDialog.dismiss();
 
                                     // Create the adapter to convert the array to views
-                                    adapter = new SpotAdapter(getActivity(), tampon, ListeSpots.this);
+                                    adapter = new SpotAdapter(getActivity(), tampon, ListeSpots.this, type);
                                     // Attach the adapter to a ListView
                                     listView.setAdapter(adapter);
                                     // Setting new scroll position
@@ -381,7 +471,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                         if (barProgressDialog.getProgress() == barProgressDialog.getMax()) {
                             barProgressDialog.dismiss();
                             // Create the adapter to convert the array to views
-                            adapter = new SpotAdapter(getActivity(), tampon, ListeSpots.this);
+                            adapter = new SpotAdapter(getActivity(), tampon, ListeSpots.this, type);
                             // Attach the adapter to a ListView
                             listView.setAdapter(adapter);
                             // Setting new scroll position
@@ -514,6 +604,11 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
         }
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
         getActivity().startActivity(intent);
+
+    }
+
+    @Override
+    public void delete(int position) {
 
     }
 

@@ -172,7 +172,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
 //                        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
                     } else
-                        Log.i("test", "location null");
+                        Log.i("dialog", "location null");
                 }
             }
         });
@@ -523,7 +523,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
         respoter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("test", current_spot_id+"");
+                Log.i("dialog", current_spot_id+"");
                 if (current_spot_id != Integer.valueOf(profile.get(SessionManager.KEY_ID))) {
                     Thread t = new Thread(new Runnable() {
                         @Override
@@ -614,7 +614,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
                             Double.valueOf(s.getLongitude()), s.getId()));
                 }
             } else
-                Log.i("test", "spot null");
+                Log.i("dialog", "spot null");
             plotMarkers(mMyMarkersArray);
         }
     }

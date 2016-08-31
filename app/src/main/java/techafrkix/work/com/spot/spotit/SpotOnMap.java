@@ -118,7 +118,7 @@ public class SpotOnMap extends FragmentActivity implements OnMapReadyCallback {
                 Spot s = new Spot();
                 int i = 0;
                 for (i = 0; i < spots.size(); i++) {
-                    Log.i("test ", spots.get(i).getGeohash().toLowerCase().replace(" ", "") + " , " + hash);
+                    Log.i("dialog ", spots.get(i).getGeohash().toLowerCase().replace(" ", "") + " , " + hash);
                     if (spots.get(i).getGeohash().toLowerCase().replace(" ", "").equals(hash))
                         s = spots.get(i);
                 }

@@ -1,54 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="techafrkix.work.com.spot.spotit.Test">
+    tools:context="techafrkix.work.com.spot.spotit.Test"
+    android:orientation="vertical">
 
-    <HorizontalScrollView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="50dp"
+        android:background="@color/blanc">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/profile_image"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            app:civ_border_color="#FF000000"
+            app:civ_border_width="0dp"
+            android:src="@drawable/profile"/>
 
         <LinearLayout
-            android:id="@+id/listes"
-            android:layout_width="match_parent"
+            android:id="@+id/linearlayout"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:isScrollContainer="true"
-            android:orientation="horizontal"/>
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/profile_image"
+            android:layout_toEndOf="@+id/profile_image">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="06 Juin 2016 - 10h10, Yaounde(Cameroun)"
+                android:textColor="@color/mainblue"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:layout_gravity="start"
+                android:id="@+id/txtDate" />
 
-    </HorizontalScrollView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="#tag1 #tag2 #tag3 #tag4"
+                android:id="@+id/txtTag" />
 
-    <EditText
-        android:id="@+id/editText5"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="73dp" />
+        </LinearLayout>
 
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/editText5"
-        android:layout_centerHorizontal="true"
-        android:text="Button" />
+        <ImageButton
+            android:id="@+id/imgdelete"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginRight="10dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/delete" />
 
-    <Button
-        android:id="@+id/btnValider"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="Valider" />
+    </RelativeLayout>
 
-
-</RelativeLayout>
+</LinearLayout>

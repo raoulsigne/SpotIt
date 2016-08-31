@@ -47,10 +47,12 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
     private HashMap<String, String> profile;
     private DBServer server;
     private int resultat;
+    private int type;
 
-    public SpotAdapter(Context context, ArrayList<Spot> spots, Fragment fg) {
+    public SpotAdapter(Context context, ArrayList<Spot> spots, Fragment fg, int type) {
         super(context, 0, spots);
         this.context = context;
+        this.type = type;
         try {
             this.mAdapterCallback = ((AdapterCallback) fg);
         } catch (ClassCastException e) {
@@ -66,7 +68,7 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         final TextView spotDate, spotTag;
-        final ImageButton share, comment, letsgo, like, respot;
+        final ImageButton share, comment, letsgo, like, respot, delete;
         final ImageView spotPhoto;
         final ImageView photoprofile;
 
@@ -88,6 +90,17 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
         respot = (ImageButton) convertView.findViewById(R.id.imgrespot);
         share = (ImageButton) convertView.findViewById(R.id.imgshare);
         letsgo = (ImageButton) convertView.findViewById(R.id.imgNavigation);
+        delete = (ImageButton) convertView.findViewById(R.id.imgdelete);
+
+        if (type == 0)
+            delete.setVisibility(View.GONE);
+
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mAdapterCallback.delete(position);
+            }
+        });
 
         comment.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -205,5 +218,6 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
         public void detail(int position);
         public void share(int position);
         public void letsgo(int position);
+        public void delete(int position);
     }
 }

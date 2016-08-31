@@ -185,7 +185,7 @@ public class Add_Friend extends Fragment implements FriendCallback{
                 for (int i = 0; i < users.size(); i++) {
                     items[i] = users.get(i).getPseudo();
                 }
-                Log.i("test friend 1", friends.toString());
+                Log.i("dialog friend 1", friends.toString());
                 CustomList_Search adapter = new CustomList_Search(getActivity(), items, cle, Add_Friend.this);
                 lvfriends.invalidate();
                 lvfriends.setAdapter(adapter);
@@ -215,7 +215,7 @@ public class Add_Friend extends Fragment implements FriendCallback{
 //                            String[] items = new String[users.size()];
 //                            for (int i = 0; i < users.size(); i++)
 //                                items[i] = users.get(i).getPseudo();
-//                            Log.i("test", items.toString());
+//                            Log.i("dialog", items.toString());
 //                            CustomList_Search adapter = new CustomList_Search(getActivity(), items, cle, Add_Friend.this);
 //                            lvfriends.invalidate();
 //                            lvfriends.setAdapter(adapter);
@@ -450,7 +450,7 @@ public class Add_Friend extends Fragment implements FriendCallback{
                             public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
                                 int rapport = (int) (bytesCurrent * 100);
                                 try {
-                                    Log.i("test", bytesCurrent + " " + bytesTotal);
+                                    Log.i("dialog", bytesCurrent + " " + bytesTotal);
                                     rapport /= bytesTotal;
                                     barProgressDialog.setProgress(rapport);
                                     if (rapport == 100) {

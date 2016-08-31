@@ -72,7 +72,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginLeft="30dp">
@@ -103,7 +103,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="4dp"
+                            android:layout_marginTop="0dp"
                             android:text="spots"
                             android:textColor="@color/titre_menu"
                             android:textAlignment="center"
@@ -131,7 +131,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="4dp"
+                            android:layout_marginTop="0dp"
                             android:text="respots"
                             android:textColor="@color/titre_menu"
                             android:textAlignment="center"
@@ -159,7 +159,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="4dp"
+                            android:layout_marginTop="0dp"
                             android:text="friends"
                             android:textColor="@color/titre_menu"
                             android:textAlignment="center"
@@ -189,7 +189,7 @@
                         android:textColor="#555555"
                         android:textSize="16sp"
                         android:drawableLeft="@drawable/optionaccount"
-                        android:drawablePadding="10dp"
+                        android:drawablePadding="20dp"
                         android:paddingLeft="20dp"
                         android:paddingRight="20dp"/>
 

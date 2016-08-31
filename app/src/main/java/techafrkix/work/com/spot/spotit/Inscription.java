@@ -15,6 +15,7 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -56,7 +57,7 @@ import techafrkix.work.com.spot.bd.UtilisateurDBAdapteur;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
-public class Inscription extends AppCompatActivity {
+public class Inscription extends AppCompatActivity implements DatePickerCallback{
 
     public static  final  String _TO_CONCAT = "cs457syu89iuer8poier787";
     protected EditText pseudo, email, password, date;
@@ -85,6 +86,8 @@ public class Inscription extends AppCompatActivity {
     String s_pseudo, sdate;
 
     private TextView policy;
+    private EditText edtdate, edtpseudo;
+    private Button btnValider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -232,22 +235,6 @@ public class Inscription extends AppCompatActivity {
             };
         }
 
-        final EditText txtPseudo = new EditText(Inscription.this);
-        txtPseudo.setHint("Pseudo");
-        final EditText txtDate = new EditText(Inscription.this);
-        txtDate.setHint("Date de naissance");
-        txtDate.setInputType(InputType.TYPE_CLASS_DATETIME);
-        final Button btnValider = new Button(Inscription.this);
-        btnValider.setText("Valider");
-        btnValider.setHeight(20);
-        btnValider.setBackground(getResources().getDrawable(R.drawable.button_blue));
-        final LinearLayout layout = new LinearLayout(Inscription.this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(10, 0, 10, 0);
-        layout.addView(txtPseudo);
-        layout.addView(txtDate);
-        layout.addView(btnValider);
-
         fbSignin.setReadPermissions(Arrays.asList(
                 "public_profile", "email", "user_birthday", "user_friends"));
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -303,16 +290,34 @@ public class Inscription extends AppCompatActivity {
                                                         finish();
                                                     }
                                                     else { // on demande à l'utilisateur d'entrer ses identifiants pour l'en créer un compte
-                                                        new AlertDialog.Builder(Inscription.this)
-                                                                .setTitle("Vos Information")
-                                                                .setView(layout)
-                                                                .show();
+                                                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(Inscription.this);
+                                                        LayoutInflater inflater = getLayoutInflater();
+                                                        View dialogView = inflater.inflate(R.layout.dialog, null);
+                                                        dialogBuilder.setView(dialogView);
+
+                                                        edtpseudo = (EditText) dialogView.findViewById(R.id.edtpseudo);
+                                                        edtdate = (EditText) dialogView.findViewById(R.id.edtdate);
+                                                        btnValider = (Button) dialogView.findViewById(R.id.btnvalider);
+
+                                                        edtdate.setOnTouchListener(new View.OnTouchListener() {
+                                                            public boolean onTouch(View v, MotionEvent event) {
+                                                                int action = event.getActionMasked();
+                                                                if (action == MotionEvent.ACTION_DOWN && action != MotionEvent.ACTION_CANCEL) {
+                                                                    DialogFragment newFragment = new DatePickerFragment();
+                                                                    newFragment.show(getSupportFragmentManager(), "datePicker");
+                                                                }
+                                                                return true;
+                                                            }
+                                                        });
+
+                                                        AlertDialog alertDialog = dialogBuilder.create();
+                                                        alertDialog.show();
 
                                                         btnValider.setOnClickListener(new View.OnClickListener() {
                                                             @Override
                                                             public void onClick(View v) {
-                                                                s_pseudo = txtPseudo.getText().toString();
-                                                                sdate = txtDate.getText().toString();
+                                                                s_pseudo = edtpseudo.getText().toString();
+                                                                sdate = edtdate.getText().toString();
                                                                 utilisateur = new Utilisateur();
 
 
@@ -330,12 +335,12 @@ public class Inscription extends AppCompatActivity {
                                                                     t2.join();
                                                                     if (utilisateur != null){
                                                                         Log.i("Connexion", "Utilisateur avec " + pseudo + " existant");
-                                                                        txtPseudo.setTextColor(getResources().getColor(R.color.pink));
-                                                                        txtPseudo.setText(txtPseudo.getText().toString() + " existant!");
+                                                                        edtpseudo.setTextColor(getResources().getColor(R.color.pink));
+                                                                        edtpseudo.setText(edtpseudo.getText().toString() + " existant!");
                                                                     }
                                                                     else {
                                                                         final Utilisateur user = new Utilisateur();
-                                                                        user.setDate_naissance(txtDate.getText().toString());
+                                                                        user.setDate_naissance(edtdate.getText().toString());
                                                                         user.setEmail(email);
                                                                         String pass = BCrypt.hashpw(email+Inscription._TO_CONCAT, BCrypt.gensalt()).toString();
                                                                         user.setPassword(pass);
@@ -355,7 +360,7 @@ public class Inscription extends AppCompatActivity {
                                                                                 // Creating user login session
                                                                                 // For testing i am stroing name, email as follow
                                                                                 // Use user real data
-                                                                                session.createLoginSession(utilisateur.getPseudo(), utilisateur.getEmail(), USER_ID);
+                                                                                session.createLoginSession(user.getPseudo(), user.getEmail(), USER_ID);
                                                                                 session.registerGCM();
 
                                                                                 startActivity(itmain);
@@ -423,10 +428,24 @@ public class Inscription extends AppCompatActivity {
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
+    @Override
+    public void changedate(String date) {
+        edtdate.setText(date);
+    }
+
     public static class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+
+        private DatePickerCallback mAdapterCallback;
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            try {
+                this.mAdapterCallback = ((DatePickerCallback) getActivity());
+            } catch (ClassCastException e) {
+                throw new ClassCastException("Activity must implement AdapterCallback.");
+            }
+
             // Use the current date as the default date in the picker
             final Calendar c = Calendar.getInstance();
             int year = c.get(Calendar.YEAR);
@@ -439,11 +458,10 @@ public class Inscription extends AppCompatActivity {
 
         public void onDateSet(DatePicker view, int year, int month, int day) {
             // Do something with the date chosen by the user
-            EditText date = (EditText)getActivity().findViewById(R.id.editText);
             String mois = String.valueOf(month), jour = String.valueOf(day);
             if (month < 10) mois = "0"+month;
             if (day < 10) jour = "0"+day;
-            date.setText(year + "-" + mois + "-" + jour);
+            mAdapterCallback.changedate(year + "-" + mois + "-" + jour);
         }
     }
 
@@ -469,4 +487,8 @@ public class Inscription extends AppCompatActivity {
             }
         }.execute(null, null, null);
     }
+}
+
+interface DatePickerCallback{
+    public void changedate(String date);
 }

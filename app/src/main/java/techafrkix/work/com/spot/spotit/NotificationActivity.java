@@ -305,7 +305,7 @@ public class NotificationActivity extends Fragment {
                             public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
                                 int rapport = (int) (bytesCurrent * 100);
                                 try {
-                                    Log.i("test", bytesCurrent + " " + bytesTotal);
+                                    Log.i("dialog", bytesCurrent + " " + bytesTotal);
                                     rapport /= bytesTotal;
                                     barProgressDialog.setProgress(rapport);
                                     if (rapport == 100) {

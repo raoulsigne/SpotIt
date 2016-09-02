@@ -131,7 +131,7 @@ public class DetailSpot extends Fragment {
         like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                like.setBackground(getActivity().getResources().getDrawable(R.drawable.liked));
             }
         });
 

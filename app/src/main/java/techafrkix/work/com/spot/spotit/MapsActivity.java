@@ -161,7 +161,11 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
                     Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
                     if (location != null) {
-                        mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+                        int maxZoomLevel = (int) mMap.getMaxZoomLevel();
+                        if (maxZoomLevel > 0)
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), maxZoomLevel));
+                        else
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15));
 
 //                        CameraPosition cameraPosition = new CameraPosition.Builder()
 //                                .target(new LatLng(location.getLatitude(), location.getLongitude()))      // Sets the center of the map to location user
@@ -292,7 +296,11 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
                             @Override
                             public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
                                 int rapport = (int) (bytesCurrent * 100);
-                                rapport /= bytesTotal;
+                                try {
+                                    rapport /= bytesTotal;
+                                }catch (Exception e){
+                                    rapport= 100;
+                                }
                                 barProgressDialog.setProgress(rapport);
                                 if (rapport == 100) {
                                     barProgressDialog.dismiss();

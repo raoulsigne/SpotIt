@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Parcelable;
@@ -299,11 +300,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                     break;
                 case REQUEST_IMAGE_CAPTURE:
-                    Bundle extras = data.getExtras();
-                    Bitmap imageBitmap = (Bitmap) extras.get("data");
+                    Bitmap imageBitmap;
+
+                    try {
+                        Bundle extras = data.getExtras();
+                        imageBitmap = (Bitmap) extras.get("data");
+                    }catch (Exception e) {
+                        Uri selectedImage = data.getData();
+                        String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                        Cursor cursor = getContentResolver().query(selectedImage,
+                                filePathColumn, null, null, null);
+                        cursor.moveToFirst();
+                        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                        String picturePath = cursor.getString(columnIndex);
+                        cursor.close();
+                        imageBitmap = BitmapFactory.decodeFile(picturePath);
+                    }
                     //imageBitmap = Bitmap.createScaledBitmap(imageBitmap, 400, 400, true);
                     final String temps = profile.get(SessionManager.KEY_ID) + "_" + String.valueOf(System.currentTimeMillis());
-                    File file = new File(getApplicationContext().getFilesDir().getPath() + "/SpotItPictures/" + temps + ".jpg");
+                    File file = new File(DBServer.DOSSIER_IMAGE + temps + ".jpg");
                     try {
                         OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
                         imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);

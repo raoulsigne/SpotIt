@@ -127,6 +127,12 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
                 mAdapterCallback.share(position);
             }
         });
+        like.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                like.setBackground(context.getResources().getDrawable(R.drawable.liked));
+            }
+        });
         respot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -150,12 +156,6 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
                     }
                 } else
                     Toast.makeText(context, "You cannot respot your own spot!", Toast.LENGTH_SHORT).show();
-            }
-        });
-        like.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
             }
         });
 

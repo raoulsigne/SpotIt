@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -27,12 +28,20 @@ public class Search extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    public static final String V_MOI = "moi";
+    public static final String V_FRIEND = "amis";
+    public static final String V_PUBLIC = "publics";
+
+    private String visibilite;
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
+    private TextView txtMoi, txtAmis, txtPublic;
+    private ImageButton vMoi, vFriend, vPublic;
     public Search() {
         // Required empty publics constructor
     }
@@ -69,6 +78,53 @@ public class Search extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_search, container, false);
+
+        vMoi = (ImageButton) view.findViewById(R.id.visibiliteMoi);
+        vFriend = (ImageButton) view.findViewById(R.id.visibiliteFriend);
+        vPublic = (ImageButton) view.findViewById(R.id.visibilitePublic);
+        txtMoi = (TextView) view.findViewById(R.id.txtMoi);
+        txtAmis = (TextView) view.findViewById(R.id.txtAmis);
+        txtPublic = (TextView) view.findViewById(R.id.txtPublic);
+
+        vMoi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                visibilite = V_MOI;
+                txtMoi.setTextColor(getResources().getColor(R.color.myblue));
+                txtAmis.setTextColor(getResources().getColor(R.color.titre_menu));
+                txtPublic.setTextColor(getResources().getColor(R.color.titre_menu));
+
+                vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi_clicked));
+                vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend_clicked));
+                vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.publics));
+            }
+        });
+        vFriend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                visibilite = V_FRIEND;
+                txtMoi.setTextColor(getResources().getColor(R.color.titre_menu));
+                txtAmis.setTextColor(getResources().getColor(R.color.myblue));
+                txtPublic.setTextColor(getResources().getColor(R.color.titre_menu));
+
+                vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi));
+                vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friends));
+                vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.publics));
+            }
+        });
+        vPublic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                visibilite = V_PUBLIC;
+                txtMoi.setTextColor(getResources().getColor(R.color.titre_menu));
+                txtAmis.setTextColor(getResources().getColor(R.color.titre_menu));
+                txtPublic.setTextColor(getResources().getColor(R.color.myblue));
+
+                vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi));
+                vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend_clicked));
+                vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.public_clicked));
+            }
+        });
 
         return view;
     }

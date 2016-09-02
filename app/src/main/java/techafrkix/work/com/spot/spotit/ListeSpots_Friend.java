@@ -74,7 +74,6 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
     private ListView listspots;
 
     private ArrayList<Spot> spots;
-    private HashMap<String, Bitmap> spotsimages;
     private SpotFriendAdapter adapter;
 
     private OnFragmentInteractionListener mListener;
@@ -215,7 +214,6 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
         // Adding button to listview at footer
         listspots.addFooterView(btnLoadMore);
 
-        spotsimages = new HashMap<String, Bitmap>();
         loadSpots();
 
         /**
@@ -319,12 +317,11 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
                     final File file = new File(DBServer.DOSSIER_IMAGE+ File.separator  + s.getPhotokey() + ".jpg");
                     if (file.exists()) {
                         Log.i("file", "file exists " + DBServer.DOSSIER_IMAGE + s.getPhotokey() + ".jpg");
-                        spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
                         barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
                         if (barProgressDialog.getProgress() == spots.size()) {
                             barProgressDialog.dismiss();
                             // Create the adapter to convert the array to views
-                            adapter = new SpotFriendAdapter(getActivity(), spots, spotsimages, this);
+                            adapter = new SpotFriendAdapter(getActivity(), spots, this);
                             // Attach the adapter to a ListView
                             listspots.setAdapter(adapter);
                             // Setting new scroll position
@@ -351,7 +348,6 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
                                     rapport /= bytesTotal;
                                     if (rapport == 100) {
                                         barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
-                                        spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
                                     }
                                 }else{
                                     barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
@@ -362,7 +358,7 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
 //                                    int currentPosition = listspots.getFirstVisiblePosition();
 
                                     // Create the adapter to convert the array to views
-                                    adapter = new SpotFriendAdapter(getActivity(), spots, spotsimages, ListeSpots_Friend.this);
+                                    adapter = new SpotFriendAdapter(getActivity(), spots, ListeSpots_Friend.this);
                                     // Attach the adapter to a ListView
                                     listspots.setAdapter(adapter);
 
@@ -464,7 +460,6 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
 
 class SpotFriendAdapter extends ArrayAdapter<Spot> {
 
-    HashMap<String, Bitmap> mapimages;
     private AdapterCallback mAdapterCallback;
     private Context context;
     SessionManager session;
@@ -475,23 +470,6 @@ class SpotFriendAdapter extends ArrayAdapter<Spot> {
     public SpotFriendAdapter(Context context, ArrayList<Spot> spots, Fragment fg) {
         super(context, 0, spots);
         this.context = context;
-        try {
-            this.mAdapterCallback = ((AdapterCallback) fg);
-        } catch (ClassCastException e) {
-            throw new ClassCastException("Activity must implement AdapterCallback.");
-        }
-
-        session = new SessionManager(context);
-        profile = new HashMap<>();
-        profile = session.getUserDetails();
-        server = new DBServer(context);
-    }
-
-    public SpotFriendAdapter(Context context, ArrayList<Spot> spots, HashMap<String, Bitmap> spotsimages, Fragment fg) {
-        super(context, 0, spots);
-        this.context = context;
-        mapimages = new HashMap<String, Bitmap>();
-        mapimages = spotsimages;
         try {
             this.mAdapterCallback = ((AdapterCallback) fg);
         } catch (ClassCastException e) {
@@ -580,7 +558,7 @@ class SpotFriendAdapter extends ArrayAdapter<Spot> {
         like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                like.setBackground(context.getResources().getDrawable(R.drawable.liked));
             }
         });
         // Populate the data into the template view using the data object
@@ -596,20 +574,26 @@ class SpotFriendAdapter extends ArrayAdapter<Spot> {
                 }
                 spotTag.setText(chainetag.toString());
             }
-            Bitmap bitmap = mapimages.get(spot.getPhotokey()); //BitmapFactory.decodeFile(spot.getPhotokey());
 
-            // Get height or width of screen at runtime
-            Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
-            Point size = new Point();
-            display.getSize(size);
-            int width = size.x;
+            //photo du spot
+            File file = new File(DBServer.DOSSIER_IMAGE + File.separator + spot.getPhotokey() + ".jpg");
+            if (file.exists()) {
+                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
 
-            //reduce the photo dimension keeping the ratio so that it'll fit in the imageview
-            int nh = (int) ( bitmap.getHeight() * (Double.valueOf(width) / bitmap.getWidth()) );
-            Bitmap scaled = Bitmap.createScaledBitmap(bitmap, width, nh, true);
+                // Get height or width of screen at runtime
+                Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
+                int width = size.x;
 
-            //define the image source of the imageview
-            spotPhoto.setImageBitmap(scaled);
+                //reduce the photo dimension keeping the ratio so that it'll fit in the imageview
+                int nh = (int) ( bitmap.getHeight() * (Double.valueOf(width) / bitmap.getWidth()) );
+                Bitmap scaled = Bitmap.createScaledBitmap(bitmap, width, nh, true);
+
+                //define the image source of the imageview
+                spotPhoto.setImageBitmap(scaled);
+            }
+
         }catch (Exception e){
             Log.e("spot", e.getMessage());}
 

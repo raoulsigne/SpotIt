@@ -26,7 +26,7 @@ public class Test extends AppCompatActivity implements AdapterCallback {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_test);
+        setContentView(R.layout.test);
         _context = getApplicationContext();
 
         Button valider = (Button) findViewById(R.id.btnValider);

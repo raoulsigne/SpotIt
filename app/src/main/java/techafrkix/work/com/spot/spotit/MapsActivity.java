@@ -31,6 +31,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -93,6 +94,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
     ArrayList<Spot> spots;
 
     private HashMap<Marker, MyMarker> mMarkersHashMap;
+    private HashMap<Marker, Spot> mappage;
     private ArrayList<MyMarker> mMyMarkersArray = new ArrayList<MyMarker>();
 
     private SessionManager session;
@@ -104,7 +106,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
 
     private ImageView locateme, myspot;
     private TextView txtmyspot;
-    private EditText findspot;
+    private LinearLayout findspot;
 
     DownloadSpotsTask task;
 
@@ -118,19 +120,17 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
         View view = inflater.inflate(R.layout.activity_maps, container, false);
         spots = new ArrayList<Spot>();
         mMarkersHashMap = new HashMap<Marker, MyMarker>();
+        mappage = new HashMap<>();
 
         locateme = (ImageView) view.findViewById(R.id.imgLocateMe);
         myspot = (ImageView) view.findViewById(R.id.imgMySpots);
         txtmyspot = (TextView) view.findViewById(R.id.txtMySpot);
-        findspot = (EditText) view.findViewById(R.id.findspot);
+        findspot = (LinearLayout) view.findViewById(R.id.findspot);
 
-        findspot.setOnTouchListener(new View.OnTouchListener() {
-            public boolean onTouch(View v, MotionEvent event) {
-                int action = event.getActionMasked();
-                if (action == MotionEvent.ACTION_DOWN && action != MotionEvent.ACTION_CANCEL) {
-                    mListener.onSearchSpot();
-                }
-                return true;
+        findspot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onSearchSpot();
             }
         });
 
@@ -366,6 +366,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onLoadSpot(ArrayList<Spot> spots);
+        void onDetailSpot(Spot spot);
         void onSearchSpot();
     }
 

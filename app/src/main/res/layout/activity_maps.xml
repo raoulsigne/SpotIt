@@ -6,29 +6,35 @@
     android:layout_height="match_parent"
     tools:context="techafrkix.work.com.spot.spotit.MapsActivity">
 
-    <RelativeLayout
+    <LinearLayout
+        android:id="@+id/findspot"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
-        android:elevation="10dp">
+        android:layout_height="40dip"
+        android:layout_gravity="top"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:background="@color/myblue">
 
-        <EditText
-            android:id="@+id/findspot"
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
+        <ImageView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:src="@drawable/search"
             android:layout_gravity="center"
-            android:layout_weight="1"
-            android:background="@drawable/custom_edittext"
-            android:hint="search spots"
-            android:textAlignment="center"
-            android:textSize="14sp"
-            android:drawableLeft="@drawable/search"
-            android:drawableRight="@drawable/cross"/>
+            android:scaleType="center">
 
-    </RelativeLayout>
+        </ImageView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="Search spots"
+            android:layout_gravity="center"
+            android:textColor="@color/blanc"
+            android:textSize="14sp"
+            android:textAllCaps="false"/>
+
+    </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"

@@ -211,6 +211,10 @@ public class TakeSnap extends Activity implements View.OnClickListener{
             clear = new Button(context);
             clear.setBackground(getResources().getDrawable(R.drawable.cancel));
             shutter.setBackground(getResources().getDrawable(R.drawable.round_button));
+            done.setVisibility(INVISIBLE);
+            clear.setVisibility(INVISIBLE);
+            txtAnnuler.setVisibility(INVISIBLE);
+            txtValider.setVisibility(INVISIBLE);
             addView(shutter);
             addView(done);
             addView(clear);
@@ -239,6 +243,11 @@ public class TakeSnap extends Activity implements View.OnClickListener{
                                     new Camera.ShutterCallback() { @Override public void onShutter() { } },
                                     new Camera.PictureCallback() { @Override public void onPictureTaken(byte[] data, Camera camera) { } },
                                     ph);
+
+                            done.setVisibility(VISIBLE);
+                            clear.setVisibility(VISIBLE);
+                            txtAnnuler.setVisibility(VISIBLE);
+                            txtValider.setVisibility(VISIBLE);
                         }
                     } catch (Exception e) {
                         Log.d(TAG, e.getMessage());
@@ -280,6 +289,11 @@ public class TakeSnap extends Activity implements View.OnClickListener{
                         if (mCamera != null) {
                             mCamera.setDisplayOrientation(90);
                             mCamera.startPreview();
+
+                            done.setVisibility(INVISIBLE);
+                            clear.setVisibility(INVISIBLE);
+                            txtAnnuler.setVisibility(INVISIBLE);
+                            txtValider.setVisibility(INVISIBLE);
                         }
                     } catch (Exception e) {
                         Log.d(TAG, e.getMessage());

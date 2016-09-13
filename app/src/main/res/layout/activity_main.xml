@@ -20,7 +20,7 @@
         android:layout_height="?attr/actionBarSize"
         android:layout_alignParentBottom="true"
         android:layout_weight="1"
-        android:background="@drawable/custom_bar"
+        android:background="@drawable/custom_bar_blue"
         android:orientation="horizontal">
 
         <LinearLayout

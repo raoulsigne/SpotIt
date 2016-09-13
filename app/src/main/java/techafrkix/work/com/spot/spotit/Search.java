@@ -94,7 +94,7 @@ public class Search extends Fragment {
                 txtAmis.setTextColor(getResources().getColor(R.color.titre_menu));
                 txtPublic.setTextColor(getResources().getColor(R.color.titre_menu));
 
-                vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi_clicked));
+                vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi_selected));
                 vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend_clicked));
                 vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.publics));
             }
@@ -107,8 +107,8 @@ public class Search extends Fragment {
                 txtAmis.setTextColor(getResources().getColor(R.color.myblue));
                 txtPublic.setTextColor(getResources().getColor(R.color.titre_menu));
 
-                vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi));
-                vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friends));
+                vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi_));
+                vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friends_clicked));
                 vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.publics));
             }
         });
@@ -120,7 +120,7 @@ public class Search extends Fragment {
                 txtAmis.setTextColor(getResources().getColor(R.color.titre_menu));
                 txtPublic.setTextColor(getResources().getColor(R.color.myblue));
 
-                vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi));
+                vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi_));
                 vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend_clicked));
                 vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.public_clicked));
             }

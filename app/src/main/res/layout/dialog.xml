@@ -53,19 +53,12 @@
             android:layout_height="1dip"
             android:background="@color/separator"/>
 
-        <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="fill_parent"
+        <Spinner
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <RadioButton android:id="@+id/radio_pirates"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Masculin"/>
-            <RadioButton android:id="@+id/radio_ninjas"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Feminin"/>
-        </RadioGroup>
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/spinner_sexe"
+            android:padding="10dp" />
 
     </LinearLayout>
 

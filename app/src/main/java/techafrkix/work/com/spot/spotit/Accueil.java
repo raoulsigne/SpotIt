@@ -17,16 +17,24 @@ import techafrkix.work.com.spot.bd.Commentaire;
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.GeoHash;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
 public class Accueil extends AppCompatActivity {
 
     Button login, signin;
     ArrayList<Spot> spots;
+    private SessionManager session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accueil);
+
+        session = new SessionManager(getApplicationContext());
+        if (session.isLogin()){
+            startActivity(new Intent(Accueil.this, Welcome.class));
+            finish();
+        }
 
         //recuperation des boutons à partir du xml
         login = (Button)findViewById(R.id.btnLogin);

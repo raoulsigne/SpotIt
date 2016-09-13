@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
@@ -418,12 +419,12 @@ public class Add_Friend extends Fragment implements FriendCallback{
             });
 
             if (utilisateurs[position].getPhoto() != "") {
-                String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
-                final File file = new File(dossier + File.separator + utilisateurs[position].getPhoto() + ".jpg");
+                final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + utilisateurs[position].getPhoto() + ".jpg");
 
                 if (file.exists()) {
                     // marker.showInfoWindow();
-                    imgProfile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                    Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                    imgProfile.setImageBitmap(bitmap);
                     Log.i("file", "file exists");
                 } else {
                     if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
@@ -455,7 +456,8 @@ public class Add_Friend extends Fragment implements FriendCallback{
                                     barProgressDialog.setProgress(rapport);
                                     if (rapport == 100) {
                                         barProgressDialog.dismiss();
-                                        imgProfile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                                        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                                        imgProfile.setImageBitmap(bitmap);
                                     }
                                 }catch (Exception e){
                                     Log.e("chargement", e.getMessage());

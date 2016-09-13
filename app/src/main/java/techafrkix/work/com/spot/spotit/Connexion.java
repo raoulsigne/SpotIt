@@ -3,16 +3,21 @@ package techafrkix.work.com.spot.spotit;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -40,7 +45,7 @@ import techafrkix.work.com.spot.bd.UtilisateurDBAdapteur;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
-public class Connexion extends AppCompatActivity {
+public class Connexion extends AppCompatActivity implements DatePickerCallback{
 
     private static int USER_ID = 0;
     private AccessTokenTracker fbTracker;
@@ -63,6 +68,10 @@ public class Connexion extends AppCompatActivity {
     private String fbProfileName;
 
     private Utilisateur utilisateur;
+
+    private EditText edtdate, edtpseudo;
+    private Spinner spsexe;
+    private Button btnValider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,21 +113,6 @@ public class Connexion extends AppCompatActivity {
             }
         }
 
-        final EditText txtPseudo = new EditText(Connexion.this);
-        txtPseudo.setHint("Pseudo");
-        final EditText txtDate = new EditText(Connexion.this);
-        txtDate.setHint("Date de naissance");
-        txtDate.setInputType(InputType.TYPE_CLASS_DATETIME);
-        final Button btnValider = new Button(Connexion.this);
-        btnValider.setText("Valider");
-        btnValider.setHeight(20);
-        btnValider.setBackground(getResources().getDrawable(R.drawable.button_blue));
-        final LinearLayout layout = new LinearLayout(Connexion.this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(10, 0, 10, 0);
-        layout.addView(txtPseudo);
-        layout.addView(txtDate);
-        layout.addView(btnValider);
         //bout de code pour gérer le bouton de connexion via facebook à l'application
         loginButton.setReadPermissions("user_friends");
         LoginManager.getInstance().registerCallback(callbackManager,
@@ -170,6 +164,8 @@ public class Connexion extends AppCompatActivity {
                                                         session.createLoginSession(utilisateur.getPseudo(), utilisateur.getEmail(), utilisateur.getId(),
                                                                 utilisateur.getNbspot(), utilisateur.getNbrespot(), 0, utilisateur.getPhoto(), DBServer.CONNEXION_FB);
 
+                                                        session.valid_login();
+
                                                         if (regId == utilisateur.getAndroidid())
                                                             session.storeRegistrationId(utilisateur.getAndroidid());
                                                         else if (regId != null & regId != " "){
@@ -187,16 +183,42 @@ public class Connexion extends AppCompatActivity {
                                                         finish();
                                                     }
                                                     else { // on demande à l'utilisateur d'entrer ses identifiants pour l'en créer un compte
-                                                        new AlertDialog.Builder(Connexion.this)
-                                                                .setTitle("Vos Informations")
-                                                                .setView(layout)
-                                                                .show();
+                                                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(Connexion.this);
+                                                        LayoutInflater inflater = getLayoutInflater();
+                                                        View dialogView = inflater.inflate(R.layout.dialog, null);
+                                                        dialogBuilder.setView(dialogView);
+
+                                                        edtpseudo = (EditText) dialogView.findViewById(R.id.edtpseudo);
+                                                        edtdate = (EditText) dialogView.findViewById(R.id.edtdate);
+                                                        btnValider = (Button) dialogView.findViewById(R.id.btnvalider);
+                                                        spsexe = (Spinner) dialogView.findViewById(R.id.spinner_sexe);
+
+                                                        final String[] mylabels = getApplicationContext().getResources().getStringArray(R.array.sexe);
+                                                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
+                                                                R.layout.mylabel, R.id.textview_label, mylabels);
+                                                        adapter.setDropDownViewResource(R.layout.mylabel);
+                                                        spsexe.setAdapter(adapter);
+                                                        spsexe.setSelection(1);
+
+                                                        edtdate.setOnTouchListener(new View.OnTouchListener() {
+                                                            public boolean onTouch(View v, MotionEvent event) {
+                                                                int action = event.getActionMasked();
+                                                                if (action == MotionEvent.ACTION_DOWN && action != MotionEvent.ACTION_CANCEL) {
+                                                                    DialogFragment newFragment = new Inscription.DatePickerFragment();
+                                                                    newFragment.show(getSupportFragmentManager(), "datePicker");
+                                                                }
+                                                                return true;
+                                                            }
+                                                        });
+
+                                                        AlertDialog alertDialog = dialogBuilder.create();
+                                                        alertDialog.show();
 
                                                         btnValider.setOnClickListener(new View.OnClickListener() {
                                                             @Override
                                                             public void onClick(View v) {
-                                                                pseudo = txtPseudo.getText().toString();
-                                                                sdate = txtDate.getText().toString();
+                                                                pseudo = edtpseudo.getText().toString();
+                                                                sdate = edtdate.getText().toString();
                                                                 utilisateur = new Utilisateur();
 
 
@@ -214,12 +236,12 @@ public class Connexion extends AppCompatActivity {
                                                                     t2.join();
                                                                     if (utilisateur != null){
                                                                         Log.i("Connexion", "Utilisateur avec " + pseudo + " existant");
-                                                                        txtPseudo.setTextColor(getResources().getColor(R.color.pink));
-                                                                        txtPseudo.setText(txtPseudo.getText().toString() + " existant!");
+                                                                        edtpseudo.setTextColor(getResources().getColor(R.color.pink));
+                                                                        edtpseudo.setText(edtpseudo.getText().toString() + " existant!");
                                                                     }
                                                                     else {
                                                                         final Utilisateur user = new Utilisateur();
-                                                                        user.setDate_naissance(txtDate.getText().toString());
+                                                                        user.setDate_naissance(edtdate.getText().toString());
                                                                         user.setEmail(email);
                                                                         String pass = BCrypt.hashpw(email+Inscription._TO_CONCAT, BCrypt.gensalt()).toString();
                                                                         user.setPassword(pass);
@@ -237,11 +259,7 @@ public class Connexion extends AppCompatActivity {
                                                                             t3.join();
                                                                             if (USER_ID != -1) {
                                                                                 Log.i("BD", "nouvel utilisateur enregistré");
-                                                                                // Creating user login session
-                                                                                // For testing i am stroing name, email as follow
-                                                                                // Use user real data
-                                                                                session.createLoginSession(pseudo, user.getEmail(), USER_ID);
-
+                                                                                session.valid_login();
                                                                                 session.createLoginSession(user.getPseudo(), user.getEmail(), USER_ID,
                                                                                         0, 0, 0, "", DBServer.CONNEXION_FB);
 
@@ -315,6 +333,7 @@ public class Connexion extends AppCompatActivity {
                             session.createLoginSession(utilisateur.getPseudo(), utilisateur.getEmail(), utilisateur.getId(),
                                     utilisateur.getNbspot(), utilisateur.getNbrespot(), 0, utilisateur.getPhoto(), DBServer.CONNEXION_NORMAL);
                             session.storeRegistrationId(utilisateur.getAndroidid());
+                            session.valid_login();
 
                             startActivity(itwelcome);
                             finish();
@@ -351,6 +370,11 @@ public class Connexion extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void changedate(String date) {
+        edtdate.setText(date);
     }
 
     public boolean isLoggedIn() {

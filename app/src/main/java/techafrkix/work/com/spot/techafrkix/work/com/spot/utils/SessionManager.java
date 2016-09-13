@@ -39,6 +39,7 @@ public class SessionManager {
 
     // Sharedpref file name
     private static final String PREF_NAME = "AndroidHivePref";
+    private static final String PREF_NAME_W = "SpotitPref";
 
     // All Shared Preferences Keys
     public static final String IS_LOGIN = "IsLoggedIn";
@@ -72,6 +73,9 @@ public class SessionManager {
 
     // type connexion Id (make variable publics to access from outside)
     public static final String KEY_TYPE_CONNEXION_ID = "type_connexion_id";
+
+    // type connexion Id (make variable publics to access from outside)
+    public static final String KEY_USER_REGISTERED = "user_registered";
 
     // Constructor
     public SessionManager(Context context){
@@ -116,14 +120,6 @@ public class SessionManager {
         //storing type connexion in pref
         editor.putString(KEY_TYPE_CONNEXION_ID, String.valueOf(0));
 
-        // Récupération du registerId du terminal ou enregistrement de ce dernier
-//        regId = registerGCM();
-//        if (TextUtils.isEmpty(regId)){
-//            Log.i("GCM", "register key vide");
-//        }else
-//            editor.putString(KEY_REGISTRATION_ID, regId);
-
-
         // commit changes
         editor.commit();
     }
@@ -161,13 +157,6 @@ public class SessionManager {
 
         //storing type connexion in pref
         editor.putString(KEY_TYPE_CONNEXION_ID, String.valueOf(connexionId));
-
-        // Récupération du registerId du terminal ou enregistrement de ce dernier
-//        regId = registerGCM();
-//        if (TextUtils.isEmpty(regId)){
-//            Log.i("GCM", "register key vide");
-//        }else
-//            editor.putString(KEY_REGISTRATION_ID, regId);
 
         // commit changes
         editor.commit();
@@ -232,6 +221,38 @@ public class SessionManager {
     }
 
     /**
+     * fonction qui incrémente de 1 le nombre de respots
+     */
+    public void valid_registration(){
+        SharedPreferences settings = _context.getSharedPreferences(PREF_NAME_W, 0);
+        settings.edit().putBoolean(KEY_USER_REGISTERED, true).commit();
+        isLogin();
+    }
+
+    /**
+     * dialog if an user is registered
+     * @return true or false depending of the status of user
+     */
+    public boolean isRegistered(){
+        SharedPreferences settings = _context.getSharedPreferences(PREF_NAME_W, 0);
+        return settings.getBoolean(KEY_USER_REGISTERED, false);
+    }
+
+    /**
+     * dialog if an user is connected
+     * @return true or false depending of the status of user
+     */
+    public boolean isLogin(){
+
+        return pref.getBoolean(IS_LOGIN, false);
+    }
+
+    public void valid_login(){
+        editor.putBoolean(IS_LOGIN, true);
+        editor.commit();
+        valid_registration();
+    }
+    /**
      * Get stored session data
      * */
     public HashMap<String, String> getUserDetails(){
@@ -268,14 +289,6 @@ public class SessionManager {
 
         // return user
         return user;
-    }
-
-    /**
-     * dialog if an user is connected
-     * @return true or false depending of the status of user
-     */
-    public boolean isLogin(){
-        return pref.getBoolean(IS_LOGIN, false);
     }
 
     /**

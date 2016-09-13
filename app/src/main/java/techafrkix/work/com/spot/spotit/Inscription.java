@@ -18,9 +18,11 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -82,6 +84,7 @@ public class Inscription extends AppCompatActivity implements DatePickerCallback
 
     private TextView policy;
     private EditText edtdate, edtpseudo;
+    private Spinner spsexe;
     private Button btnValider;
 
     @Override
@@ -182,6 +185,7 @@ public class Inscription extends AppCompatActivity implements DatePickerCallback
                                     // For testing i am stroing name, email as follow
                                     // Use user real data
                                     session.createLoginSession(user.getPseudo(), user.getEmail(), USER_ID);
+                                    session.valid_registration();
                                     startActivity(itmain);
                                     finish();
                                 } else {
@@ -280,6 +284,7 @@ public class Inscription extends AppCompatActivity implements DatePickerCallback
                                                         session.createLoginSession(utilisateur.getPseudo(), utilisateur.getEmail(), utilisateur.getId(),
                                                                 utilisateur.getNbspot(), utilisateur.getNbrespot(), 0, utilisateur.getPhoto(), DBServer.CONNEXION_FB);
                                                         session.storeRegistrationId(utilisateur.getAndroidid());
+                                                        session.valid_registration();
 
                                                         startActivity(itmain); // déjà enregistré on démarre l'activité Welcome
                                                         finish();
@@ -293,6 +298,14 @@ public class Inscription extends AppCompatActivity implements DatePickerCallback
                                                         edtpseudo = (EditText) dialogView.findViewById(R.id.edtpseudo);
                                                         edtdate = (EditText) dialogView.findViewById(R.id.edtdate);
                                                         btnValider = (Button) dialogView.findViewById(R.id.btnvalider);
+                                                        spsexe = (Spinner) dialogView.findViewById(R.id.spinner_sexe);
+
+                                                        final String[] mylabels = getApplicationContext().getResources().getStringArray(R.array.sexe);
+                                                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
+                                                                R.layout.mylabel, R.id.textview_label, mylabels);
+                                                        adapter.setDropDownViewResource(R.layout.mylabel);
+                                                        spsexe.setAdapter(adapter);
+                                                        spsexe.setSelection(1);
 
                                                         edtdate.setOnTouchListener(new View.OnTouchListener() {
                                                             public boolean onTouch(View v, MotionEvent event) {
@@ -357,6 +370,7 @@ public class Inscription extends AppCompatActivity implements DatePickerCallback
                                                                                 // Use user real data
                                                                                 session.createLoginSession(user.getPseudo(), user.getEmail(), USER_ID);
                                                                                 session.registerGCM();
+                                                                                session.valid_registration();
 
                                                                                 startActivity(itmain);
                                                                                 finish();

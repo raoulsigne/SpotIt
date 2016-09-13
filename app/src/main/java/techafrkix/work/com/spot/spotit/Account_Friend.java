@@ -274,8 +274,7 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
             @Override
             public boolean onMarkerClick(final com.google.android.gms.maps.model.Marker marker) {
                 final MyMarker myMarker = mMarkersHashMap.get(marker);
-                String dossier = getActivity().getApplicationContext().getFilesDir().getPath() + DBServer.DOSSIER_IMAGE;
-                final File file = new File(dossier + File.separator + myMarker.getmIcon() + ".jpg");
+                final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + myMarker.getmIcon() + ".jpg");
 
                 if (file.exists()) {
                     // marker.showInfoWindow();

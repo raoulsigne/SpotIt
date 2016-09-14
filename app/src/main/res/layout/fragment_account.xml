@@ -8,30 +8,39 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@color/blanc">
+        android:background="@color/blanc"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp"
+            android:background="@color/myblue"
             android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/edtsearchfriend"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:layout_gravity="center"
-                android:background="@drawable/custom_edittext"
-                android:hint="Search friends"
-                android:textAlignment="center"
-                android:textSize="14sp"
-                android:drawableLeft="@drawable/search"
-                android:drawableRight="@drawable/cross"/>
+                android:layout_height="30dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@android:drawable/editbox_background"
+                android:gravity="center">
 
+                <EditText
+                    android:id="@+id/edtsearchfriend"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true"
+                    android:background="@null"
+                    android:drawableLeft="@android:drawable/ic_menu_search"
+                    android:gravity="center"
+                    android:hint="Search friends"
+                    android:textAlignment="center"
+                    android:textSize="12sp" />
+
+            </RelativeLayout>
 
         </LinearLayout>
 
@@ -39,19 +48,18 @@
             android:id="@+id/infos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="15dp"
+            android:background="@color/blanc"
             android:paddingBottom="10dp"
-            android:background="@color/blanc">
+            android:paddingTop="15dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginLeft="20dp">
+                android:layout_marginLeft="20dp"
+                android:orientation="vertical">
 
 
-                <com.mikhaellopez.circularimageview.CircularImageView
-                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                <com.mikhaellopez.circularimageview.CircularImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/profile_image"
                     android:layout_width="90dp"
                     android:layout_height="90dp"
@@ -61,6 +69,7 @@
                     app:civ_border_width="0dp" />
 
                 <TextView
+                    android:id="@+id/txtPseudo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -68,16 +77,15 @@
                     android:textAlignment="center"
                     android:textColor="@color/noir"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:id="@+id/txtPseudo" />
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginLeft="30dp">
+                android:layout_marginLeft="30dp"
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -91,15 +99,15 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/txtSpots"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5dp"
                             android:text="28"
+                            android:textAlignment="center"
                             android:textColor="@color/noir"
                             android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:textAlignment="center"
-                            android:id="@+id/txtSpots" />
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="match_parent"
@@ -107,8 +115,8 @@
                             android:layout_gravity="center_horizontal"
                             android:layout_marginTop="0dp"
                             android:text="spots"
-                            android:textColor="@color/titre_menu"
                             android:textAlignment="center"
+                            android:textColor="@color/titre_menu"
                             android:textSize="15sp" />
                     </LinearLayout>
 
@@ -119,15 +127,15 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/txtRespots"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5dp"
                             android:text="28"
+                            android:textAlignment="center"
                             android:textColor="@color/noir"
                             android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:textAlignment="center"
-                            android:id="@+id/txtRespots" />
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="match_parent"
@@ -135,8 +143,8 @@
                             android:layout_gravity="center_horizontal"
                             android:layout_marginTop="0dp"
                             android:text="respots"
-                            android:textColor="@color/titre_menu"
                             android:textAlignment="center"
+                            android:textColor="@color/titre_menu"
                             android:textSize="15sp" />
                     </LinearLayout>
 
@@ -147,15 +155,15 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/txtFriends"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5dp"
                             android:text="28"
+                            android:textAlignment="center"
                             android:textColor="@color/noir"
                             android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:textAlignment="center"
-                            android:id="@+id/txtFriends" />
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="match_parent"
@@ -163,8 +171,8 @@
                             android:layout_gravity="center_horizontal"
                             android:layout_marginTop="0dp"
                             android:text="friends"
-                            android:textColor="@color/titre_menu"
                             android:textAlignment="center"
+                            android:textColor="@color/titre_menu"
                             android:textSize="15sp" />
                     </LinearLayout>
 
@@ -173,10 +181,10 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:layout_gravity="bottom"
+                    android:layout_marginTop="15dp"
                     android:gravity="center"
-                    android:layout_marginTop="15dp">
+                    android:orientation="horizontal">
 
                     <Button
                         android:id="@+id/btnoption"
@@ -185,15 +193,15 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="10dp"
                         android:background="@color/fond_detail"
-                        android:text="settings"
-                        android:textAllCaps="false"
-                        android:textStyle="normal"
-                        android:textColor="#555555"
-                        android:textSize="16sp"
                         android:drawableLeft="@drawable/optionaccount"
                         android:drawablePadding="20dp"
                         android:paddingLeft="20dp"
-                        android:paddingRight="20dp"/>
+                        android:paddingRight="20dp"
+                        android:text="settings"
+                        android:textAllCaps="false"
+                        android:textColor="#555555"
+                        android:textSize="16sp"
+                        android:textStyle="normal" />
 
                 </LinearLayout>
 
@@ -205,8 +213,8 @@
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_gravity="center"
-            android:gravity="center"
             android:background="@drawable/custom_bar"
+            android:gravity="center"
             android:orientation="horizontal">
 
             <LinearLayout
@@ -248,7 +256,8 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <RelativeLayout android:layout_width="match_parent"
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
                     <ImageButton
@@ -258,21 +267,21 @@
                         android:layout_centerHorizontal="true"
                         android:background="@drawable/notification" />
 
-                    <TextView android:id="@+id/notif_count"
+                    <TextView
+                        android:id="@+id/notif_count"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignRight="@id/imgNotification"
                         android:layout_marginLeft="10dp"
+                        android:background="@drawable/badge_red"
+                        android:gravity="center"
                         android:paddingLeft="5dp"
                         android:paddingRight="5dp"
-                        android:background="@drawable/badge_red"
+                        android:singleLine="true"
                         android:text="0"
-                        android:textSize="12sp"
-                        android:textColor="@android:color/white"
                         android:textAlignment="center"
-                        android:gravity="center"
-                        android:singleLine="true">
-                    </TextView>
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp"></TextView>
 
                 </RelativeLayout>
 
@@ -282,10 +291,10 @@
 
         <fragment
             android:id="@+id/mymap"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/background_new"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
             tools:context="techafrkix.work.com.spot.spotit.Account">
 
             <RelativeLayout
@@ -306,8 +315,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="18dp"
                         android:layout_marginBottom="2dp"
-                        android:gravity="center"
                         android:background="@drawable/badge"
+                        android:gravity="center"
                         android:paddingLeft="5dp"
                         android:paddingRight="5dp"
                         android:text=" Spots"
@@ -320,11 +329,11 @@
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_gravity="center"
+                        android:background="@drawable/round_button_white"
+                        android:elevation="15dp"
                         android:gravity="center"
                         android:padding="12dp"
-                        android:src="@drawable/play_button"
-                        android:background="@drawable/round_button_white"
-                        android:elevation="15dp"/>
+                        android:src="@drawable/play_button" />
 
 
                 </LinearLayout>

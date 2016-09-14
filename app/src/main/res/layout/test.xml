@@ -125,4 +125,23 @@
 
     </RelativeLayout>
 
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:background="@android:drawable/editbox_background">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Username"
+            android:background="@null"
+            android:gravity="center"
+            android:drawableLeft="@android:drawable/ic_menu_search"/>
+
+    </RelativeLayout>
+
 </LinearLayout>

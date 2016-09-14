@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private static Context context;
 
     MapsActivity fgAccueil;
+    TakeSnap fgSnap;
     ListeSpots fgSpots;
     Account fgAccount;
     DetailSpot fgDetailspot;
@@ -150,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             notif_count.setVisibility(View.INVISIBLE);
 
         fgAccueil = new MapsActivity();
+        fgSnap = new TakeSnap();
         fgSpots = new ListeSpots();
         fgAccount = new Account();
         fgDetailspot = new DetailSpot();
@@ -818,11 +820,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     bundle.putDouble("latitude", 0);
                 }
 
-                Intent imagepreview = new Intent(MainActivity.this,TakeSnap.class);
-                imagepreview.putExtras(bundle);
-                // finish();
-                startActivity(imagepreview);
+//                Intent imagepreview = new Intent(MainActivity.this,TakeSnap.class);
+//                imagepreview.putExtras(bundle);
+//                // finish();
+//                startActivity(imagepreview);
 
+                fgSnap = new TakeSnap();
+                fgSnap.setArguments(bundle);
+                try {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, fgSnap, "NEW")
+                            .commit();
+                } catch (Exception e) {
+                    Log.e("fragment", e.getMessage());
+                }
 
                 break;
 

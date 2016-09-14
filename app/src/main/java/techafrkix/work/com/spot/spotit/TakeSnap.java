@@ -11,7 +11,9 @@ import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -33,7 +35,7 @@ import java.util.List;
 
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 
-public class TakeSnap extends Activity implements View.OnClickListener{
+public class TakeSnap extends Fragment implements View.OnClickListener{
 
     public static final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
     protected Preview mPreview;
@@ -43,33 +45,33 @@ public class TakeSnap extends Activity implements View.OnClickListener{
     public double longitude, latitude;
     Button button;
 
+    Context _context;
+
     // The first rear facing camera
     int defaultCameraId;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Bundle extras = getIntent().getExtras();
+        _context = getActivity();
 
         try {
-            longitude = extras.getDouble("longitude");
-            latitude = extras.getDouble("latitude");
+            longitude = getArguments().getDouble("longitude");
+            latitude = getArguments().getDouble("latitude");
             Log.i("parametre", " longitude=" + longitude + "; latitude=" + latitude);
         }catch (Exception e){
             latitude = 0;
             longitude = 0;
         }
         // Hide the window title.
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        // requestWindowFeature(Window.FEATURE_NO_TITLE);
         // getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         // Create a RelativeLayout container that will hold a SurfaceView,
         // and set it as the content of our activity.
-        mPreview = new Preview(this);
+        mPreview = new Preview(_context);
         mPreview.longitude = longitude;
         mPreview.latitude = latitude;
-        setContentView(mPreview);
 
         // Find the total number of cameras available
         numberOfCameras = Camera.getNumberOfCameras();
@@ -82,13 +84,25 @@ public class TakeSnap extends Activity implements View.OnClickListener{
                 defaultCameraId = i;
             }
         }
+
+        return mPreview;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
     }
 
     @Override
     public void onClick(View view) {
         try {
             if (mCamera != null){
-                PhotoHandler ph = new PhotoHandler(this, mCamera);
+                PhotoHandler ph = new PhotoHandler(_context, mCamera);
                 mCamera.takePicture(null, null, ph);
             }
         }
@@ -99,7 +113,7 @@ public class TakeSnap extends Activity implements View.OnClickListener{
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
 
 
@@ -119,7 +133,7 @@ public class TakeSnap extends Activity implements View.OnClickListener{
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
 
         // Because the Camera object is a shared resource, it's very
@@ -155,7 +169,7 @@ public class TakeSnap extends Activity implements View.OnClickListener{
 
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    Toast.makeText(getApplicationContext(),"Vous ne serez pas capable de faire des spots", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(_context,"Vous ne serez pas capable de faire des spots", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
@@ -433,7 +447,6 @@ public class TakeSnap extends Activity implements View.OnClickListener{
                     int hauteur = height - width;
                     //positionnement de la surface du preview
                     child.layout(0, 0, width, height);
-                    Log.i("PhotoHandler", "Preview dimension " + width + " " + height + " rapport = " + (double) height / width);
                     //positionnement du bouton shutter
                     child1.layout(width/2-pixels, width+hauteur/2-pixels, width/2+pixels, width+hauteur/2+pixels);
                     //positionnement du bouton valider
@@ -509,12 +522,12 @@ public class TakeSnap extends Activity implements View.OnClickListener{
             // the preview.
 
             // Here, thisActivity is the current activity
-            if (ContextCompat.checkSelfPermission(TakeSnap.this,
+            if (ContextCompat.checkSelfPermission(_context,
                     Manifest.permission.CAMERA)
                     != PackageManager.PERMISSION_GRANTED) {
 
                 // Should we show an explanation?
-                if (ActivityCompat.shouldShowRequestPermissionRationale(TakeSnap.this,
+                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                         Manifest.permission.CAMERA)) {
 
                     // Show an expanation to the user *asynchronously* -- don't block
@@ -525,7 +538,7 @@ public class TakeSnap extends Activity implements View.OnClickListener{
 
                     // No explanation needed, we can request the permission.
 
-                    ActivityCompat.requestPermissions(TakeSnap.this,
+                    ActivityCompat.requestPermissions(getActivity(),
                             new String[]{Manifest.permission.CAMERA},
                             MY_PERMISSIONS_REQUEST_CAMERA);
 

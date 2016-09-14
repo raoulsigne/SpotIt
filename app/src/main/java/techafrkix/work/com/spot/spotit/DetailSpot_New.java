@@ -1,10 +1,12 @@
 package techafrkix.work.com.spot.spotit;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -15,7 +17,9 @@ import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -37,7 +41,9 @@ import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.GeoHash;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
-public class DetailSpot_New extends AppCompatActivity {
+public class DetailSpot_New extends Fragment {
+
+    Context _context;
 
     TextView txtMoi, txtAmis, txtPublic;
     EditText edtTags;
@@ -58,37 +64,36 @@ public class DetailSpot_New extends AppCompatActivity {
     public static final String V_PUBLIC = "publics";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_detail_spot);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_detail_spot, container, false);
+        _context = getActivity();
 
         // Session class instance
-        session = new SessionManager(getApplicationContext());
+        session = new SessionManager(_context);
         profile = new HashMap<>();
-        server = new DBServer(getApplicationContext());
+        server = new DBServer(_context);
         profile = session.getUserDetails();
 
-        Bundle extras = getIntent().getExtras();
-
-        imagepath = extras.getString("image");
-        longitude = extras.getDouble("longitude");
-        latitude = extras.getDouble("latitude");
-        aws_tools = new AWS_Tools(getApplicationContext());
+        imagepath = getArguments().getString("image");
+        longitude = getArguments().getDouble("longitude");
+        latitude = getArguments().getDouble("latitude");
+        aws_tools = new AWS_Tools(_context);
 
         Log.i("Photo", imagepath);
 
-        Button valider = (Button)findViewById(R.id.btnValider);
-        Button annuler = (Button)findViewById(R.id.btnAnnuler);
-        final ImageButton vMoi = (ImageButton)findViewById(R.id.visibiliteMoi);
-        final ImageButton vFriend = (ImageButton)findViewById(R.id.visibiliteFriend);
-        final ImageButton vPublic = (ImageButton)findViewById(R.id.visibilitePublic);
-        txtMoi = (TextView)findViewById(R.id.txtMoi);
-        txtAmis = (TextView)findViewById(R.id.txtAmis);
-        txtPublic = (TextView)findViewById(R.id.txtPublic);
-        imgspot = (ImageView)findViewById(R.id.imgspot);
-        edtTags = (EditText)findViewById(R.id.edtTags);
-        liste = (LinearLayout) findViewById(R.id.listes);
-        buttonAdd = (Button) findViewById(R.id.btnAdd);
+        Button valider = (Button) view.findViewById(R.id.btnValider);
+//        Button annuler = (Button) view.findViewById(R.id.btnAnnuler);
+        final ImageButton vMoi = (ImageButton) view.findViewById(R.id.visibiliteMoi);
+        final ImageButton vFriend = (ImageButton) view.findViewById(R.id.visibiliteFriend);
+        final ImageButton vPublic = (ImageButton) view.findViewById(R.id.visibilitePublic);
+        txtMoi = (TextView) view.findViewById(R.id.txtMoi);
+        txtAmis = (TextView) view.findViewById(R.id.txtAmis);
+        txtPublic = (TextView) view.findViewById(R.id.txtPublic);
+        imgspot = (ImageView) view.findViewById(R.id.imgspot);
+        edtTags = (EditText) view.findViewById(R.id.edtTags);
+        liste = (LinearLayout) view.findViewById(R.id.listes);
+        buttonAdd = (Button) view.findViewById(R.id.btnAdd);
 
         imgspot.setImageBitmap(BitmapFactory.decodeFile(imagepath));
 
@@ -96,7 +101,7 @@ public class DetailSpot_New extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String chaine = edtTags.getText().toString();
-                View child = getLayoutInflater().inflate(R.layout.btntag, null);
+                View child = getLayoutInflater(null).inflate(R.layout.btntag, null);
                 ((Button)child.findViewById(R.id.button)).setText(chaine);
                 liste.addView(child);
 
@@ -153,14 +158,14 @@ public class DetailSpot_New extends AppCompatActivity {
             }
         });
 
-        annuler.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent mainintent = new Intent(getApplicationContext(), MainActivity.class);
-                finish();
-                startActivity(mainintent);
-            }
-        });
+//        annuler.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent mainintent = new Intent(_context, MainActivity.class);
+//                //finish();
+//                startActivity(mainintent);
+//            }
+//        });
 
         valider.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -214,7 +219,7 @@ public class DetailSpot_New extends AppCompatActivity {
                                 Bitmap resized = Bitmap.createScaledBitmap(bitmap, 800, 800, true);
                                 resized.compress(Bitmap.CompressFormat.JPEG, 50, os);
                                 os.close();
-                                aws_tools = new AWS_Tools(DetailSpot_New.this);
+                                aws_tools = new AWS_Tools(_context);
                                 aws_tools.uploadPhoto(file, temps, spot);
                             }catch (Exception e)
                             {
@@ -227,15 +232,17 @@ public class DetailSpot_New extends AppCompatActivity {
                         }
                         else {
                             Log.i("BD", "nouveau spot non enregistré");
-                            Toast.makeText(getApplicationContext(), "Nouveau spot non enregistré", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(_context, "Nouveau spot non enregistré", Toast.LENGTH_SHORT).show();
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
                 else
-                    Toast.makeText(getApplicationContext(), "please describe your spot!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(_context, "please describe your spot!", Toast.LENGTH_SHORT).show();
             }
         });
+
+        return view;
     }
 }

@@ -228,67 +228,67 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
             }
         });
 
-        searchfriend.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                final int DRAWABLE_LEFT = 0;
-                final int DRAWABLE_TOP = 1;
-                final int DRAWABLE_RIGHT = 2;
-                final int DRAWABLE_BOTTOM = 3;
-
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    if (event.getRawX() >= (searchfriend.getRight() - searchfriend.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                        // your action here
-                        searchfriend.setText("");
-                        View view = getActivity().getCurrentFocus();
-                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                        return true;
-                    }
-                }
-
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    if (event.getRawX() <= (searchfriend.getCompoundDrawables()[DRAWABLE_LEFT].getBounds().width())) {
-                        // your action here
-                        final String cle = searchfriend.getText().toString();
-                        searchfriend.setText("");
-                        View view = getActivity().getCurrentFocus();
-                        if (view != null) {
-                            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                        }
-                        if (!TextUtils.isEmpty(cle)) {
-                            Thread t = new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    users = server.getUsers_by_pseudo(cle);
-                                }
-                            });
-
-                            t.start(); // spawn thread
-                            try {
-                                t.join();
-                                if (users != null) {
-                                    setAciveTab(0);
-                                    getChildFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-                                    fgAddfrient = new Add_Friend();
-                                    Bundle args = new Bundle();
-                                    args.putInt("type", 1);
-                                    args.putSerializable("users", users);
-                                    args.putString("cle", cle);
-                                    fgAddfrient.setArguments(args);
-                                    getChildFragmentManager().beginTransaction().replace(R.id.mymap, fgAddfrient, "FRIEND").commit();
-                                }
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
+//        searchfriend.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                final int DRAWABLE_LEFT = 0;
+//                final int DRAWABLE_TOP = 1;
+//                final int DRAWABLE_RIGHT = 2;
+//                final int DRAWABLE_BOTTOM = 3;
+//
+//                if (event.getAction() == MotionEvent.ACTION_UP) {
+//                    if (event.getRawX() >= (searchfriend.getRight() - searchfriend.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+//                        // your action here
+//                        searchfriend.setText("");
+//                        View view = getActivity().getCurrentFocus();
+//                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+//                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+//                        return true;
+//                    }
+//                }
+//
+//                if (event.getAction() == MotionEvent.ACTION_UP) {
+//                    if (event.getRawX() <= (searchfriend.getCompoundDrawables()[DRAWABLE_LEFT].getBounds().width())) {
+//                        // your action here
+//                        final String cle = searchfriend.getText().toString();
+//                        searchfriend.setText("");
+//                        View view = getActivity().getCurrentFocus();
+//                        if (view != null) {
+//                            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+//                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+//                        }
+//                        if (!TextUtils.isEmpty(cle)) {
+//                            Thread t = new Thread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    users = server.getUsers_by_pseudo(cle);
+//                                }
+//                            });
+//
+//                            t.start(); // spawn thread
+//                            try {
+//                                t.join();
+//                                if (users != null) {
+//                                    setAciveTab(0);
+//                                    getChildFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+//                                    fgAddfrient = new Add_Friend();
+//                                    Bundle args = new Bundle();
+//                                    args.putInt("type", 1);
+//                                    args.putSerializable("users", users);
+//                                    args.putString("cle", cle);
+//                                    fgAddfrient.setArguments(args);
+//                                    getChildFragmentManager().beginTransaction().replace(R.id.mymap, fgAddfrient, "FRIEND").commit();
+//                                }
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                        return true;
+//                    }
+//                }
+//                return false;
+//            }
+//        });
 
         profile = session.getUserDetails();
         txtPseudo.setText(profile.get(SessionManager.KEY_NAME));

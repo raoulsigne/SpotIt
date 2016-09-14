@@ -1,53 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/blanc">
+    android:background="@color/blanc"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@color/blanc">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/profile_image"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             app:civ_border_color="#FF000000"
-            app:civ_border_width="0dp"/>
+            app:civ_border_width="0dp" />
 
         <LinearLayout
             android:id="@+id/linearlayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
             android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/profile_image"
             android:layout_toRightOf="@+id/profile_image"
-            android:layout_toEndOf="@+id/profile_image">
+            android:gravity="center"
+            android:orientation="vertical">
+
             <TextView
+                android:id="@+id/txtDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="start"
                 android:text="06 Juin 2016 - 10h10, Yaounde(Cameroun)"
                 android:textColor="@color/mainblue"
                 android:textSize="15sp"
-                android:textStyle="bold"
-                android:layout_gravity="start"
-                android:id="@+id/txtDate" />
+                android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/txtTag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:text="#tag1 #tag2 #tag3 #tag4"
-                android:id="@+id/txtTag" />
+                android:text="#tag1 #tag2 #tag3 #tag4" />
 
         </LinearLayout>
 
@@ -55,108 +55,68 @@
             android:id="@+id/imgdelete"
             android:layout_width="15dp"
             android:layout_height="15dp"
-            android:layout_marginRight="10dp"
-            android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
             android:background="@drawable/delete" />
 
     </RelativeLayout>
 
     <ImageView
+        android:id="@+id/imgSpot"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scaleType="centerCrop"
-        android:id="@+id/imgSpot" />
+        android:scaleType="centerCrop" />
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_weight="1"
-        android:background="@color/blanc"
-        android:orientation="horizontal">
-
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/blanc"
             android:orientation="horizontal">
 
             <ImageButton
                 android:id="@+id/imglike"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:background="@drawable/like" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:layout_gravity="center"
-            android:orientation="horizontal">
 
             <ImageButton
                 android:id="@+id/imgchat"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:background="@drawable/chat" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:layout_gravity="center"
-            android:orientation="horizontal">
-
-            <ImageButton
-                android:id="@+id/imgrespot"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:background="@drawable/respots" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:layout_gravity="center"
-            android:orientation="horizontal">
 
             <ImageButton
                 android:id="@+id/imgshare"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:background="@drawable/share" />
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:layout_gravity="center"
-            android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/imgNavigation"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/let_go" />
 
-            <ImageButton
-                android:id="@+id/imgNavigation"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:background="@drawable/let_go" />
+    </RelativeLayout>
 
-        </LinearLayout>
-
-    </LinearLayout>
 </LinearLayout>

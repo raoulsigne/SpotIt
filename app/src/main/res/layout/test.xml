@@ -1,98 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="techafrkix.work.com.spot.spotit.Test"
+    android:layout_height="wrap_content"
+    android:background="@color/blanc"
     android:orientation="vertical">
-
-    <LinearLayout
-        android:id="@+id/findspot"
-        android:layout_width="match_parent"
-        android:layout_height="40dip"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:background="@color/myblue">
-
-        <ImageView
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:src="@drawable/search"
-            android:layout_gravity="center"
-            android:scaleType="center">
-
-        </ImageView>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="Search spots"
-            android:layout_gravity="center"
-            android:textColor="@color/blanc"
-            android:textSize="14sp"
-            android:textAllCaps="false"/>
-
-    </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@color/blanc">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/profile_image"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             app:civ_border_color="#FF000000"
-            app:civ_border_width="0dp"
-            android:src="@drawable/profile"/>
+            app:civ_border_width="0dp" />
 
         <LinearLayout
             android:id="@+id/linearlayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
             android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/profile_image"
             android:layout_toRightOf="@+id/profile_image"
-            android:layout_toEndOf="@+id/profile_image">
+            android:gravity="center"
+            android:orientation="vertical">
+
             <TextView
+                android:id="@+id/txtDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="start"
                 android:text="06 Juin 2016 - 10h10, Yaounde(Cameroun)"
                 android:textColor="@color/mainblue"
                 android:textSize="15sp"
-                android:textStyle="bold"
-                android:layout_gravity="start"
-                android:id="@+id/txtDate" />
+                android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/txtTag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:text="#tag1 #tag2 #tag3 #tag4"
-                android:id="@+id/txtTag" />
+                android:text="#tag1 #tag2 #tag3 #tag4" />
 
         </LinearLayout>
 
         <ImageButton
             android:id="@+id/imgdelete"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginRight="10dp"
-            android:layout_centerVertical="true"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
             android:background="@drawable/delete" />
+
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/imgSpot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="centerCrop" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_alignParentBottom="true">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:background="@color/blanc"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/imglike"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/like" />
+
+            <ImageButton
+                android:id="@+id/imgchat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/chat" />
+
+            <ImageButton
+                android:id="@+id/imgrespot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/respots" />
+
+            <ImageButton
+                android:id="@+id/imgshare"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/share" />
+
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/imgNavigation"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/let_go" />
 
     </RelativeLayout>
 

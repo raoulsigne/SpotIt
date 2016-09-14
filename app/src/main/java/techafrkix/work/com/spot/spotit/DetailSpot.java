@@ -28,6 +28,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,7 +63,7 @@ public class DetailSpot extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM1 = "spots";
     private static final String ARG_PARAM2 = "friend";
     private static final String ARG_PARAM3 = "spot";
 
@@ -77,10 +78,12 @@ public class DetailSpot extends Fragment {
     ImageView imgspot, imgprofile;
     ListView listView;
     TextView txttag, txtdate;
+    LinearLayout retour;
     int resultat;
 
-    Spot spot;
-    SessionManager session;
+    private Spot spot;
+    private ArrayList<Spot> spots;
+    private SessionManager session;
     private HashMap<String, String> profile;
     private Utilisateur friend;
 
@@ -92,6 +95,8 @@ public class DetailSpot extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         spot = new Spot();
+        spots = new ArrayList<>();
+
         // Session class instance
         session = new SessionManager(getActivity());
         profile = new HashMap<>();
@@ -100,6 +105,7 @@ public class DetailSpot extends Fragment {
             spot = (Spot) getArguments().getSerializable(ARG_PARAM3);
             try {
                 friend = (Utilisateur) getArguments().getSerializable(ARG_PARAM2);
+                spots = (ArrayList<Spot>) getArguments().getSerializable(ARG_PARAM1);
             } catch (Exception e) {
             }
         }
@@ -127,6 +133,14 @@ public class DetailSpot extends Fragment {
         listView = (ListView) view.findViewById(R.id.listComments);
         btnpost = (Button) view.findViewById(R.id.btnPost);
         edtComment = (EditText) view.findViewById(R.id.edtComment);
+        retour = (LinearLayout) view.findViewById(R.id.retour);
+
+        retour.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onLoadSpot(spots);
+            }
+        });
 
         like.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -462,6 +476,7 @@ public class DetailSpot extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
 
+        void onLoadSpot(ArrayList<Spot> spots);
     }
 
     private void loadComment() {

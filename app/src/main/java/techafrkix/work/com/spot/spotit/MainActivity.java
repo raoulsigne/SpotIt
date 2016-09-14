@@ -242,9 +242,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (getIntent().getExtras() != null) {
             try {
                 Bundle extras = getIntent().getExtras();
-                Spot spot = new Spot();
-                spot = (Spot) extras.getSerializable("spot");
-                onDetailSpot(spot);
+                Spot spot = (Spot) extras.getSerializable("spot");
+                onLoadSpot();
                 setAciveTab(MENU_ACTIF_ACCOUNT);
 
             } catch (Exception e) {
@@ -623,6 +622,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     @Override
+    public void onDetailSpot(ArrayList<Spot> spots, Spot spot) {
+        try {
+
+            Bundle args = new Bundle();
+            args.putSerializable("spot", spot);
+            args.putSerializable("spots", spots);
+            fgDetailspot.setArguments(args);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, fgDetailspot, "DETAIL")
+                    .commit();
+        } catch (Exception e) {
+            Log.e("fragment", e.getMessage());
+        }
+    }
+
+    @Override
     public void onLoadInformation(int i) {
         try {
             Bundle args = new Bundle();
@@ -734,10 +749,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     @Override
-    public void onDetailSpot(Spot spot, Utilisateur utilisateur) {
+    public void onDetailSpot(ArrayList<Spot> spots, Spot spot, Utilisateur utilisateur) {
         try {
             Bundle args = new Bundle();
             args.putSerializable("spot", spot);
+            args.putSerializable("spots", spots);
             args.putSerializable("friend", utilisateur);
             fgDetailspot.setArguments(args);
             getSupportFragmentManager().beginTransaction()

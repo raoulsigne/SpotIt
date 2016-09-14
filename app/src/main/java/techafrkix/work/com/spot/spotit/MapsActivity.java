@@ -94,7 +94,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
     ArrayList<Spot> spots;
 
     private HashMap<Marker, MyMarker> mMarkersHashMap;
-    private HashMap<Marker, Spot> mappage;
+    private HashMap<MyMarker, Spot> mappage;
     private ArrayList<MyMarker> mMyMarkersArray = new ArrayList<MyMarker>();
 
     private SessionManager session;
@@ -264,73 +264,12 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final com.google.android.gms.maps.model.Marker marker) {
-                final MyMarker myMarker = mMarkersHashMap.get(marker);
-                final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + myMarker.getmIcon() + ".jpg");
+                MyMarker myMarker = mMarkersHashMap.get(marker);
                 current_spot_id = myMarker.getmSpot_ID();
 
-                if (file.exists()) {
-                    // marker.showInfoWindow();
-                    showdialogMarker(myMarker, file);
-                    Log.i("file", "file exists");
-                } else {
-                    if (isNetworkAvailable(MainActivity.getAppContext())) {
-                        Log.i("file", "file not exists");
-                        AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
-                        final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
-                        barProgressDialog.setTitle("Telechargement du spot ...");
-                        barProgressDialog.setMessage("Opération en progression ...");
-                        barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
-                        barProgressDialog.setProgress(0);
-                        barProgressDialog.setMax(100);
-                        barProgressDialog.show();
-                        int transfertId = aws_tools.download(file, myMarker.getmIcon());
-                        TransferUtility transferUtility = aws_tools.getTransferUtility();
-                        TransferObserver observer = transferUtility.getTransferById(transfertId);
-                        observer.setTransferListener(new TransferListener() {
+                Spot spot = mappage.get(myMarker);
+                mListener.onDetailSpot(spot);
 
-                            @Override
-                            public void onStateChanged(int id, TransferState state) {
-                                // do something
-                            }
-
-                            @Override
-                            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                                int rapport = (int) (bytesCurrent * 100);
-                                try {
-                                    rapport /= bytesTotal;
-                                }catch (Exception e){
-                                    rapport= 100;
-                                }
-                                barProgressDialog.setProgress(rapport);
-                                if (rapport == 100) {
-                                    barProgressDialog.dismiss();
-                                    // marker.showInfoWindow();
-                                    //display a dialog bout spot detail
-                                    showdialogMarker(myMarker, file);
-                                }
-                            }
-
-                            @Override
-                            public void onError(int id, Exception ex) {
-                                // do something
-                                barProgressDialog.dismiss();
-                            }
-
-                        });
-                    } else {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setTitle("Spot It:Information")
-                                .setMessage("Vérifiez votre connexion Internet")
-                                .setCancelable(false)
-                                .setNegativeButton("Close", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                });
-                        AlertDialog alert = builder.create();
-                        alert.show();
-                    }
-                }
                 return true;
             }
         });
@@ -612,6 +551,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
 
         protected void onPostExecute(Long result) {
             if (spots != null) {
+                mappage = new HashMap<>();
                 //afficher le nombre de spots
                 int n = spots.size();
                 if (n <= 1)
@@ -619,8 +559,10 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
                 else
                     txtmyspot.setText(n + " Spots");
                 for (Spot s : spots) {
-                    mMyMarkersArray.add(new MyMarker(s.getDate(), s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()),
-                            Double.valueOf(s.getLongitude()), s.getId()));
+                    MyMarker m = new MyMarker(s.getDate(), s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()),
+                            Double.valueOf(s.getLongitude()), s.getId());
+                    mMyMarkersArray.add(m);
+                    mappage.put(m, s);
                 }
             } else
                 Log.i("dialog", "spot null");

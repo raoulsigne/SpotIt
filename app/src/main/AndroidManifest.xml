@@ -85,7 +85,8 @@
             
         </activity>
         <activity android:name=".Inscription" />
-        <activity android:name=".DetailSpot_New" />
+        <activity android:name=".DetailSpot_New"
+            android:windowSoftInputMode="stateHidden"/>
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main2"

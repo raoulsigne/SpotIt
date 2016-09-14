@@ -134,8 +134,8 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
         txtfriend = (TextView)view.findViewById(R.id.txtFriends_friend);
         listspots = (ListView) view.findViewById(R.id.listView);
 
-        listspots.setDivider(null);
-        listspots.setDividerHeight(0);
+//        listspots.setDivider(null);
+//        listspots.setDividerHeight(0);
 
         if (friend != null){
             txtpseudo.setText(friend.getPseudo());
@@ -267,7 +267,7 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
-        void onDetailSpot(Spot spot, Utilisateur utilisateur);
+        void onDetailSpot(ArrayList<Spot> spots, Spot spot, Utilisateur utilisateur);
     }
 
     private void loadSpots() {
@@ -387,7 +387,7 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
 
     @Override
     public void detail(int position) {
-        mListener.onDetailSpot(spots.get(position), friend);
+        mListener.onDetailSpot(spots, spots.get(position), friend);
     }
 
     @Override
@@ -485,7 +485,7 @@ class SpotFriendAdapter extends ArrayAdapter<Spot> {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         TextView spotDate, spotTag;
-        final ImageButton share, comment, letsgo, like, respot;
+        final ImageButton share, comment, letsgo, like;
         ImageView spotPhoto;
 
         // Get the data item for this position
@@ -502,7 +502,7 @@ class SpotFriendAdapter extends ArrayAdapter<Spot> {
 
         like = (ImageButton) convertView.findViewById(R.id.imglike);
         comment = (ImageButton) convertView.findViewById(R.id.imgchat);
-        respot = (ImageButton) convertView.findViewById(R.id.imgrespot);
+//        respot = (ImageButton) convertView.findViewById(R.id.imgrespot);
         share = (ImageButton) convertView.findViewById(R.id.imgshare);
         letsgo = (ImageButton) convertView.findViewById(R.id.imgNavigation);
 
@@ -530,31 +530,31 @@ class SpotFriendAdapter extends ArrayAdapter<Spot> {
                 mAdapterCallback.share(position);
             }
         });
-        respot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (spot.getUser_id() != Integer.valueOf(profile.get(SessionManager.KEY_ID))) {
-                    Thread t = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            resultat = server.enregistrer_respot(Integer.valueOf(profile.get(SessionManager.KEY_ID)), spot.getId());
-                        }
-                    });
-
-                    t.start(); // spawn thread
-                    try {
-                        t.join();
-                        if (resultat > 0) {
-                            session.increment_nbrespot(); // incremente le nombre de respots d'un utilisateur
-                            Toast.makeText(context, "Operation succeed!", Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } else
-                    Toast.makeText(context, "You cannot respot your own spot!", Toast.LENGTH_SHORT).show();
-            }
-        });
+//        respot.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (spot.getUser_id() != Integer.valueOf(profile.get(SessionManager.KEY_ID))) {
+//                    Thread t = new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            resultat = server.enregistrer_respot(Integer.valueOf(profile.get(SessionManager.KEY_ID)), spot.getId());
+//                        }
+//                    });
+//
+//                    t.start(); // spawn thread
+//                    try {
+//                        t.join();
+//                        if (resultat > 0) {
+//                            session.increment_nbrespot(); // incremente le nombre de respots d'un utilisateur
+//                            Toast.makeText(context, "Operation succeed!", Toast.LENGTH_SHORT).show();
+//                        }
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                } else
+//                    Toast.makeText(context, "You cannot respot your own spot!", Toast.LENGTH_SHORT).show();
+//            }
+//        });
         like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

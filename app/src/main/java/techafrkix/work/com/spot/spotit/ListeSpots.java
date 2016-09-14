@@ -183,34 +183,11 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
 
         listView = (ListView) view.findViewById(R.id.listView);
 
-        listView.setDivider(null);
-        listView.setDividerHeight(0);
-
         offset = 0;
         preLast = 0;
 
-        // Creating a button - Load More
-        Button btnLoadMore = new Button(getActivity());
-        btnLoadMore.setText("Load More");
-        btnLoadMore.setBackground(getResources().getDrawable(R.drawable.button_blue));
-
-        // Adding button to listview at footer
-        listView.addFooterView(btnLoadMore);
-
-//        spotsimages = new HashMap<String, Bitmap>();
         tampon = new ArrayList<>();
         loadSpots();
-
-        /**
-         * Listening to Load More button click event
-         * */
-        btnLoadMore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                // Starting a new async task
-                loadSpots();
-            }
-        });
 
         /**
          * Handle when reaching the end of the list
@@ -228,6 +205,8 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                     if (preLast != lastItem) { //to avoid multiple calls for last item
                         Log.i("Last", "Last");
                         preLast = lastItem;
+
+                        loadSpots();
                     }
                 }
             }
@@ -518,9 +497,9 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
     @Override
     public void detail(int position) {
         if (type == 1) {
-            mListener.onDetailSpot(spots.get(position));
+            mListener.onDetailSpot(spots, spots.get(position));
         } else {
-            mListener.onDetailSpot(tampon.get(position));
+            mListener.onDetailSpot(tampon, tampon.get(position));
         }
     }
 
@@ -624,7 +603,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onDetailSpot(Spot spot);
+        void onDetailSpot(ArrayList<Spot> spots, Spot spot);
 
         void onLetsGo();
     }

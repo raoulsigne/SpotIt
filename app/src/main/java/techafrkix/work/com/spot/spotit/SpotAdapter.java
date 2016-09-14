@@ -68,7 +68,7 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         final TextView spotDate, spotTag;
-        final ImageButton share, comment, letsgo, like, respot, delete;
+        final ImageButton share, comment, letsgo, like, delete;
         final ImageView spotPhoto;
         final ImageView photoprofile;
 
@@ -87,7 +87,7 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
 
         like = (ImageButton) convertView.findViewById(R.id.imglike);
         comment = (ImageButton) convertView.findViewById(R.id.imgchat);
-        respot = (ImageButton) convertView.findViewById(R.id.imgrespot);
+//        respot = (ImageButton) convertView.findViewById(R.id.imgrespot);
         share = (ImageButton) convertView.findViewById(R.id.imgshare);
         letsgo = (ImageButton) convertView.findViewById(R.id.imgNavigation);
         delete = (ImageButton) convertView.findViewById(R.id.imgdelete);
@@ -133,31 +133,31 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
                 like.setBackground(context.getResources().getDrawable(R.drawable.liked));
             }
         });
-        respot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (spot.getUser_id() != Integer.valueOf(profile.get(SessionManager.KEY_ID))) {
-                    Thread t = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            resultat = server.enregistrer_respot(Integer.valueOf(profile.get(SessionManager.KEY_ID)), spot.getId());
-                        }
-                    });
-
-                    t.start(); // spawn thread
-                    try {
-                        t.join();
-                        if (resultat > 0) {
-                            session.increment_nbrespot(); // incremente le nombre de respots d'un utilisateur
-                            Toast.makeText(context, "Operation succeed!", Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } else
-                    Toast.makeText(context, "You cannot respot your own spot!", Toast.LENGTH_SHORT).show();
-            }
-        });
+//        respot.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (spot.getUser_id() != Integer.valueOf(profile.get(SessionManager.KEY_ID))) {
+//                    Thread t = new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            resultat = server.enregistrer_respot(Integer.valueOf(profile.get(SessionManager.KEY_ID)), spot.getId());
+//                        }
+//                    });
+//
+//                    t.start(); // spawn thread
+//                    try {
+//                        t.join();
+//                        if (resultat > 0) {
+//                            session.increment_nbrespot(); // incremente le nombre de respots d'un utilisateur
+//                            Toast.makeText(context, "Operation succeed!", Toast.LENGTH_SHORT).show();
+//                        }
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                } else
+//                    Toast.makeText(context, "You cannot respot your own spot!", Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
         Log.i("teste", spot.getId() + " " + spot.getPhotokey());
         // Populate the data into the template view using the data object

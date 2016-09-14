@@ -1371,7 +1371,7 @@ public class DBServer {
                         spot.setLongitude(json2.getDouble("gpslong") + "");
                         spot.setLatitude(json2.getDouble("gpslat") + "");
                         spot.setPhotokey((String) json2.get("photo"));
-                        spot.setDate(convert_date((String) json2.get("created")));
+                        spot.setDate(convert_date_new((String) json2.get("created")));
                         spot.setPhotouser((String) json2.get("photouser"));
                         JSONArray jArrtag = json2.getJSONArray("tags");
                         tags = new ArrayList<>();
@@ -2165,6 +2165,70 @@ public class DBServer {
             resultat = "hier à " + tab3[0] + "h" + tab3[1];
         else
             resultat = sdf.format(datec.getTime()) + " - " + tab3[0] + "h" + tab3[1];
+
+        return resultat;
+    }
+
+    public String convert_date_new(String date) {
+        String resultat = "";
+        String[] tableau = date.split("T");
+        String[] tab1 = tableau[1].split("\\.");
+        String[] tab2 = tableau[0].split("-");
+        String[] tab3 = tab1[0].split(":");
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy");
+        Calendar datec = Calendar.getInstance();
+        int sec = datec.get(Calendar.SECOND);
+        int min = datec.get(Calendar.MINUTE);
+        int hour = datec.get(Calendar.HOUR_OF_DAY);
+        int daynumber = datec.get(Calendar.DAY_OF_WEEK);
+        int weeknumber = datec.get(Calendar.WEEK_OF_MONTH);
+        int monthnumber = datec.get(Calendar.MONTH);
+
+        datec.set(Calendar.YEAR, Integer.valueOf(tab2[0]));
+        datec.set(Calendar.MONTH, Integer.valueOf(tab2[1]) - 1);
+        datec.set(Calendar.DAY_OF_MONTH, Integer.valueOf(tab2[2]));
+        int sec1 = Integer.valueOf(tab3[0]);
+        int min1 = Integer.valueOf(tab3[1]);
+        int hour1 = Integer.valueOf(tab3[2]);
+        int daynumber1 = datec.get(Calendar.DAY_OF_WEEK);
+        int weeknumber1 = datec.get(Calendar.WEEK_OF_MONTH);
+        int monthnumber1 = datec.get(Calendar.MONTH);
+
+        if (monthnumber == monthnumber1){
+            if (weeknumber == weeknumber1){
+                if (daynumber == daynumber1){
+                    if (hour == hour1){
+                        if (min == min1){
+                            if (sec == sec1){
+                                resultat = "now";
+                            }else{
+                                resultat = "il y'a " + (sec - sec1) + " secondes";
+                            }
+                        }else {
+                            resultat = "il y'a " + (min - min1) + " minutes";
+                        }
+                    }else {
+                        resultat = "il y'a " + (hour - hour1) + " heures";
+                    }
+                }else{
+                    if ((daynumber - daynumber1) == 1)
+                        resultat = "yesterday";
+                    else
+                        resultat = "il y'a " + (daynumber - daynumber1) + " jours";
+                }
+            }else{
+                if ((weeknumber - weeknumber1) == 1)
+                    resultat = "last week";
+                else
+                    resultat = "il y'a " + (weeknumber - weeknumber1) + " semaines";
+            }
+        }else{
+            if ((monthnumber - monthnumber1) == 1)
+                resultat = "last month";
+            else
+                resultat = "il y'a " + (monthnumber - monthnumber1) + " mois";
+        }
 
         return resultat;
     }

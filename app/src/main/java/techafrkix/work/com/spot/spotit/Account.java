@@ -25,8 +25,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -177,7 +180,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
             notif_count.setVisibility(View.INVISIBLE);
         if (notifs != 0) {
             notif_count.setVisibility(View.VISIBLE);
-            notif_count.setText(String.valueOf(notifs+""));
+            notif_count.setText(String.valueOf(notifs + ""));
         }
 
         //default active tab
@@ -227,68 +230,6 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
                 mListener.onLoadOption();
             }
         });
-
-//        searchfriend.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                final int DRAWABLE_LEFT = 0;
-//                final int DRAWABLE_TOP = 1;
-//                final int DRAWABLE_RIGHT = 2;
-//                final int DRAWABLE_BOTTOM = 3;
-//
-//                if (event.getAction() == MotionEvent.ACTION_UP) {
-//                    if (event.getRawX() >= (searchfriend.getRight() - searchfriend.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-//                        // your action here
-//                        searchfriend.setText("");
-//                        View view = getActivity().getCurrentFocus();
-//                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-//                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-//                        return true;
-//                    }
-//                }
-//
-//                if (event.getAction() == MotionEvent.ACTION_UP) {
-//                    if (event.getRawX() <= (searchfriend.getCompoundDrawables()[DRAWABLE_LEFT].getBounds().width())) {
-//                        // your action here
-//                        final String cle = searchfriend.getText().toString();
-//                        searchfriend.setText("");
-//                        View view = getActivity().getCurrentFocus();
-//                        if (view != null) {
-//                            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-//                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-//                        }
-//                        if (!TextUtils.isEmpty(cle)) {
-//                            Thread t = new Thread(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    users = server.getUsers_by_pseudo(cle);
-//                                }
-//                            });
-//
-//                            t.start(); // spawn thread
-//                            try {
-//                                t.join();
-//                                if (users != null) {
-//                                    setAciveTab(0);
-//                                    getChildFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-//                                    fgAddfrient = new Add_Friend();
-//                                    Bundle args = new Bundle();
-//                                    args.putInt("type", 1);
-//                                    args.putSerializable("users", users);
-//                                    args.putString("cle", cle);
-//                                    fgAddfrient.setArguments(args);
-//                                    getChildFragmentManager().beginTransaction().replace(R.id.mymap, fgAddfrient, "FRIEND").commit();
-//                                }
-//                            } catch (InterruptedException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                        return true;
-//                    }
-//                }
-//                return false;
-//            }
-//        });
 
         profile = session.getUserDetails();
         txtPseudo.setText(profile.get(SessionManager.KEY_NAME));
@@ -366,6 +307,60 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
                 }
             }
         }
+
+        searchfriend.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                if (before == 0 && count == 1 && s.charAt(start) == '\n') {
+
+                    searchfriend.getText().replace(start, start + 1, ""); //remove the <enter>
+                    Toast.makeText(getActivity(), searchfriend.getText(), Toast.LENGTH_SHORT).show();
+
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
+
+                    // your action here
+                    final String cle = searchfriend.getText().toString();
+                    searchfriend.setText("");
+
+                    if (!TextUtils.isEmpty(cle)) {
+                        Thread t = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                users = server.getUsers_by_pseudo(cle);
+                            }
+                        });
+
+                        t.start(); // spawn thread
+                        try {
+                            t.join();
+                            if (users != null) {
+                                setAciveTab(0);
+                                getChildFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+                                fgAddfrient = new Add_Friend();
+                                Bundle args = new Bundle();
+                                args.putInt("type", 1);
+                                args.putSerializable("users", users);
+                                args.putString("cle", cle);
+                                fgAddfrient.setArguments(args);
+                                getChildFragmentManager().beginTransaction().replace(R.id.mymap, fgAddfrient, "FRIEND").commit();
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    searchfriend.setText("");
+                }
+
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
 
         buildGoogleApiClient();
         if (mGoogleApiClient != null) {

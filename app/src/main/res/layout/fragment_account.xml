@@ -11,38 +11,29 @@
         android:background="@color/blanc"
         android:orientation="vertical">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_gravity="center_horizontal"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
             android:background="@color/myblue"
             android:orientation="horizontal">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
+            <EditText
+                android:id="@+id/edtsearchfriend"
+                android:layout_width="wrap_content"
                 android:layout_height="30dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:background="@android:drawable/editbox_background"
-                android:gravity="center">
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:background="@color/myblue"
+                android:drawableLeft="@drawable/search"
+                android:gravity="center"
+                android:hint="Search friends"
+                android:textAlignment="center"
+                android:textColor="@color/blanc"
+                android:textColorHint="@color/blanc"
+                android:textSize="12sp" />
 
-                <EditText
-                    android:id="@+id/edtsearchfriend"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_gravity="center"
-                    android:layout_centerVertical="true"
-                    android:layout_centerHorizontal="true"
-                    android:background="@null"
-                    android:drawableLeft="@android:drawable/ic_menu_search"
-                    android:gravity="center"
-                    android:hint="Search friends"
-                    android:textAlignment="center"
-                    android:textSize="12sp" />
-
-            </RelativeLayout>
-
-        </LinearLayout>
+        </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/infos"

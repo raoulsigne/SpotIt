@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -24,6 +25,7 @@ import android.util.Log;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,7 +37,7 @@ import java.util.List;
 
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 
-public class TakeSnap extends Fragment implements View.OnClickListener{
+public class TakeSnap extends Fragment implements View.OnClickListener, CameraCallback{
 
     public static final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
     protected Preview mPreview;
@@ -46,6 +48,7 @@ public class TakeSnap extends Fragment implements View.OnClickListener{
     Button button;
 
     Context _context;
+    private OnFragmentInteractionListener mListener;
 
     // The first rear facing camera
     int defaultCameraId;
@@ -85,17 +88,34 @@ public class TakeSnap extends Fragment implements View.OnClickListener{
             }
         }
 
-        return mPreview;
+        FrameLayout layout = new FrameLayout(_context);
+        FrameLayout.LayoutParams layoutparams=new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
+                ViewGroup.LayoutParams.FILL_PARENT, Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL);
+        layout.setLayoutParams(layoutparams);
+        layout.addView(mPreview);
+
+        return layout;
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            mListener = (OnFragmentInteractionListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnHeadlineSelectedListener");
+        }
+
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        mListener = null;
     }
 
     @Override
@@ -179,7 +199,26 @@ public class TakeSnap extends Fragment implements View.OnClickListener{
         }
     }
 
-    // ----------------------------------------------------------------------
+    @Override
+    public void detail(Bundle bundle) {
+        mListener.onRegisterSpot(bundle);
+    }
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p/>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onRegisterSpot(Bundle bundle);
+    }
+// ----------------------------------------------------------------------
 
     /**
      * A simple wrapper around a Camera and a SurfaceView that renders a centered preview of the Camera
@@ -188,6 +227,7 @@ public class TakeSnap extends Fragment implements View.OnClickListener{
      */
     class Preview extends ViewGroup implements SurfaceHolder.Callback {
         private final String TAG = "Preview";
+        private CameraCallback mListener;
 
         SurfaceView mSurfaceView;
         Button shutter;
@@ -204,6 +244,13 @@ public class TakeSnap extends Fragment implements View.OnClickListener{
 
         Preview(final Context context) {
             super(context);
+
+            try {
+                this.mListener = ((CameraCallback) TakeSnap.this);
+            } catch (ClassCastException e) {
+                throw new ClassCastException("Activity must implement AdapterCallback.");
+            }
+
             currentCameraId = CameraInfo.CAMERA_FACING_BACK;
             //this.setBackgroundColor(getResources().getColor(R.color.fondsnap));
             mSurfaceView = new SurfaceView(context);
@@ -283,10 +330,8 @@ public class TakeSnap extends Fragment implements View.OnClickListener{
                             bundle.putDouble("latitude", latitude);
                             bundle.putString("image", photo);
                             Log.i("photo", photo);
-                            Intent itDetailSpot = new Intent(context, DetailSpot_New.class);
-                            itDetailSpot.putExtras(bundle);
-                            context.startActivity(itDetailSpot);
-                            ((Activity) context).finish();
+
+                            mListener.detail(bundle);
                         }
                     } catch (Exception e) {
                         Log.d(TAG, e.getMessage());
@@ -465,25 +510,27 @@ public class TakeSnap extends Fragment implements View.OnClickListener{
             }
         }
 
+        @Override
         public void surfaceCreated(SurfaceHolder holder) {
             // The Surface has been created, acquire the camera and tell it where
             // to draw.
             try {
                 if (mCamera != null) {
                     mCamera.setPreviewDisplay(holder);
+                    Log.i("test", "teqdqfqfqrgrg'gtghtdh");
                 }
             } catch (IOException exception) {
                 Log.e(TAG, "IOException caused by setPreviewDisplay()", exception);
             }
         }
 
+        @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
             // Surface will be destroyed when we return, so stop the preview.
             if (mCamera != null) {
                 mCamera.stopPreview();
             }
         }
-
 
         private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
             final double ASPECT_TOLERANCE = 0.1;
@@ -517,6 +564,7 @@ public class TakeSnap extends Fragment implements View.OnClickListener{
             return optimalSize;
         }
 
+        @Override
         public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
             // Now that the size is known, set up the camera parameters and begin
             // the preview.
@@ -649,4 +697,7 @@ public class TakeSnap extends Fragment implements View.OnClickListener{
 
 }
 
+interface CameraCallback{
+    public void detail(Bundle bundle);
+}
 

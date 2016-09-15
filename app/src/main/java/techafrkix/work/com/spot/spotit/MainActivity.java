@@ -58,7 +58,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         MapsActivity.OnFragmentInteractionListener, ListeSpots.OnFragmentInteractionListener, DetailSpot.OnFragmentInteractionListener,
         Search.OnFragmentInteractionListener, Add_Friend.OnFragmentInteractionListener, Account_Friend.OnFragmentInteractionListener,
         ListeSpots_Friend.OnFragmentInteractionListener, NotificationActivity.OnFragmentInteractionListener, SpotUser.OnFragmentInteractionListener,
-        UserSettings.OnFragmentInteractionListener, ShowInformation.OnFragmentInteractionListener, ChangePassword.OnFragmentInteractionListener{
+        UserSettings.OnFragmentInteractionListener, ShowInformation.OnFragmentInteractionListener, ChangePassword.OnFragmentInteractionListener,
+        TakeSnap.OnFragmentInteractionListener{
 
     static final int REQUEST_IMAGE_CAPTURE = 10;
 
@@ -790,6 +791,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onDeleteNotification() {
         notif_count.setVisibility(View.INVISIBLE);
         notif_count.setText(String.valueOf(0));
+    }
+
+    @Override
+    public void onRegisterSpot(Bundle bundle) {
+        DetailSpot_New fgDetailSpot = new DetailSpot_New();
+
+        try {
+            fgDetailSpot.setArguments(bundle);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, fgDetailSpot, "DETAIL_SPOT")
+                    .commit();
+        } catch (Exception e) {
+            Log.e("fragment", e.getMessage());
+        }
     }
 
     public void startFragment(int menu){

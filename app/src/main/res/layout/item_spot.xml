@@ -51,15 +51,28 @@
 
         </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/imgdelete"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
-            android:background="@drawable/delete" />
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="remove this spot ?"/>
+
+            <ImageButton
+                android:id="@+id/imgdelete"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/delete" />
+
+        </LinearLayout>
 
     </RelativeLayout>
 

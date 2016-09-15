@@ -76,6 +76,7 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
     private int total_spot;
 
     private OnFragmentInteractionListener mListener;
+    private ImageView imgmap, imgspots, imgfriends;
 
     public Account_Friend() {
         // Required empty publics constructor
@@ -120,17 +121,24 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_account__friend, container, false);
         final ImageView item_profile = (ImageView) view.findViewById(R.id.imgprofile_friend);
-        ImageView play_spot = (ImageView) view.findViewById(R.id.imgNbSpots);
+
+        imgmap = (ImageView) view.findViewById(R.id.imgMapHome);
+        imgspots = (ImageView) view.findViewById(R.id.imgListSpot);
+        imgfriends = (ImageView) view.findViewById(R.id.imgNotification);
+
+        ImageView play_spot = (ImageView) view.findViewById(R.id.imgMySpots_friends);
         TextView txtPseudo = (TextView) view.findViewById(R.id.txtPseudo_friend);
         TextView txtSpot = (TextView) view.findViewById(R.id.txtSpots_friend);
-        TextView txtNbSpot = (TextView) view.findViewById(R.id.txtNbSpot);
+        TextView txtRespot = (TextView) view.findViewById(R.id.txtRespots_friend);
+        TextView txtNbSpot = (TextView) view.findViewById(R.id.txtMySpots_friends);
         TextView txtNbFriend = (TextView) view.findViewById(R.id.txtFriends_friend);
 
         if (friend != null){
             txtPseudo.setText(friend.getPseudo());
-            txtSpot.setText(friend.getNbspot() + " spots | " + friend.getNbrespot() + " respots");
-            txtNbSpot.setText(friend.getSpot() + " Spots");
-            txtNbFriend.setText(friend.getNbfriends() + " friends");
+            txtSpot.setText(String.valueOf(friend.getNbspot()));
+            txtRespot.setText(String.valueOf(friend.getNbrespot()));
+            txtNbSpot.setText((friend.getSpot() + friend.getNbspot()) + " Spots");
+            txtNbFriend.setText(String.valueOf(friend.getNbfriends()));
             total_spot = friend.getNbspot() + friend.getNbrespot();
         }
 
@@ -140,6 +148,32 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
                 mListener.onListSpot_Friend(friend);
             }
         });
+
+        //default active tab
+        setAciveTab(1);
+
+        imgmap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setAciveTab(1);
+
+            }
+        });
+        imgspots.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setAciveTab(2);
+
+            }
+        });
+        imgfriends.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setAciveTab(3);
+
+            }
+        });
+
 
         if (friend.getPhoto() != "") {
             final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + friend.getPhoto() + ".jpg");
@@ -423,6 +457,39 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
 
                 mMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
             }
+        }
+    }
+
+    public void setAciveTab(int menu) {
+        switch (menu) {
+            case 0:
+
+                imgmap.setBackground(getResources().getDrawable(R.drawable.mapfriends));
+                imgspots.setBackground(getResources().getDrawable(R.drawable.spots));
+                imgfriends.setBackground(getResources().getDrawable(R.drawable.friendsaccount));
+                break;
+
+            case 1:
+
+                imgmap.setBackground(getResources().getDrawable(R.drawable.mapfriends_clicked));
+                imgspots.setBackground(getResources().getDrawable(R.drawable.spots));
+                imgfriends.setBackground(getResources().getDrawable(R.drawable.friendsaccount));
+
+                break;
+            case 2:
+
+                imgmap.setBackground(getResources().getDrawable(R.drawable.mapfriends));
+                imgspots.setBackground(getResources().getDrawable(R.drawable.spots_clicked));
+                imgfriends.setBackground(getResources().getDrawable(R.drawable.friendsaccount));
+                break;
+
+            case 3:
+
+                imgmap.setBackground(getResources().getDrawable(R.drawable.mapfriends));
+                imgspots.setBackground(getResources().getDrawable(R.drawable.spots));
+                imgfriends.setBackground(getResources().getDrawable(R.drawable.friends_clicked));
+                break;
+
         }
     }
 

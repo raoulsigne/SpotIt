@@ -8,56 +8,253 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@color/myblue">
+        android:background="@color/blanc"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/retour"
+            android:layout_width="match_parent"
+            android:layout_height="30dip"
+            android:layout_gravity="top"
+            android:gravity="left"
+            android:orientation="horizontal"
+            android:background="@color/myblue">
+
+            <ImageView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:src="@drawable/back"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:scaleType="center">
+
+            </ImageView>
+
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/infos"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_gravity="center"
-            android:gravity="center">
-
-            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/imgprofile_friend"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginLeft="10dp"
-                android:layout_gravity="center"
-                app:civ_border_color="#FF000000"
-                app:civ_border_width="0dp" />
+            android:layout_height="wrap_content"
+            android:background="@color/blanc"
+            android:paddingBottom="10dp"
+            android:paddingTop="15dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="60dp"
-                android:layout_marginLeft="10dp"
-                android:layout_gravity="center"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
                 android:orientation="vertical">
+
+
+                <com.mikhaellopez.circularimageview.CircularImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/imgprofile_friend"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:layout_marginTop="10dp"
+                    android:scaleType="centerCrop"
+                    app:civ_border_color="#FF000000"
+                    app:civ_border_width="0dp" />
 
                 <TextView
                     android:id="@+id/txtPseudo_friend"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Stephen Curry"
-                    android:textColor="@color/blanc"
-                    android:textSize="17sp"
+                    android:layout_marginTop="8dp"
+                    android:text="Stephen"
+                    android:textAlignment="center"
+                    android:textColor="@color/noir"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/txtSpots_friend"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:textColor="@color/blanc"
-                    android:text="28 spots | 15 respots" />
+            </LinearLayout>
 
-                <TextView
-                    android:id="@+id/txtFriends_friend"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/txtSpots_friend"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="28"
+                            android:textAlignment="center"
+                            android:textColor="@color/noir"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="0dp"
+                            android:text="spots"
+                            android:textAlignment="center"
+                            android:textColor="@color/titre_menu"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/txtRespots_friend"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="28"
+                            android:textAlignment="center"
+                            android:textColor="@color/noir"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="0dp"
+                            android:text="respots"
+                            android:textAlignment="center"
+                            android:textColor="@color/titre_menu"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/txtFriends_friend"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="28"
+                            android:textAlignment="center"
+                            android:textColor="@color/noir"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="0dp"
+                            android:text="friends"
+                            android:textAlignment="center"
+                            android:textColor="@color/titre_menu"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginTop="15dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnremove"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="10dp"
+                        android:background="@color/fond_detail"
+                        android:drawablePadding="20dp"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:text="remove from my friends "
+                        android:textAllCaps="false"
+                        android:textColor="#555555"
+                        android:textSize="14sp"
+                        android:textStyle="normal" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:background="@drawable/custom_bar"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/groupeHome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/imgMapHome"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:textColor="@color/blanc"
-                    android:text="26 Friends" />
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/mapfriends" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/groupeNewspot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/imgListSpot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/spots" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/groupeNotification"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageButton
+                        android:id="@+id/imgNotification"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/friendsaccount" />
+
+                </RelativeLayout>
 
             </LinearLayout>
 
@@ -65,11 +262,11 @@
 
         <fragment
             android:id="@+id/friendmap"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/background_new"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-            tools:context="techafrkix.work.com.spot.spotit.Account_Friend">
+            tools:context="techafrkix.work.com.spot.spotit.Account">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -85,12 +282,12 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/txtNbSpot"
+                        android:id="@+id/txtMySpots_friends"
                         android:layout_width="wrap_content"
                         android:layout_height="18dp"
                         android:layout_marginBottom="2dp"
-                        android:gravity="center"
                         android:background="@drawable/badge"
+                        android:gravity="center"
                         android:paddingLeft="5dp"
                         android:paddingRight="5dp"
                         android:text=" Spots"
@@ -99,19 +296,18 @@
                         android:textSize="12sp" />
 
                     <ImageView
-                        android:id="@+id/imgNbSpots"
+                        android:id="@+id/imgMySpots_friends"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_gravity="center"
+                        android:background="@drawable/round_button_white"
+                        android:elevation="15dp"
                         android:gravity="center"
                         android:padding="12dp"
-                        android:src="@drawable/play_button"
-                        android:background="@drawable/round_button_white"
-                        android:elevation="15dp"/>
+                        android:src="@drawable/play_button" />
 
 
                 </LinearLayout>
-
             </RelativeLayout>
         </fragment>
 

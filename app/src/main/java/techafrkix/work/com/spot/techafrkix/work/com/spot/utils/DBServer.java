@@ -1112,7 +1112,7 @@ public class DBServer {
                         spot.setLatitude((String) json2.get(SpotsDBAdapteur.COLONNE_LATITUDE));
                         spot.setPhotokey((String) json2.get(SpotsDBAdapteur.COLONNE_PHOTO));
                         spot.setUser_id((int) json2.get(SpotsDBAdapteur.COLONNE_USER_ID));
-                        spot.setDate(convert_date((String) json2.get("created")));
+                        spot.setDate(convert_date_new((String) json2.get("created")));
                         spot.setNbcomment((int) json2.get("nbcomment"));
 
                         spots.add(spot);
@@ -1195,7 +1195,7 @@ public class DBServer {
                         spot.setPhotokey((String) json2.get("photo"));
                         spot.setPhotouser((String) json2.get("photouser"));
                         spot.setUser_id((int) json2.get(SpotsDBAdapteur.COLONNE_USER_ID));
-                        spot.setDate(convert_date((String) json2.get("created")));
+                        spot.setDate(convert_date_new((String) json2.get("created")));
                         spot.setNbcomment((int) json2.get("nbcomment"));
                         JSONArray jArrtag = json2.getJSONArray("tags");
                         tags = new ArrayList<>();
@@ -1277,7 +1277,7 @@ public class DBServer {
                     spot.setPhotokey((String) json2.get("photo"));
                     spot.setPhotouser((String) json2.get("photouser"));
                     spot.setUser_id((int) json2.get(SpotsDBAdapteur.COLONNE_USER_ID));
-                    spot.setDate(convert_date((String) json2.get("created")));
+                    spot.setDate(convert_date_new((String) json2.get("created")));
                     spot.setNbcomment((int) json2.get("nbcomment"));
                     JSONArray jArrtag = json2.getJSONArray("tags");
                     tags = new ArrayList<>();
@@ -1756,7 +1756,7 @@ public class DBServer {
                         notificationEntity.setId((int) json2.get("id"));
                         notificationEntity.setUser_id((int) json2.get("user_id"));
                         notificationEntity.setTypenotification_id((int) json2.get("typenotification_id"));
-                        notificationEntity.setCreated(convert_date((String) json2.get("created")));
+                        notificationEntity.setCreated(convert_date_new((String) json2.get("created")));
                         notificationEntity.setData((String) json2.get("data"));
                         try {
                             notificationEntity.setSender_id((int) json2.get("sender_id"));

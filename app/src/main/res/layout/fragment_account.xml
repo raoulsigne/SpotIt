@@ -204,9 +204,11 @@
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_gravity="center"
-            android:background="@drawable/custom_bar"
+            android:background="@drawable/custom_bar_grey"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:divider="?android:dividerVertical"
+            android:orientation="horizontal"
+            android:showDividers="middle">
 
             <LinearLayout
                 android:id="@+id/groupeHome"
@@ -220,7 +222,23 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:background="@drawable/homeaccount" />
+                    android:background="@drawable/mapfriends" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/groupeRespot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/imgListReSpot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/spots" />
 
             </LinearLayout>
 

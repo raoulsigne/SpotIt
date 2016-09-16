@@ -138,11 +138,11 @@ public class GcmIntentService extends IntentService {
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.logospotitblue)
                         .setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.logospotitblue))
-                        .setContentTitle("NotificationActivity from Spot It")
+                        .setContentTitle("Notification from Spot It")
                         .setStyle(new NotificationCompat.InboxStyle()
                                 .addLine(msg.getDescription())
                                 .addLine(msg.getCreated()))
-                        .setContentText(extras.getString(_DATA))
+                        .setContentText(extras.getString(_DESCRIPTION))
                         .setAutoCancel(false)
                         .setDefaults(Notification.DEFAULT_SOUND);
 

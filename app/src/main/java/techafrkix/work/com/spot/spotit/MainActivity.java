@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Search.OnFragmentInteractionListener, Add_Friend.OnFragmentInteractionListener, Account_Friend.OnFragmentInteractionListener,
         ListeSpots_Friend.OnFragmentInteractionListener, NotificationActivity.OnFragmentInteractionListener, SpotUser.OnFragmentInteractionListener,
         UserSettings.OnFragmentInteractionListener, ShowInformation.OnFragmentInteractionListener, ChangePassword.OnFragmentInteractionListener,
-        TakeSnap.OnFragmentInteractionListener{
+        TakeSnap.OnFragmentInteractionListener, ListRespots.OnFragmentInteractionListener{
 
     static final int REQUEST_IMAGE_CAPTURE = 10;
 
@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public static final int MENU_ACTIF_NEW = 3;
     public static final int MENU_ACTIF_NOTIFICATION = 4;
     public static final int MENU_ACTIF_ACCOUNT = 5;
+    public static final int MENU_ACTIF_ACCOUNT_2 = 6;
 
     private static final int CAMERA_REQUEST = 1;
     private static final int WRITE_REQUEST = 2;
@@ -614,6 +615,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         try {
 
             Bundle args = new Bundle();
+            args.putInt("type", 1);
             args.putSerializable("spot", spot);
             fgDetailspot.setArguments(args);
             getSupportFragmentManager().beginTransaction()
@@ -629,6 +631,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         try {
 
             Bundle args = new Bundle();
+            args.putInt("type", 3);
             args.putSerializable("spot", spot);
             args.putSerializable("spots", spots);
             fgDetailspot.setArguments(args);
@@ -755,6 +758,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onDetailSpot(ArrayList<Spot> spots, Spot spot, Utilisateur utilisateur) {
         try {
             Bundle args = new Bundle();
+            args.putInt("type", 2);
             args.putSerializable("spot", spot);
             args.putSerializable("spots", spots);
             args.putSerializable("friend", utilisateur);
@@ -785,6 +789,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         //traitement de l'action lors du click
         startFragment(MENU_ACTIF_ACCOUNT);
+    }
+
+    @Override
+    public void onLoadAccount(int i) {
+        //changement des couleurs des widgets
+        setAciveTab(MENU_ACTIF_ACCOUNT);
+
+        //traitement de l'action lors du click
+        startFragment(MENU_ACTIF_ACCOUNT_2);
     }
 
     @Override
@@ -856,6 +869,23 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 try {
                     Bundle args = new Bundle();
                     args.putInt("notif_count", Integer.parseInt(notif_count.getText().toString()));
+                    args.putInt("menuactif", 1);
+                    fgAccount.setArguments(args);
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, fgAccount, "ACCOUNT")
+                            .commit();
+                    menuactif = MENU_ACTIF_ACCOUNT;
+                } catch (Exception e) {
+                    Log.e("fragment", e.getMessage());
+                }
+
+                break;
+
+            case MENU_ACTIF_ACCOUNT_2:
+                try {
+                    Bundle args = new Bundle();
+                    args.putInt("notif_count", Integer.parseInt(notif_count.getText().toString()));
+                    args.putInt("menuactif", 2);
                     fgAccount.setArguments(args);
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.container, fgAccount, "ACCOUNT")

@@ -103,25 +103,26 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
     private DBServer server;
     private SessionManager session;
     private HashMap<String, String> profile;
-    ArrayList<Spot> spots;
+    ArrayList<Spot> spots, respots;
     private HashMap<Marker, MyMarker> mMarkersHashMap;
     private ArrayList<MyMarker> mMyMarkersArray = new ArrayList<MyMarker>();
 
     private TextView txtPseudo, txtSpots, txtRespots, txtFriends, txtmySpots;
     private EditText searchfriend;
     private Button btnoption;
-    private ImageView imghome, imglist, imgnotification;
+    private ImageView imghome, imglist, imgrespot, imgnotification;
 
     private ImageView myspot;
     private CircularImageView imageprofile;
     TextView notif_count;
-    private int notifs;
+    private int notifs, activetab;
 
     private int total_spot;
 
     private Add_Friend fgAddfrient;
     private NotificationActivity fgNotificationActivity;
     private SpotUser fgSpotuser;
+    private ListRespots fgRespot;
     private ArrayList<Utilisateur> users;
 
     @Override
@@ -139,6 +140,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         // Session class instance
         if (getArguments() != null) {
             notifs = getArguments().getInt("notif_count");
+            activetab = getArguments().getInt("menuactif");
         }
 
         // Session class instance
@@ -152,6 +154,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         fgAddfrient = new Add_Friend();
         fgNotificationActivity = new NotificationActivity();
         fgSpotuser = new SpotUser();
+        fgRespot = new ListRespots();
 
         myspot = (ImageView) view.findViewById(R.id.imgMySpots);
         myspot.setOnClickListener(new View.OnClickListener() {
@@ -171,6 +174,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         imghome = (ImageView) view.findViewById(R.id.imgMapHome);
         imglist = (ImageView) view.findViewById(R.id.imgListSpot);
         imgnotification = (ImageView) view.findViewById(R.id.imgNotification);
+        imgrespot = (ImageView) view.findViewById(R.id.imgListReSpot);
 
         txtmySpots = (TextView) view.findViewById(R.id.txtMySpots);
         imageprofile = (CircularImageView) view.findViewById(R.id.profile_image);
@@ -184,7 +188,18 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         }
 
         //default active tab
-        setAciveTab(1);
+        setAciveTab(activetab);
+
+        if (activetab != 1){
+            getChildFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+            fgAddfrient = new Add_Friend();
+            Bundle args = new Bundle();
+            args.putInt("type", 0);
+            fgAddfrient.setArguments(args);
+            getChildFragmentManager().beginTransaction()
+                    .replace(R.id.mymap, fgAddfrient, "FRIEND")
+                    .commit();
+        }
 
         imghome.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -209,11 +224,42 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
                         .commit();
             }
         });
+        imgrespot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setAciveTab(3);
+
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        respots = server.find_respot_user(Integer.valueOf(profile.get(SessionManager.KEY_ID)), 0,
+                                Integer.valueOf(profile.get(SessionManager.KEY_SPOT)) + Integer.valueOf(profile.get(SessionManager.KEY_RESPOT)));
+                    }
+                });
+
+                t.start(); // spawn thread
+                try {
+                    t.join();
+                    if (respots != null) {
+                        getChildFragmentManager().beginTransaction().remove(fgRespot).commit();
+                        fgRespot = new ListRespots();
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("spots", respots);
+                        fgRespot.setArguments(bundle);
+                        getChildFragmentManager().beginTransaction()
+                                .replace(R.id.mymap, fgRespot, "RESPOT")
+                                .commit();
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         imgnotification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ShortcutBadger.removeCount(getActivity());
-                setAciveTab(3);
+                setAciveTab(4);
                 notif_count.setVisibility(View.INVISIBLE);
                 notif_count.setText("0");
                 notifs = 0;
@@ -637,43 +683,43 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         switch (menu) {
             case 0:
 
-                imghome.setBackground(getResources().getDrawable(R.drawable.homeaccount));
+                imghome.setBackground(getResources().getDrawable(R.drawable.mapfriends));
                 imglist.setBackground(getResources().getDrawable(R.drawable.friendsaccount));
                 imgnotification.setBackground(getResources().getDrawable(R.drawable.notification));
-                // imgoption.setBackground(getResources().getDrawable(R.drawable.optionaccount));
+                imgrespot.setBackground(getResources().getDrawable(R.drawable.spots));
 
                 break;
             case 1:
 
-                imghome.setBackground(getResources().getDrawable(R.drawable.home_account_clicked));
+                imghome.setBackground(getResources().getDrawable(R.drawable.mapfriends_clicked));
                 imglist.setBackground(getResources().getDrawable(R.drawable.friendsaccount));
+                imgrespot.setBackground(getResources().getDrawable(R.drawable.spots));
                 imgnotification.setBackground(getResources().getDrawable(R.drawable.notification));
-                // imgoption.setBackground(getResources().getDrawable(R.drawable.optionaccount));
 
                 break;
             case 2:
 
-                imghome.setBackground(getResources().getDrawable(R.drawable.homeaccount));
+                imghome.setBackground(getResources().getDrawable(R.drawable.mapfriends));
                 imglist.setBackground(getResources().getDrawable(R.drawable.friends_clicked));
+                imgrespot.setBackground(getResources().getDrawable(R.drawable.spots));
                 imgnotification.setBackground(getResources().getDrawable(R.drawable.notification));
-                // imgoption.setBackground(getResources().getDrawable(R.drawable.optionaccount));
 
                 break;
 
             case 3:
 
-                imghome.setBackground(getResources().getDrawable(R.drawable.homeaccount));
+                imghome.setBackground(getResources().getDrawable(R.drawable.mapfriends));
                 imglist.setBackground(getResources().getDrawable(R.drawable.friendsaccount));
-                imgnotification.setBackground(getResources().getDrawable(R.drawable.bell_clicked1));
-                // imgoption.setBackground(getResources().getDrawable(R.drawable.optionaccount));
+                imgrespot.setBackground(getResources().getDrawable(R.drawable.spots_clicked));
+                imgnotification.setBackground(getResources().getDrawable(R.drawable.notification));
 
                 break;
             case 4:
 
-                imghome.setBackground(getResources().getDrawable(R.drawable.homeaccount));
+                imghome.setBackground(getResources().getDrawable(R.drawable.mapfriends));
                 imglist.setBackground(getResources().getDrawable(R.drawable.friendsaccount));
-                imgnotification.setBackground(getResources().getDrawable(R.drawable.notification));
-                // imgoption.setBackground(getResources().getDrawable(R.drawable.option_clicked));
+                imgrespot.setBackground(getResources().getDrawable(R.drawable.spots));
+                imgnotification.setBackground(getResources().getDrawable(R.drawable.bell_clicked1));
 
                 break;
         }

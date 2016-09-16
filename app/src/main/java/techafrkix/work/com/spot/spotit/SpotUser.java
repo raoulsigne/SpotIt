@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import techafrkix.work.com.spot.bd.Spot;
+import techafrkix.work.com.spot.bd.Utilisateur;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.MyMarker;
@@ -63,7 +64,7 @@ public class SpotUser extends Fragment implements OnMapReadyCallback,
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM1 = "friend";
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
@@ -86,6 +87,7 @@ public class SpotUser extends Fragment implements OnMapReadyCallback,
     private int total_spot;
     private TextView txtmySpots;
     private ImageView myspot;
+    private Utilisateur friend;
 
     public SpotUser() {
         // Required empty publics constructor
@@ -115,6 +117,11 @@ public class SpotUser extends Fragment implements OnMapReadyCallback,
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+            try {
+                friend = (Utilisateur)getArguments().getSerializable(ARG_PARAM1);
+            }catch (Exception e){
+                friend = null;
+            }
         }
     }
 
@@ -132,19 +139,30 @@ public class SpotUser extends Fragment implements OnMapReadyCallback,
         mMarkersHashMap = new HashMap<Marker, MyMarker>();
         server = new DBServer(getActivity());
         spots = new ArrayList<Spot>();
-
         profile = session.getUserDetails();
-        total_spot = Integer.valueOf(profile.get(SessionManager.KEY_SPOT)) + Integer.valueOf(profile.get(SessionManager.KEY_RESPOT));
-        if (total_spot <= 1)
-            txtmySpots.setText(total_spot + " Spot");
-        else
-            txtmySpots.setText(total_spot + " Spots");
+
+        if (friend == null) {
+            total_spot = Integer.valueOf(profile.get(SessionManager.KEY_SPOT)) + Integer.valueOf(profile.get(SessionManager.KEY_RESPOT));
+            if (total_spot <= 1)
+                txtmySpots.setText(total_spot + " Spot");
+            else
+                txtmySpots.setText(total_spot + " Spots");
+        }else {
+            total_spot = friend.getNbspot() + friend.getNbrespot();
+            if (total_spot <= 1)
+                txtmySpots.setText(total_spot + " Spot");
+            else
+                txtmySpots.setText(total_spot + " Spots");
+        }
 
         myspot = (ImageView) view.findViewById(R.id.imgMySpots);
         myspot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onLoadSpot();
+                if (friend != null)
+                    mListener.onLoadSpot();
+                else
+                    mListener.onLoadSpot(spots);
             }
         });
 
@@ -310,6 +328,7 @@ public class SpotUser extends Fragment implements OnMapReadyCallback,
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onLoadSpot();
+        void onLoadSpot(ArrayList<Spot> spots);
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -362,7 +381,10 @@ public class SpotUser extends Fragment implements OnMapReadyCallback,
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                spots = server.find_spot_user(Integer.valueOf(profile.get(SessionManager.KEY_ID)), 0, total_spot);
+                if (friend == null)
+                    spots = server.find_spot_user(Integer.valueOf(profile.get(SessionManager.KEY_ID)), 0, total_spot);
+                else
+                    spots = server.find_spot_user(friend.getId(), 0, total_spot);
             }});
 
         t.start(); // spawn thread

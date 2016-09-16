@@ -101,82 +101,11 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view;
+        type = (int) getArguments().getInt("type");
         if (type == 1) {
             view = inflater.inflate(R.layout.activity_liste_spots_user, container, false);
-//            imgprofile = (ImageView) view.findViewById(R.id.item_profile);
             txtpseudo = (TextView)view.findViewById(R.id.txtPseudo_friend);
-//            txtspots = (TextView)view.findViewById(R.id.txtSpots_friend);
-//            txtfriend = (TextView)view.findViewById(R.id.txtFriends_friend);
-//
             txtpseudo.setText(profile.get(SessionManager.KEY_NAME));
-//            txtspots.setText(profile.get(SessionManager.KEY_SPOT) + " spots | " + profile.get(SessionManager.KEY_RESPOT) + " respots");
-//            txtfriend.setText(profile.get(SessionManager.KEY_FRIENDS) + " friends");
-
-//            if (profile.get(SessionManager.KEY_PHOTO) != null & profile.get(SessionManager.KEY_PHOTO) != "") {
-//                Log.i("file", profile.get(SessionManager.KEY_PHOTO));
-//                final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + profile.get(SessionManager.KEY_PHOTO) + ".jpg");
-//
-//                if (file.exists()) {
-//                    // marker.showInfoWindow();
-//                    imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
-//                } else {
-//                    if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
-//                        Log.i("file", "file not exists");
-//                        AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
-//                        final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
-//                        barProgressDialog.setTitle("Telechargement du spot ...");
-//                        barProgressDialog.setMessage("Opération en progression ...");
-//                        barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
-//                        barProgressDialog.setProgress(0);
-//                        barProgressDialog.setMax(100);
-//                        barProgressDialog.show();
-//                        int transfertId = aws_tools.download(file, profile.get(SessionManager.KEY_PHOTO));
-//                        TransferUtility transferUtility = aws_tools.getTransferUtility();
-//                        TransferObserver observer = transferUtility.getTransferById(transfertId);
-//                        observer.setTransferListener(new TransferListener() {
-//
-//                            @Override
-//                            public void onStateChanged(int id, TransferState state) {
-//                                // do something
-//                            }
-//
-//                            @Override
-//                            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-//                                int rapport = (int) (bytesCurrent * 100);
-//                                if (bytesTotal != 0) {
-//                                    rapport /= bytesTotal;
-//                                    if (rapport == 100) {
-//                                        barProgressDialog.dismiss();
-//                                        imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
-//                                    }
-//                                    barProgressDialog.setProgress(rapport);
-//                                } else {
-//                                    barProgressDialog.dismiss();
-//                                }
-//                            }
-//
-//                            @Override
-//                            public void onError(int id, Exception ex) {
-//                                // do something
-//                                barProgressDialog.dismiss();
-//                            }
-//
-//                        });
-//                    } else {
-//                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//                        builder.setTitle("Spot It:Information")
-//                                .setMessage("Vérifiez votre connexion Internet")
-//                                .setCancelable(false)
-//                                .setNegativeButton("Close", new DialogInterface.OnClickListener() {
-//                                    public void onClick(DialogInterface dialog, int id) {
-//                                        dialog.cancel();
-//                                    }
-//                                });
-//                        AlertDialog alert = builder.create();
-//                        alert.show();
-//                    }
-//                }
-//            }
         }
         else
             view = inflater.inflate(R.layout.activity_liste_spots, container, false);

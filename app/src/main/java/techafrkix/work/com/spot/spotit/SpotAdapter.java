@@ -67,7 +67,7 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        final TextView spotDate, spotTag;
+        final TextView spotDate, spotTag, txtdelete;
         final ImageButton share, comment, letsgo, like, delete;
         final ImageView spotPhoto;
         final ImageView photoprofile;
@@ -91,9 +91,12 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
         share = (ImageButton) convertView.findViewById(R.id.imgshare);
         letsgo = (ImageButton) convertView.findViewById(R.id.imgNavigation);
         delete = (ImageButton) convertView.findViewById(R.id.imgdelete);
+        txtdelete = (TextView) convertView.findViewById(R.id.txtdelete);
 
-        if (type == 0)
+        if (type == 0) {
             delete.setVisibility(View.GONE);
+            txtdelete.setVisibility(View.GONE);
+        }
 
         delete.setOnClickListener(new View.OnClickListener() {
             @Override

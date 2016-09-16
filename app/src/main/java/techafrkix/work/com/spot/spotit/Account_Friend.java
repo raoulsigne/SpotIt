@@ -68,7 +68,7 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
     LocationRequest locationRequest;
 
     private  Utilisateur friend;
-    ArrayList<Spot> spots;
+    ArrayList<Spot> spots, respots;
     private HashMap<Marker, MyMarker> mMarkersHashMap;
     private ArrayList<MyMarker> mMyMarkersArray = new ArrayList<MyMarker>();
     private DBServer server;
@@ -76,7 +76,11 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
     private int total_spot;
 
     private OnFragmentInteractionListener mListener;
-    private ImageView imgmap, imgspots, imgfriends;
+    private ImageView imgmap, imgspots, imgfriends, imgretour;
+
+    private SpotUser fgSpotuser;
+    private ListRespots fgRespot;
+    private Add_Friend fgAddfrient;
 
     public Account_Friend() {
         // Required empty publics constructor
@@ -115,6 +119,7 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         spots = new ArrayList<Spot>();
+        respots = new ArrayList<>();
         mMarkersHashMap = new HashMap<Marker, MyMarker>();
         server = new DBServer(getActivity());
 
@@ -125,6 +130,11 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
         imgmap = (ImageView) view.findViewById(R.id.imgMapHome);
         imgspots = (ImageView) view.findViewById(R.id.imgListSpot);
         imgfriends = (ImageView) view.findViewById(R.id.imgNotification);
+        imgretour = (ImageView) view.findViewById(R.id.imgretour);
+
+        fgSpotuser = new SpotUser();
+        fgRespot = new ListRespots();
+        fgAddfrient = new Add_Friend();
 
         ImageView play_spot = (ImageView) view.findViewById(R.id.imgMySpots_friends);
         TextView txtPseudo = (TextView) view.findViewById(R.id.txtPseudo_friend);
@@ -137,7 +147,7 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
             txtPseudo.setText(friend.getPseudo());
             txtSpot.setText(String.valueOf(friend.getNbspot()));
             txtRespot.setText(String.valueOf(friend.getNbrespot()));
-            txtNbSpot.setText((friend.getSpot() + friend.getNbspot()) + " Spots");
+            txtNbSpot.setText((friend.getSpot()) + " Spots");
             txtNbFriend.setText(String.valueOf(friend.getNbfriends()));
             total_spot = friend.getNbspot() + friend.getNbrespot();
         }
@@ -156,24 +166,67 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
             @Override
             public void onClick(View v) {
                 setAciveTab(1);
-
+                getChildFragmentManager().beginTransaction().remove(fgSpotuser).commit();
+                fgSpotuser = new SpotUser();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("friend", friend);
+                fgSpotuser.setArguments(bundle);
+                getChildFragmentManager().beginTransaction()
+                        .replace(R.id.friendmap, fgSpotuser, "SPOT")
+                        .commit();
             }
         });
         imgspots.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setAciveTab(2);
 
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        respots = server.find_respot_user(friend.getId(), 0, friend.getSpot());
+                    }
+                });
+
+                t.start(); // spawn thread
+                try {
+                    t.join();
+                    if (respots != null) {
+                        getChildFragmentManager().beginTransaction().remove(fgRespot).commit();
+                        fgRespot = new ListRespots();
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("spots", respots);
+                        fgRespot.setArguments(bundle);
+                        getChildFragmentManager().beginTransaction()
+                                .replace(R.id.friendmap, fgRespot, "RESPOT")
+                                .commit();
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                setAciveTab(2);
             }
         });
         imgfriends.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setAciveTab(3);
-
+                getChildFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+                fgAddfrient = new Add_Friend();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("friend", friend);
+                fgAddfrient.setArguments(bundle);
+                getChildFragmentManager().beginTransaction()
+                        .replace(R.id.friendmap, fgAddfrient, "FRIEND")
+                        .commit();
             }
         });
-
+        imgretour.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onLoadAccount(2);
+            }
+        });
 
         if (friend.getPhoto() != "") {
             final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + friend.getPhoto() + ".jpg");
@@ -408,6 +461,7 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
         void onListSpot_Friend(Utilisateur friend);
+        void onLoadAccount(int i);
     }
 
     /**
@@ -443,7 +497,7 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
         mMap.clear();
         if(markers.size() > 0)
         {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(markers.get(0).getmLatitude(), markers.get(0).getmLongitude()), 10));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(markers.get(0).getmLatitude(), markers.get(0).getmLongitude()), 14));
             for (MyMarker myMarker : markers)
             {
 

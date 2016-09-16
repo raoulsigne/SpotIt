@@ -1237,6 +1237,97 @@ public class DBServer {
     }
 
     /**
+     * fonction qui retourne les spots d'un utilisateur
+     *
+     * @param user_id  id dudit utilisateur
+     * @param offset   reprsente l'indice du premier élément
+     * @param interval représente le nombre d'éléments à recuperer
+     * @return retourne une liste de spots
+     */
+    public ArrayList<Spot> find_respot_user(int user_id, int offset, int interval) {
+        ArrayList<Spot> spots = new ArrayList<>();
+        Spot spot = new Spot();
+        ContentValues values = new ContentValues();
+        values.put("apikey", API_KEY);
+        values.put("user_id", user_id);
+        values.put("offset", offset);
+        values.put("interval", interval);
+        try {
+            url = new URL(BASE_URL + URL_FIND_SPOT_USER + "?" + getQuery(values));
+            Log.i("url", url.toString());
+            client = (HttpURLConnection) url.openConnection();
+            client.setRequestMethod("GET");
+
+            StringBuilder builder = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                builder.append(line + "\n");
+            }
+            br.close();
+            Log.i(TAG, "reponse = " + builder.toString());
+            try {
+                JSONObject json = new JSONObject(builder.toString());
+                ArrayList<String> tags = new ArrayList<>();
+                int statut = Integer.valueOf(json.getString("statut"));
+                if (statut == 1) {
+                    JSONArray jArr = json.getJSONArray("data");
+                    for (int i = 0; i < jArr.length(); i++) {
+                        JSONObject json2 = jArr.getJSONObject(i);
+                        if ((int) json2.get("respot") == 1) {
+                            spot = new Spot();
+                            spot.setRespot((int) json2.get("respot"));
+                            spot.setVisibilite_id((int) json2.get("visibilite_id"));
+                            spot.setGeohash((String) json2.get("hash"));
+                            spot.setId((int) json2.get("id"));
+                            spot.setLongitude(json2.getDouble("gpslong") + "");
+                            spot.setLatitude(json2.getDouble("gpslat") + "");
+                            spot.setPhotokey((String) json2.get("photo"));
+                            spot.setPhotouser((String) json2.get("photouser"));
+                            spot.setUser_id((int) json2.get(SpotsDBAdapteur.COLONNE_USER_ID));
+                            spot.setDate(convert_date_new((String) json2.get("created")));
+                            spot.setNbcomment((int) json2.get("nbcomment"));
+                            JSONArray jArrtag = json2.getJSONArray("tags");
+                            tags = new ArrayList<>();
+                            for (int j = 0; j < jArrtag.length(); j++) {
+                                JSONObject json3 = jArrtag.getJSONObject(j);
+                                tags.add((String) json3.get("tag"));
+                            }
+                            spot.setTags(tags);
+                            spots.add(spot);
+                        }
+                    }
+                    return spots;
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
+                    builder.append("message = " + json.getString("message"));
+
+                    Log.i(TAG, "reponse = " + builder.toString());
+                    return null;
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "JSONException " + e.getMessage());
+                return null;
+            }
+        } catch (MalformedURLException error) {
+            //Handles an incorrectly entered URL
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
+            return null;
+        } catch (SocketTimeoutException error) {
+            //Handles URL access timeout.
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
+            return null;
+        } catch (IOException error) {
+            //Handles input and output errors
+            Log.e(TAG, "IOException " + error.toString());
+            return null;
+        } finally {
+            client.disconnect();
+        }
+    }
+
+    /**
      * function which find a spot given an id of the spot
      * @param id
      * @return spot ou null

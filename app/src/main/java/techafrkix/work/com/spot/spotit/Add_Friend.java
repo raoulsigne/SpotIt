@@ -56,6 +56,7 @@ public class Add_Friend extends Fragment implements FriendCallback{
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "users";
     private static final String ARG_PARAM2 = "type";
+    private static final String ARG_PARAM3 = "friend";
     private int type;
     private String cle;
 
@@ -74,6 +75,7 @@ public class Add_Friend extends Fragment implements FriendCallback{
     private SessionManager session;
     private HashMap<String, String> profile;
     private int response;
+    private Utilisateur friend;
 
     private OnFragmentInteractionListener mListener;
 
@@ -103,6 +105,19 @@ public class Add_Friend extends Fragment implements FriendCallback{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        users = new ArrayList<>();
+        if (getArguments() != null) {
+            type = getArguments().getInt(ARG_PARAM2);
+            cle = getArguments().getString("cle");
+            users = (ArrayList<Utilisateur>)getArguments().getSerializable(ARG_PARAM1);
+
+            try {
+                friend = (Utilisateur)getArguments().getSerializable(ARG_PARAM3);
+            }catch (Exception e){
+                friend = null;
+            }
+        }
+
         // Session class instance
         session = new SessionManager(getActivity());
         profile = new HashMap<>();
@@ -113,7 +128,10 @@ public class Add_Friend extends Fragment implements FriendCallback{
         Thread t1 = new Thread(new Runnable() {
             @Override
             public void run() {
-                users = server.getAllFriends(Integer.valueOf(profile.get(SessionManager.KEY_ID)));
+                if (friend == null)
+                    users = server.getAllFriends(Integer.valueOf(profile.get(SessionManager.KEY_ID)));
+                else
+                    users = server.getAllFriends(friend.getId());
             }
         });
 
@@ -130,13 +148,6 @@ public class Add_Friend extends Fragment implements FriendCallback{
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
-
-        users = new ArrayList<>();
-        if (getArguments() != null) {
-            type = getArguments().getInt(ARG_PARAM2);
-            cle = getArguments().getString("cle");
-            users = (ArrayList<Utilisateur>)getArguments().getSerializable(ARG_PARAM1);
         }
     }
 
@@ -155,7 +166,10 @@ public class Add_Friend extends Fragment implements FriendCallback{
             Thread t = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    users = server.getAllFriends(Integer.valueOf(profile.get(SessionManager.KEY_ID)));
+                    if (friend == null)
+                        users = server.getAllFriends(Integer.valueOf(profile.get(SessionManager.KEY_ID)));
+                    else
+                        users = server.getAllFriends(friend.getId());
                 }
             });
 
@@ -192,51 +206,18 @@ public class Add_Friend extends Fragment implements FriendCallback{
                 lvfriends.setAdapter(adapter);
             }
         }
-//        btnLaunch.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            publics void onClick(View v) {
-//                final String cle = edtFindspot.getText().toString();
-//                View view = getActivity().getCurrentFocus();
-//                if (view != null) {
-//                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-//                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-//                }
-//                if (!TextUtils.isEmpty(cle)) {
-//                    Thread t = new Thread(new Runnable() {
-//                        @Override
-//                        publics void run() {
-//                            users = server.getUsers_by_pseudo(cle);
-//                        }
-//                    });
-//
-//                    t.start(); // spawn thread
-//                    try {
-//                        t.join();
-//                        if (users != null) {
-//                            String[] items = new String[users.size()];
-//                            for (int i = 0; i < users.size(); i++)
-//                                items[i] = users.get(i).getPseudo();
-//                            Log.i("dialog", items.toString());
-//                            CustomList_Search adapter = new CustomList_Search(getActivity(), items, cle, Add_Friend.this);
-//                            lvfriends.invalidate();
-//                            lvfriends.setAdapter(adapter);
-//                        }
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//        });
 
-        lvfriends.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (friends.contains(users.get(position).getPseudo()))
-                    mListener.onLoadFriend(users.get(position));
-                else
-                    Toast.makeText(getActivity(), "You are not yet friend", Toast.LENGTH_SHORT).show();
-            }
-        });
+        if (friend == null) {
+            lvfriends.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    if (friends.contains(users.get(position).getPseudo()))
+                        mListener.onLoadFriend(users.get(position));
+                    else
+                        Toast.makeText(getActivity(), "You are not yet friend", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
 
         return view;
     }

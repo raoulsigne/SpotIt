@@ -79,7 +79,7 @@ public class DetailSpot extends Fragment {
     ListView listView;
     TextView txttag, txtdate;
     LinearLayout retour;
-    int resultat;
+    int resultat, type;
 
     private Spot spot;
     private ArrayList<Spot> spots;
@@ -103,10 +103,17 @@ public class DetailSpot extends Fragment {
         profile = session.getUserDetails();
         if (getArguments() != null) {
             spot = (Spot) getArguments().getSerializable(ARG_PARAM3);
+            type = getArguments().getInt("type");
             try {
                 friend = (Utilisateur) getArguments().getSerializable(ARG_PARAM2);
+            } catch (Exception e) {
+                friend = null;
+            }
+
+            try {
                 spots = (ArrayList<Spot>) getArguments().getSerializable(ARG_PARAM1);
             } catch (Exception e) {
+                spots = null;
             }
         }
     }
@@ -138,7 +145,17 @@ public class DetailSpot extends Fragment {
         retour.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mListener.onLoadSpot(spots);
+                switch (type){
+                    case 1:
+                        mListener.onLoadSpot();
+                        break;
+                    case 2:
+                        mListener.onListSpot_Friend(friend);
+                        break;
+                    case 3:
+                        mListener.onLoadSpot(spots);
+                        break;
+                }
             }
         });
 
@@ -475,7 +492,8 @@ public class DetailSpot extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-
+        void onLoadSpot();
+        void onListSpot_Friend(Utilisateur friend);
         void onLoadSpot(ArrayList<Spot> spots);
     }
 

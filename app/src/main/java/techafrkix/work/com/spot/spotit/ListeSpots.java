@@ -426,7 +426,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
     @Override
     public void detail(int position) {
         if (type == 1) {
-            mListener.onDetailSpot(spots, spots.get(position));
+            mListener.onDetailSpot_user(spots, spots.get(position));
         } else {
             mListener.onDetailSpot(tampon, tampon.get(position));
         }
@@ -533,7 +533,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onDetailSpot(ArrayList<Spot> spots, Spot spot);
-
+        void onDetailSpot_user(ArrayList<Spot> spots, Spot spot);
         void onLetsGo();
     }
 

@@ -72,7 +72,7 @@ public class DetailSpot extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
-    private ImageButton share, comment, letsgo, like, respot;
+    private ImageButton share, comment, letsgo, like;
     Button btnpost;
     EditText edtComment;
     ImageView imgspot, imgprofile;
@@ -129,7 +129,7 @@ public class DetailSpot extends Fragment {
 
         like = (ImageButton) view.findViewById(R.id.imglike);
         comment = (ImageButton) view.findViewById(R.id.imgchat);
-        respot = (ImageButton) view.findViewById(R.id.imgrespot);
+//        respot = (ImageButton) view.findViewById(R.id.imgrespot);
         share = (ImageButton) view.findViewById(R.id.imgshare);
         letsgo = (ImageButton) view.findViewById(R.id.imgNavigation);
 
@@ -146,14 +146,34 @@ public class DetailSpot extends Fragment {
             @Override
             public void onClick(View view) {
                 switch (type){
+                    case 0:
+                        int nb = getArguments().getInt("nb");
+                        switch (nb){
+                            case 1:
+                                mListener.onLoadAccueil();
+                                break;
+                            case 2:
+                                mListener.onLoadAccount();
+                                break;
+                            case 3:
+                                Utilisateur user = new Utilisateur();
+                                user.setId(spot.getUser_id());
+                                mListener.onLoadFriend(friend);
+                                break;
+                        }
+                        Log.i("numero", "0");
+                        break;
                     case 1:
                         mListener.onLoadSpot();
+                        Log.i("numero", "1");
                         break;
                     case 2:
                         mListener.onListSpot_Friend(friend);
+                        Log.i("numero", "2");
                         break;
                     case 3:
                         mListener.onLoadSpot(spots);
+                        Log.i("numero", "3");
                         break;
                 }
             }
@@ -166,31 +186,32 @@ public class DetailSpot extends Fragment {
             }
         });
 
-        respot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (spot.getUser_id() != Integer.valueOf(profile.get(SessionManager.KEY_ID))) {
-                    Thread t = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            resultat = server.enregistrer_respot(Integer.valueOf(profile.get(SessionManager.KEY_ID)), spot.getId());
-                        }
-                    });
+//        respot.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (spot.getUser_id() != Integer.valueOf(profile.get(SessionManager.KEY_ID))) {
+//                    Thread t = new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            resultat = server.enregistrer_respot(Integer.valueOf(profile.get(SessionManager.KEY_ID)), spot.getId());
+//                        }
+//                    });
+//
+//                    t.start(); // spawn thread
+//                    try {
+//                        t.join();
+//                        if (resultat > 0) {
+//                            session.increment_nbrespot(); // incremente le nombre de respots d'un utilisateur
+//                            Toast.makeText(getActivity(), "Operation succeed!", Toast.LENGTH_SHORT).show();
+//                        }
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                } else
+//                    Toast.makeText(getActivity(), "You cannot respot your own spot!", Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
-                    t.start(); // spawn thread
-                    try {
-                        t.join();
-                        if (resultat > 0) {
-                            session.increment_nbrespot(); // incremente le nombre de respots d'un utilisateur
-                            Toast.makeText(getActivity(), "Operation succeed!", Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } else
-                    Toast.makeText(getActivity(), "You cannot respot your own spot!", Toast.LENGTH_SHORT).show();
-            }
-        });
         btnpost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -494,7 +515,10 @@ public class DetailSpot extends Fragment {
         // TODO: Update argument type and name
         void onLoadSpot();
         void onListSpot_Friend(Utilisateur friend);
+        void onLoadFriend(Utilisateur friend);
         void onLoadSpot(ArrayList<Spot> spots);
+        void onLoadAccueil();
+        void onLoadAccount();
     }
 
     private void loadComment() {

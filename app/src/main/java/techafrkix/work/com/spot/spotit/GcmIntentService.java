@@ -14,6 +14,9 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import techafrkix.work.com.spot.bd.NotificationEntity;
 
 /**
@@ -141,7 +144,7 @@ public class GcmIntentService extends IntentService {
                         .setContentTitle("Notification from Spot It")
                         .setStyle(new NotificationCompat.InboxStyle()
                                 .addLine(msg.getDescription())
-                                .addLine(msg.getCreated()))
+                                .addLine(convert_date_new(msg.getCreated())))
                         .setContentText(extras.getString(_DESCRIPTION))
                         .setAutoCancel(false)
                         .setDefaults(Notification.DEFAULT_SOUND);
@@ -239,5 +242,69 @@ public class GcmIntentService extends IntentService {
         // You can also include some extra data.
         intent.putExtra("message", "there is a new notification!");
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    public String convert_date_new(String date) {
+        String resultat = "";
+        String[] tableau = date.split("T");
+        String[] tab1 = tableau[1].split("\\.");
+        String[] tab2 = tableau[0].split("-");
+        String[] tab3 = tab1[0].split(":");
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy");
+        Calendar datec = Calendar.getInstance();
+        int sec = datec.get(Calendar.SECOND);
+        int min = datec.get(Calendar.MINUTE);
+        int hour = datec.get(Calendar.HOUR_OF_DAY);
+        int daynumber = datec.get(Calendar.DAY_OF_WEEK);
+        int weeknumber = datec.get(Calendar.WEEK_OF_MONTH);
+        int monthnumber = datec.get(Calendar.MONTH);
+
+        datec.set(Calendar.YEAR, Integer.valueOf(tab2[0]));
+        datec.set(Calendar.MONTH, Integer.valueOf(tab2[1]) - 1);
+        datec.set(Calendar.DAY_OF_MONTH, Integer.valueOf(tab2[2]));
+        int sec1 = Integer.valueOf(tab3[0]);
+        int min1 = Integer.valueOf(tab3[1]);
+        int hour1 = Integer.valueOf(tab3[2]);
+        int daynumber1 = datec.get(Calendar.DAY_OF_WEEK);
+        int weeknumber1 = datec.get(Calendar.WEEK_OF_MONTH);
+        int monthnumber1 = datec.get(Calendar.MONTH);
+
+        if (monthnumber == monthnumber1){
+            if (weeknumber == weeknumber1){
+                if (daynumber == daynumber1){
+                    if (hour == hour1){
+                        if (min == min1){
+                            if (sec == sec1){
+                                resultat = "now";
+                            }else{
+                                resultat = "il y'a " + (sec - sec1) + " secondes";
+                            }
+                        }else {
+                            resultat = "il y'a " + (min - min1) + " minutes";
+                        }
+                    }else {
+                        resultat = "il y'a " + (hour - hour1) + " heures";
+                    }
+                }else{
+                    if ((daynumber - daynumber1) == 1)
+                        resultat = "yesterday";
+                    else
+                        resultat = "il y'a " + (daynumber - daynumber1) + " jours";
+                }
+            }else{
+                if ((weeknumber - weeknumber1) == 1)
+                    resultat = "last week";
+                else
+                    resultat = "il y'a " + (weeknumber - weeknumber1) + " semaines";
+            }
+        }else{
+            if ((monthnumber - monthnumber1) == 1)
+                resultat = "last month";
+            else
+                resultat = "il y'a " + (monthnumber - monthnumber1) + " mois";
+        }
+
+        return resultat;
     }
 }

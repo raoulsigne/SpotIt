@@ -13,7 +13,7 @@
         <RelativeLayout
             android:id="@+id/infos"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="30dp"
             android:gravity="left"
             android:background="@color/myblue">
 
@@ -31,7 +31,7 @@
                     android:layout_height="wrap_content"
                     android:text="Stephen Curry"
                     android:textColor="@color/blanc"
-                    android:textSize="17sp"
+                    android:textSize="14sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -39,7 +39,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:text="spots"
-                    android:textSize="17sp"
+                    android:textSize="14sp"
                     android:textColor="@color/blanc"/>
 
             </LinearLayout>

@@ -321,7 +321,7 @@
 
                     <TextView
                         android:id="@+id/txtMySpots"
-                        android:layout_width="wrap_content"
+                        android:layout_width="60dp"
                         android:layout_height="18dp"
                         android:layout_marginBottom="2dp"
                         android:background="@drawable/badge"
@@ -331,17 +331,17 @@
                         android:text=" Spots"
                         android:textAlignment="center"
                         android:textColor="@color/blanc"
-                        android:textSize="12sp" />
+                        android:textSize="10sp" />
 
                     <ImageView
                         android:id="@+id/imgMySpots"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
                         android:layout_gravity="center"
                         android:background="@drawable/round_button_white"
                         android:elevation="15dp"
                         android:gravity="center"
-                        android:padding="12dp"
+                        android:padding="15dp"
                         android:src="@drawable/play_button" />
 
 

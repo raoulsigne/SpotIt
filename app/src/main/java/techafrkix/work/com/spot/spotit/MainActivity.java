@@ -611,11 +611,30 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     @Override
-    public void onDetailSpot(Spot spot) {
+    public void onDetailSpot(Spot spot, int i) {
         try {
 
             Bundle args = new Bundle();
-            args.putInt("type", 1);
+            args.putInt("type", 0);
+            args.putInt("nb", i);
+            args.putSerializable("spot", spot);
+            fgDetailspot.setArguments(args);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, fgDetailspot, "DETAIL")
+                    .commit();
+        } catch (Exception e) {
+            Log.e("fragment", e.getMessage());
+        }
+    }
+
+    @Override
+    public void onDetailSpot(Spot spot, Utilisateur friend, int i) {
+        try {
+
+            Bundle args = new Bundle();
+            args.putInt("type", 0);
+            args.putSerializable("friend", friend);
+            args.putInt("nb", i);
             args.putSerializable("spot", spot);
             fgDetailspot.setArguments(args);
             getSupportFragmentManager().beginTransaction()
@@ -632,6 +651,23 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             Bundle args = new Bundle();
             args.putInt("type", 3);
+            args.putSerializable("spot", spot);
+            args.putSerializable("spots", spots);
+            fgDetailspot.setArguments(args);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, fgDetailspot, "DETAIL")
+                    .commit();
+        } catch (Exception e) {
+            Log.e("fragment", e.getMessage());
+        }
+    }
+
+    @Override
+    public void onDetailSpot_user(ArrayList<Spot> spots, Spot spot) {
+        try {
+
+            Bundle args = new Bundle();
+            args.putInt("type", 1);
             args.putSerializable("spot", spot);
             args.putSerializable("spots", spots);
             fgDetailspot.setArguments(args);
@@ -789,6 +825,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         //traitement de l'action lors du click
         startFragment(MENU_ACTIF_ACCOUNT);
+    }
+
+    @Override
+    public void onLoadAccueil(){
+        //changement des couleurs des widgets
+        setAciveTab(MENU_ACTIF_HOME);
+
+        //traitement de l'action lors du click
+        startFragment(MENU_ACTIF_HOME);
     }
 
     @Override

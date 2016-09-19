@@ -105,6 +105,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
     private HashMap<String, String> profile;
     ArrayList<Spot> spots, respots;
     private HashMap<Marker, MyMarker> mMarkersHashMap;
+    private HashMap<MyMarker, Spot> mappage;
     private ArrayList<MyMarker> mMyMarkersArray = new ArrayList<MyMarker>();
 
     private TextView txtPseudo, txtSpots, txtRespots, txtFriends, txtmySpots;
@@ -146,6 +147,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         // Session class instance
         session = new SessionManager(getActivity());
         profile = new HashMap<>();
+        mappage = new HashMap<>();
         mMarkersHashMap = new HashMap<Marker, MyMarker>();
         server = new DBServer(getActivity());
         spots = new ArrayList<Spot>();
@@ -474,67 +476,13 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
             @Override
             public boolean onMarkerClick(final com.google.android.gms.maps.model.Marker marker) {
                 final MyMarker myMarker = mMarkersHashMap.get(marker);
-                final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + myMarker.getmIcon() + ".jpg");
 
-                if (file.exists()) {
-                    // marker.showInfoWindow();
-                    showdialogMarker(myMarker, file);
-                    Log.i("file", "file exists");
-                } else {
-                    if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
-                        Log.i("file", "file not exists");
-                        AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
-                        final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
-                        barProgressDialog.setTitle("Telechargement du spot ...");
-                        barProgressDialog.setMessage("Opération en progression ...");
-                        barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
-                        barProgressDialog.setProgress(0);
-                        barProgressDialog.setMax(100);
-                        barProgressDialog.show();
-                        int transfertId = aws_tools.download(file, myMarker.getmIcon());
-                        TransferUtility transferUtility = aws_tools.getTransferUtility();
-                        TransferObserver observer = transferUtility.getTransferById(transfertId);
-                        observer.setTransferListener(new TransferListener() {
-
-                            @Override
-                            public void onStateChanged(int id, TransferState state) {
-                                // do something
-                            }
-
-                            @Override
-                            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                                int rapport = (int) (bytesCurrent * 100);
-                                rapport /= bytesTotal;
-                                barProgressDialog.setProgress(rapport);
-                                if (rapport == 100) {
-                                    barProgressDialog.dismiss();
-                                    // marker.showInfoWindow();
-                                    //display a dialog bout spot detail
-                                    showdialogMarker(myMarker, file);
-                                }
-                            }
-
-                            @Override
-                            public void onError(int id, Exception ex) {
-                                // do something
-                                barProgressDialog.dismiss();
-                            }
-
-                        });
-                    } else {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setTitle("Spot It:Information")
-                                .setMessage("Vérifiez votre connexion Internet")
-                                .setCancelable(false)
-                                .setNegativeButton("Close", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                });
-                        AlertDialog alert = builder.create();
-                        alert.show();
-                    }
+                Spot spot = mappage.get(myMarker);
+                if (spot != null) {
+                    Log.i("spot detail", spot.toString());
+                    mListener.onDetailSpot(spot, 2);
                 }
+
                 return true;
             }
         });
@@ -565,14 +513,11 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onLoadSpot();
-
         void onDisconnect();
-
         void onSetPhoto();
-
         void onLoadOption();
-
         void onDeleteNotification();
+        void onDetailSpot(Spot spot, int i);
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -650,9 +595,12 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         try {
             t.join();
             if (spots != null) {
+                mappage = new HashMap<>();
                 for (Spot s : spots) {
-                    mMyMarkersArray.add(new MyMarker(s.getDate(), s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()),
-                            Double.valueOf(s.getLongitude()), s.getId()));
+                    MyMarker m = new MyMarker(s.getDate(), s.getGeohash(), s.getPhotokey(), Double.valueOf(s.getLatitude()),
+                            Double.valueOf(s.getLongitude()), s.getId());
+                    mMyMarkersArray.add(m);
+                    mappage.put(m, s);
                 }
                 plotMarkers(mMyMarkersArray);
             }

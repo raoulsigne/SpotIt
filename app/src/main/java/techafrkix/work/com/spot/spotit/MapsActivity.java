@@ -268,7 +268,10 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
                 current_spot_id = myMarker.getmSpot_ID();
 
                 Spot spot = mappage.get(myMarker);
-                mListener.onDetailSpot(spot);
+                if (spot != null) {
+                    Log.i("spot detail", spot.toString());
+                    mListener.onDetailSpot(spot, 1);
+                }
 
                 return true;
             }
@@ -305,7 +308,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onLoadSpot(ArrayList<Spot> spots);
-        void onDetailSpot(Spot spot);
+        void onDetailSpot(Spot spot, int i);
         void onSearchSpot();
     }
 

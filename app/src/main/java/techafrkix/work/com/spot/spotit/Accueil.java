@@ -57,6 +57,7 @@ public class Accueil extends AppCompatActivity {
                 Intent itLogin = new Intent(getApplicationContext(),Connexion.class);
                 itLogin.putExtra("caller","Accueil");
                 startActivity(itLogin);
+                finish();
             }
         });
 
@@ -67,6 +68,7 @@ public class Accueil extends AppCompatActivity {
                 Intent itSignin = new Intent(getApplicationContext(), Inscription.class);
                 itSignin.putExtra("caller", "Accueil");
                 startActivity(itSignin);
+                finish();
             }
         });
     }

@@ -21,8 +21,8 @@
         android:drawablePadding="20dp"
         android:background="@drawable/custom_edittext"/>
 
-    <EditText
-        android:id="@+id/editText4"
+    <AutoCompleteTextView
+        android:id="@+id/autocomplete_city"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginLeft="20dp"

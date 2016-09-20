@@ -5,13 +5,23 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
 
 
 /**
@@ -42,6 +52,11 @@ public class Search extends Fragment {
 
     private TextView txtMoi, txtAmis, txtPublic;
     private ImageButton vMoi, vFriend, vPublic;
+    private AutoCompleteTextView textView;
+
+    private ArrayList<String> listes;
+    private DBServer server;
+
     public Search() {
         // Required empty publics constructor
     }
@@ -67,6 +82,9 @@ public class Search extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        server = new DBServer(getActivity());
+        listes = new ArrayList<>();
+
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -85,6 +103,7 @@ public class Search extends Fragment {
         txtMoi = (TextView) view.findViewById(R.id.txtMoi);
         txtAmis = (TextView) view.findViewById(R.id.txtAmis);
         txtPublic = (TextView) view.findViewById(R.id.txtPublic);
+        textView = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_city);
 
         vMoi.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,6 +144,8 @@ public class Search extends Fragment {
                 vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.public_clicked));
             }
         });
+
+        textView.addTextChangedListener(tw);
 
         return view;
     }
@@ -168,4 +189,34 @@ public class Search extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
+    private TextWatcher tw = new TextWatcher() {
+        public void afterTextChanged(Editable s){
+        }
+        public void  beforeTextChanged(CharSequence s, int start, int count, int after){
+            // you can check for enter key here
+        }
+        public void  onTextChanged (final CharSequence s, int start, int before, int count) {
+            listes = new ArrayList<>();
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    listes = server.google_autocompletion(s.toString());
+                }});
+
+            t.start(); // spawn thread
+            try{
+                t.join();
+                if (listes != null) {
+                    Log.i("auto complete", listes.toString());
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+                            android.R.layout.simple_list_item_1, listes);
+                    textView.setAdapter(adapter);
+                } else {
+                    Log.i("auto complete", "liste null");
+                }
+            }catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    };
 }

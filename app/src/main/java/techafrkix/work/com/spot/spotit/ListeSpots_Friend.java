@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.Point;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -19,6 +21,7 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -207,23 +210,46 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
             }
         }
 
-        // Creating a button - Load More
-        Button btnLoadMore = new Button(getActivity());
-        btnLoadMore.setText("Load More");
-        btnLoadMore.setBackground(getResources().getDrawable(R.drawable.button_blue));
-        // Adding button to listview at footer
-        listspots.addFooterView(btnLoadMore);
+//        // Creating a button - Load More
+//        Button btnLoadMore = new Button(getActivity());
+//        btnLoadMore.setText("Load More");
+//        btnLoadMore.setBackground(getResources().getDrawable(R.drawable.button_blue));
+//        // Adding button to listview at footer
+//        listspots.addFooterView(btnLoadMore);
 
         loadSpots();
 
         /**
          * Listening to Load More button click event
          * */
-        btnLoadMore.setOnClickListener(new View.OnClickListener() {
+//        btnLoadMore.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View arg0) {
+//                // Starting a new async task
+//                loadSpots();
+//            }
+//        });
+
+        /**
+         * Handle when reaching the end of the list
+         */
+        listspots.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
-            public void onClick(View arg0) {
-                // Starting a new async task
-                loadSpots();
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                final int lastItem = firstVisibleItem + visibleItemCount;
+                if (lastItem == totalItemCount) {
+                    if (preLast != lastItem) { //to avoid multiple calls for last item
+                        Log.i("Last", "Last");
+                        preLast = lastItem;
+
+                        loadSpots();
+                    }
+                }
             }
         });
 
@@ -559,6 +585,27 @@ class SpotFriendAdapter extends ArrayAdapter<Spot> {
             @Override
             public void onClick(View view) {
                 like.setBackground(context.getResources().getDrawable(R.drawable.liked));
+
+                if (spot.getUser_id() != Integer.valueOf(profile.get(SessionManager.KEY_ID))) {
+                    Thread t = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            resultat = server.enregistrer_respot(Integer.valueOf(profile.get(SessionManager.KEY_ID)), spot.getId());
+                        }
+                    });
+
+                    t.start(); // spawn thread
+                    try {
+                        t.join();
+                        if (resultat > 0) {
+                            session.increment_nbrespot(); // incremente le nombre de respots d'un utilisateur
+                            Toast.makeText(context, "Operation succeed!", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else
+                    Toast.makeText(context, "You cannot respot your own spot!", Toast.LENGTH_SHORT).show();
             }
         });
         // Populate the data into the template view using the data object
@@ -590,8 +637,18 @@ class SpotFriendAdapter extends ArrayAdapter<Spot> {
                 int nh = (int) ( bitmap.getHeight() * (Double.valueOf(width) / bitmap.getWidth()) );
                 Bitmap scaled = Bitmap.createScaledBitmap(bitmap, width, nh, true);
 
+                ExifInterface exif = new ExifInterface(file.getAbsolutePath());
+                int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
+                Log.i("ori", orientation + " ");
+
                 //define the image source of the imageview
-                spotPhoto.setImageBitmap(scaled);
+                if ((orientation == 3) || (orientation == 6) || (orientation == 9)){
+                    Matrix matrix = new Matrix();
+                    matrix.postRotate(90);
+                    Bitmap rotatedBitmap = Bitmap.createBitmap(scaled, 0, 0, scaled.getWidth(), scaled.getHeight(), matrix, true);
+                    spotPhoto.setImageBitmap(rotatedBitmap);
+                }else
+                    spotPhoto.setImageBitmap(scaled);
             }
 
         }catch (Exception e){

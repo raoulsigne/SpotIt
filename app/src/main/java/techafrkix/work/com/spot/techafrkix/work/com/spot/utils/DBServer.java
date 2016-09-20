@@ -6,6 +6,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.internal.bind.ArrayTypeAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,8 +43,9 @@ import techafrkix.work.com.spot.bd.Utilisateur;
  */
 public class DBServer {
 
-    private static final String URL_GEOCODING = "https://maps.googleapis.com/maps/api/geocode/json";
     private static final String GOOGLE_KEY = "AIzaSyAt76Pcfr0uKwMgicAtyksRa6hkXyYKep0";
+    private static final String URL_GEOCODING = "https://maps.googleapis.com/maps/api/geocode/json";
+    private static final String GOOGLE_AUTOCOMPLETE_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/json";
 
     private static final String BASE_URL = "https://spotitproject.herokuapp.com";
     private static final String API_KEY = "012YEYQS5653278GHQSD234671QSDF26";
@@ -2180,6 +2182,70 @@ public class DBServer {
             client.disconnect();
         }
     }
+
+    /**
+     * fonction qui retourne une liste de villes provenant de l'autocomplétion avec google
+     * @param pattern contient à chaîne racine que doit contenir les villes résultats
+     * @return une liste de chaine de caractères représentant les villes
+     */
+    public ArrayList<String> google_autocompletion(String pattern){
+        ArrayList<String> result = new ArrayList<>();
+
+        ContentValues values = new ContentValues();
+        values.put("key", GOOGLE_KEY);
+        values.put("input", pattern);
+        values.put("types", "(cities)");
+        values.put("language", "fr");
+
+        try {
+            url = new URL(GOOGLE_AUTOCOMPLETE_URL + "?" + getQuery(values));
+            client = (HttpURLConnection) url.openConnection();
+            client.setRequestMethod("GET");
+
+            StringBuilder builder = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                builder.append(line + "\n");
+            }
+            br.close();
+            Log.i("auto complete", url.toString());
+            Log.i("auto complete", "reponse = " + builder.toString());
+
+            try {
+                JSONObject json = new JSONObject(builder.toString());
+                String statut = (String)json.getString("status");
+                if (statut.compareToIgnoreCase("OK") == 0) {
+                    JSONArray jArr = json.getJSONArray("predictions");
+                    for (int i = 0; i < jArr.length(); i++) {
+                        JSONObject json2 = jArr.getJSONObject(i);
+                        result.add(json2.getString("description"));
+                    }
+                    return result;
+                } else {
+                    return null;
+                }
+            } catch (JSONException e) {
+                Log.e("auto complete", "JSONException " + e.getMessage());
+                return null;
+            }
+        } catch (MalformedURLException error) {
+            //Handles an incorrectly entered URL
+            Log.e("auto complete", "MalformedURLException " + error.getMessage());
+            return null;
+        } catch (SocketTimeoutException error) {
+            //Handles URL access timeout.
+            Log.e("auto complete", "SocketTimeoutException " + error.getMessage());
+            return null;
+        } catch (IOException error) {
+            //Handles input and output errors
+            Log.e("auto complete", "IOException " + error.toString());
+            return null;
+        } finally {
+            client.disconnect();
+        }
+    }
+
 
     /**
      * fonction qui en fonction du code d'erreur retourne un string

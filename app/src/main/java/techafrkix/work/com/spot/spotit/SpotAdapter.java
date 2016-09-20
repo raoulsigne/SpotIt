@@ -6,7 +6,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.Point;
+import android.media.ExifInterface;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -134,43 +136,35 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
             @Override
             public void onClick(View view) {
                 like.setBackground(context.getResources().getDrawable(R.drawable.liked));
+
+                if (spot.getUser_id() != Integer.valueOf(profile.get(SessionManager.KEY_ID))) {
+                    Thread t = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            resultat = server.enregistrer_respot(Integer.valueOf(profile.get(SessionManager.KEY_ID)), spot.getId());
+                        }
+                    });
+
+                    t.start(); // spawn thread
+                    try {
+                        t.join();
+                        if (resultat > 0) {
+                            session.increment_nbrespot(); // incremente le nombre de respots d'un utilisateur
+                            Toast.makeText(context, "Operation succeed!", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else
+                    Toast.makeText(context, "You cannot respot your own spot!", Toast.LENGTH_SHORT).show();
             }
         });
-//        respot.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (spot.getUser_id() != Integer.valueOf(profile.get(SessionManager.KEY_ID))) {
-//                    Thread t = new Thread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            resultat = server.enregistrer_respot(Integer.valueOf(profile.get(SessionManager.KEY_ID)), spot.getId());
-//                        }
-//                    });
-//
-//                    t.start(); // spawn thread
-//                    try {
-//                        t.join();
-//                        if (resultat > 0) {
-//                            session.increment_nbrespot(); // incremente le nombre de respots d'un utilisateur
-//                            Toast.makeText(context, "Operation succeed!", Toast.LENGTH_SHORT).show();
-//                        }
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                } else
-//                    Toast.makeText(context, "You cannot respot your own spot!", Toast.LENGTH_SHORT).show();
-//            }
-//        });
 
         Log.i("teste", spot.getId() + " " + spot.getPhotokey());
         // Populate the data into the template view using the data object
         try {
             spotDate.setText(spot.getDate());
             StringBuilder chainetag = new StringBuilder();
-//            if (spot.getNbcomment() > 1)
-//                txtcomment.setText(spot.getNbcomment() + " comments");
-//            else
-//                txtcomment.setText(spot.getNbcomment() + " comment");
             if (spot.getTags().size() == 0)
                 spotTag.setText("No tag");
             else {
@@ -197,7 +191,15 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
                 Bitmap scaled = Bitmap.createScaledBitmap(bitmap, width, nh, true);
 
                 //define the image source of the imageview
-                spotPhoto.setImageBitmap(scaled);
+                ExifInterface exif = new ExifInterface(file.getAbsolutePath());
+                int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
+                Log.i("ori", orientation + " ");if ((orientation == 3) || (orientation == 6) || (orientation == 9)){
+                    Matrix matrix = new Matrix();
+                    matrix.postRotate(90);
+                    Bitmap rotatedBitmap = Bitmap.createBitmap(scaled, 0, 0, scaled.getWidth(), scaled.getHeight(), matrix, true);
+                    spotPhoto.setImageBitmap(rotatedBitmap);
+                }else
+                    spotPhoto.setImageBitmap(scaled);
             }
 
             //photo de profile du spoteur

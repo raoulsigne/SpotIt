@@ -41,6 +41,7 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.facebook.Profile;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONObject;
 import org.mindrot.jbcrypt.BCrypt;
@@ -84,7 +85,7 @@ public class Inscription extends AppCompatActivity implements DatePickerCallback
 
     private TextView policy;
     private EditText edtdate, edtpseudo;
-    private Spinner spsexe;
+    private Spinner spsexe, spinner;
     private Button btnValider;
 
     @Override
@@ -101,6 +102,11 @@ public class Inscription extends AppCompatActivity implements DatePickerCallback
         registerDevice();
         Log.i(TAG, "android id = " + regId);
 
+        final String[] mylabels = getApplicationContext().getResources().getStringArray(R.array.sexe);
+        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
+                R.layout.mylabel, R.id.textview_label, mylabels);
+        adapter.setDropDownViewResource(R.layout.mylabel);
+
         //recuperation des elements graphiques
         fbSignin = (LoginButton)findViewById(R.id.login_button);
         signin = (Button)findViewById(R.id.button);
@@ -109,8 +115,11 @@ public class Inscription extends AppCompatActivity implements DatePickerCallback
         password = (EditText)findViewById(R.id.password);
         date = (EditText)findViewById(R.id.editText);
         policy = (TextView)findViewById(R.id.textView7);
+        spinner = (Spinner)findViewById(R.id.spinner_sexe);
 
         password.setTransformationMethod(new PasswordTransformationMethod());
+        spinner.setAdapter(adapter);
+        spinner.setSelection(0);
 
         dbAdapteur = new UtilisateurDBAdapteur(getApplicationContext());
         final Intent mainintent = new Intent(this,MainActivity.class);
@@ -125,6 +134,9 @@ public class Inscription extends AppCompatActivity implements DatePickerCallback
                 int action = event.getActionMasked();
                 if (action == MotionEvent.ACTION_DOWN && action != MotionEvent.ACTION_CANCEL) {
                     DialogFragment newFragment = new DatePickerFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("numero", 1);
+                    newFragment.setArguments(bundle);
                     newFragment.show(getSupportFragmentManager(), "datePicker");
                 }
                 return true;
@@ -173,7 +185,7 @@ public class Inscription extends AppCompatActivity implements DatePickerCallback
                                 public void run() {
                                     String pass = BCrypt.hashpw(user.getPassword()+_TO_CONCAT, BCrypt.gensalt(12)).toString();
                                     USER_ID = server.register(user.getEmail(), user.getPseudo(),
-                                            pass, DBServer.CONNEXION_NORMAL, user.getDate_naissance(), regId);
+                                            pass, DBServer.CONNEXION_NORMAL, user.getDate_naissance(),spinner.getSelectedItem().toString(), regId);
                                 }});
 
                             t.start(); // spawn thread
@@ -282,7 +294,7 @@ public class Inscription extends AppCompatActivity implements DatePickerCallback
                                                         // For testing i am stroing name, email as follow
                                                         // Use user real data
                                                         session.createLoginSession(utilisateur.getPseudo(), utilisateur.getEmail(), utilisateur.getId(),
-                                                                utilisateur.getNbspot(), utilisateur.getNbrespot(), 0, utilisateur.getPhoto(), DBServer.CONNEXION_FB);
+                                                                utilisateur.getNbspot(), utilisateur.getNbrespot(), 0, utilisateur.getPhoto(), utilisateur.getPassword(), DBServer.CONNEXION_FB);
                                                         session.storeRegistrationId(utilisateur.getAndroidid());
                                                         session.valid_registration();
 
@@ -299,19 +311,17 @@ public class Inscription extends AppCompatActivity implements DatePickerCallback
                                                         edtdate = (EditText) dialogView.findViewById(R.id.edtdate);
                                                         btnValider = (Button) dialogView.findViewById(R.id.btnvalider);
                                                         spsexe = (Spinner) dialogView.findViewById(R.id.spinner_sexe);
-
-                                                        final String[] mylabels = getApplicationContext().getResources().getStringArray(R.array.sexe);
-                                                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
-                                                                R.layout.mylabel, R.id.textview_label, mylabels);
-                                                        adapter.setDropDownViewResource(R.layout.mylabel);
                                                         spsexe.setAdapter(adapter);
-                                                        spsexe.setSelection(1);
+                                                        spsexe.setSelection(0);
 
                                                         edtdate.setOnTouchListener(new View.OnTouchListener() {
                                                             public boolean onTouch(View v, MotionEvent event) {
                                                                 int action = event.getActionMasked();
                                                                 if (action == MotionEvent.ACTION_DOWN && action != MotionEvent.ACTION_CANCEL) {
                                                                     DialogFragment newFragment = new DatePickerFragment();
+                                                                    Bundle bundle = new Bundle();
+                                                                    bundle.putInt("numero", 2);
+                                                                    newFragment.setArguments(bundle);
                                                                     newFragment.show(getSupportFragmentManager(), "datePicker");
                                                                 }
                                                                 return true;
@@ -357,7 +367,8 @@ public class Inscription extends AppCompatActivity implements DatePickerCallback
                                                                             @Override
                                                                             public void run() {
                                                                                 USER_ID = server.register(user.getEmail(), user.getPseudo(),
-                                                                                        user.getPassword(), DBServer.CONNEXION_FB, user.getDate_naissance(), regId);
+                                                                                        user.getPassword(), DBServer.CONNEXION_FB, user.getDate_naissance(),
+                                                                                        spsexe.getSelectedItem().toString(), regId);
                                                                             }});
 
                                                                         t3.start(); // spawn thread
@@ -438,17 +449,22 @@ public class Inscription extends AppCompatActivity implements DatePickerCallback
     }
 
     @Override
-    public void changedate(String date) {
-        edtdate.setText(date);
+    public void changedate(int numero, String sdate) {
+        if (numero == 1)
+            date.setText(sdate);
+        else
+            edtdate.setText(sdate);
     }
 
     public static class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
         private DatePickerCallback mAdapterCallback;
+        int mNum;
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
 
+            mNum = getArguments().getInt("numero");
             try {
                 this.mAdapterCallback = ((DatePickerCallback) getActivity());
             } catch (ClassCastException e) {
@@ -470,7 +486,8 @@ public class Inscription extends AppCompatActivity implements DatePickerCallback
             String mois = String.valueOf(month), jour = String.valueOf(day);
             if (month < 10) mois = "0"+month;
             if (day < 10) jour = "0"+day;
-            mAdapterCallback.changedate(year + "-" + mois + "-" + jour);
+
+            mAdapterCallback.changedate(mNum, year + "-" + mois + "-" + jour);
         }
     }
 
@@ -499,5 +516,5 @@ public class Inscription extends AppCompatActivity implements DatePickerCallback
 }
 
 interface DatePickerCallback{
-    public void changedate(String date);
+    public void changedate(int numero, String date);
 }

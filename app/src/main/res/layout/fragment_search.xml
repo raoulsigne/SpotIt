@@ -7,7 +7,7 @@
     android:orientation="vertical">
 
     <EditText
-        android:id="@+id/edtFindspot"
+        android:id="@+id/edtTag"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="20dp"
@@ -131,7 +131,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/btnValider"
+        android:id="@+id/btnSearch"
         style="?android:attr/borderlessButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="35dp"

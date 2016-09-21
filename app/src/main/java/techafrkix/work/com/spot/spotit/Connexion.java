@@ -162,7 +162,7 @@ public class Connexion extends AppCompatActivity implements DatePickerCallback{
                                                         // For testing i am stroing name, email as follow
                                                         // Use user real data
                                                         session.createLoginSession(utilisateur.getPseudo(), utilisateur.getEmail(), utilisateur.getId(),
-                                                                utilisateur.getNbspot(), utilisateur.getNbrespot(), 0, utilisateur.getPhoto(), DBServer.CONNEXION_FB);
+                                                                utilisateur.getNbspot(), utilisateur.getNbrespot(), 0, utilisateur.getPhoto(), utilisateur.getPassword(), DBServer.CONNEXION_FB);
 
                                                         session.valid_login();
 
@@ -205,6 +205,9 @@ public class Connexion extends AppCompatActivity implements DatePickerCallback{
                                                                 int action = event.getActionMasked();
                                                                 if (action == MotionEvent.ACTION_DOWN && action != MotionEvent.ACTION_CANCEL) {
                                                                     DialogFragment newFragment = new Inscription.DatePickerFragment();
+                                                                    Bundle bundle = new Bundle();
+                                                                    bundle.putInt("numero", 1);
+                                                                    newFragment.setArguments(bundle);
                                                                     newFragment.show(getSupportFragmentManager(), "datePicker");
                                                                 }
                                                                 return true;
@@ -249,8 +252,8 @@ public class Connexion extends AppCompatActivity implements DatePickerCallback{
                                                                         Thread t3 = new Thread(new Runnable() {
                                                                             @Override
                                                                             public void run() {
-                                                                                USER_ID = server.register(user.getEmail(), user.getPseudo(),
-                                                                                        user.getPassword(), DBServer.CONNEXION_FB, user.getDate_naissance(), regId);
+                                                                                USER_ID = server.register(user.getEmail(), user.getPseudo(),user.getPassword(),
+                                                                                        DBServer.CONNEXION_FB, user.getDate_naissance(), spsexe.getSelectedItem().toString(), regId);
 
                                                                             }});
 
@@ -261,7 +264,7 @@ public class Connexion extends AppCompatActivity implements DatePickerCallback{
                                                                                 Log.i("BD", "nouvel utilisateur enregistré");
                                                                                 session.valid_login();
                                                                                 session.createLoginSession(user.getPseudo(), user.getEmail(), USER_ID,
-                                                                                        0, 0, 0, "", DBServer.CONNEXION_FB);
+                                                                                        0, 0, 0, "", user.getPassword(), DBServer.CONNEXION_FB);
 
                                                                                 startActivity(itwelcome);
                                                                                 finish();
@@ -331,7 +334,7 @@ public class Connexion extends AppCompatActivity implements DatePickerCallback{
                             // For testing i am stroing name, email as follow
                             // Use user real data
                             session.createLoginSession(utilisateur.getPseudo(), utilisateur.getEmail(), utilisateur.getId(),
-                                    utilisateur.getNbspot(), utilisateur.getNbrespot(), 0, utilisateur.getPhoto(), DBServer.CONNEXION_NORMAL);
+                                    utilisateur.getNbspot(), utilisateur.getNbrespot(), 0, utilisateur.getPhoto(), utilisateur.getPassword(), DBServer.CONNEXION_NORMAL);
                             session.storeRegistrationId(utilisateur.getAndroidid());
                             session.valid_login();
 
@@ -373,7 +376,7 @@ public class Connexion extends AppCompatActivity implements DatePickerCallback{
     }
 
     @Override
-    public void changedate(String date) {
+    public void changedate(int numero, String date) {
         edtdate.setText(date);
     }
 

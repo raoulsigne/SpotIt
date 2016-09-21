@@ -4,12 +4,22 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+import org.mindrot.jbcrypt.BCrypt;
+
+import java.util.HashMap;
+
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
 
 /**
@@ -35,6 +45,12 @@ public class ChangePassword extends Fragment {
     private EditText oldpassword, newpassword1, newpassword2;
     private Button valider;
     private ImageView leftarrow;
+
+    private SessionManager session;
+    private HashMap<String, String> profile;
+    private DBServer server;
+
+    private int retour;
 
     public ChangePassword() {
         // Required empty publics constructor
@@ -73,6 +89,12 @@ public class ChangePassword extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_change_password, container, false);
 
+        // Session class instance
+        session = new SessionManager(getActivity());
+        profile = new HashMap<>();
+        server = new DBServer(getActivity());
+        profile = session.getUserDetails();
+
         oldpassword = (EditText)view.findViewById(R.id.edtold);
         newpassword1 = (EditText)view.findViewById(R.id.edtnew1);
         newpassword2 = (EditText)view.findViewById(R.id.edtnew2);
@@ -86,6 +108,41 @@ public class ChangePassword extends Fragment {
             }
         });
 
+        valider.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String oldpass = BCrypt.hashpw(oldpassword.getText().toString() + Inscription._TO_CONCAT, BCrypt.gensalt(12)).toString();
+                Log.i("repon", oldpass);
+                if (oldpass.equals(profile.get(SessionManager.KEY_PASSWORD))) {
+                    if (newpassword1.getText().toString().equals(newpassword2.getText().toString())) {
+                        Log.i("test", "match");
+                        Thread t = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String pass = BCrypt.hashpw(newpassword1.getText().toString() + Inscription._TO_CONCAT, BCrypt.gensalt(12)).toString();
+                                retour = server.change_password(Integer.valueOf(profile.get(SessionManager.KEY_ID)),
+                                        pass);
+                            }
+                        });
+
+                        t.start(); // spawn thread
+                        try {
+                            t.join();
+                            if (retour == 1) {
+                                Toast.makeText(getActivity(), "succefully change", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(getActivity(), "unable to change your password", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    } else
+                        Toast.makeText(getActivity(), "retype new pasword", Toast.LENGTH_SHORT).show();
+                }
+                else
+                    Toast.makeText(getActivity(), "the password you entered doesn't match", Toast.LENGTH_SHORT).show();
+            }
+        });
         return view;
     }
 

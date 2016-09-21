@@ -144,7 +144,7 @@ public class GcmIntentService extends IntentService {
                         .setContentTitle("Notification from Spot It")
                         .setStyle(new NotificationCompat.InboxStyle()
                                 .addLine(msg.getDescription())
-                                .addLine(convert_date_new(msg.getCreated())))
+                                .addLine(msg.getCreated()))
                         .setContentText(extras.getString(_DESCRIPTION))
                         .setAutoCancel(false)
                         .setDefaults(Notification.DEFAULT_SOUND);
@@ -245,6 +245,7 @@ public class GcmIntentService extends IntentService {
     }
 
     public String convert_date_new(String date) {
+        Log.i("date", date);
         String resultat = "";
         String[] tableau = date.split("T");
         String[] tab1 = tableau[1].split("\\.");

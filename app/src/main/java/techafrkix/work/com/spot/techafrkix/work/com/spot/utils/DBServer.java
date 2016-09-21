@@ -55,6 +55,7 @@ public class DBServer {
     private static final String URL_CHECK = "/api/userwithpseudo";
     private static final String URL_LOGIN = "/api/login";
     private static final String URL_SPOT = "/api/spots";
+    private static final String URL_DELETE_SPOT = "/api/deletespot";
     private static final String URL_RESPOT = "/api/respot";
     private static final String URL_LIST_COMMENTAIRE = "/api/spotscoms";
     private static final String URL_TAG = "/api/spotstags";
@@ -63,11 +64,13 @@ public class DBServer {
     private static final String URL_FIND_SPOT = "/api/findspots";
     private static final String URL_FIND_SPOT_2 = "/api/findspotswithtagorhash";
     private static final String URL_FIND_SPOT_3 = "/api/getspot";
+    private static final String URL_FIND_SPOT_4 = "/api/findspotswithtagorhashandvisility";
     private static final String URL_FIND_ALL_SPOT = "/api/findallspots";
     private static final String URL_FRIEND = "/api/friendships";
     private static final String URL_LIST_NOTIFICATION = "/api/notifications";
     private static final String URL_FIND_USER = "/api/findusers";
     private static final String URL_FIND_SPOT_USER = "/api/allspotslistwithoffset";
+    private static final String URL_UPDATE_USER = "/api/updatepassword";
     private static final String URL_SEND_NOTIFICATION = "/api/testnotif";
 
     private static final int STATUT_REQUEST = 0;
@@ -101,7 +104,8 @@ public class DBServer {
      * @param androidid        device id from gcm server
      * @return retourne un entier qui represente le code de retour
      */
-    public int register(String email, String pseudo, String password, int typeconnexion_id, String birth, String androidid) {
+    public int register(String email, String pseudo, String password, int typeconnexion_id, String birth,
+                        String genre, String androidid) {
 
         try {
             url = new URL(BASE_URL + URL_USER);
@@ -119,6 +123,11 @@ public class DBServer {
             values.put("password", password);
             values.put("typeconnexion_id", typeconnexion_id);
             values.put("birth", birth);
+            if (genre.equals("Feminin")) {
+                values.put("genre", 2);
+            }
+            else
+                values.put("genre", 1);
             values.put("androidid", androidid);
 
             writer.write(getQuery(values));
@@ -170,6 +179,72 @@ public class DBServer {
 
         return -1;
     }
+
+
+    public int change_password(int userid, String password) {
+        try {
+            url = new URL(BASE_URL + URL_UPDATE_USER);
+            client = (HttpURLConnection) url.openConnection();
+            client.setRequestMethod("POST");
+            client.setDoOutput(true);
+
+            OutputStream outputPost = new BufferedOutputStream(client.getOutputStream());
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputPost, "UTF-8"));
+
+            ContentValues values = new ContentValues();
+            values.put("apikey", API_KEY);
+            values.put("id", userid);
+            values.put("password", password);
+
+            writer.write(getQuery(values));
+            writer.flush();
+            writer.close();
+            outputPost.close();
+            Log.i(TAG, url.toString());
+
+            StringBuilder builder = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                builder.append(line + "\n");
+            }
+            br.close();
+            Log.i(TAG, "reponse = " + builder.toString());
+
+            try {
+                JSONObject json = new JSONObject(builder.toString());
+                int statut = Integer.valueOf(json.getString("statut"));
+                if (statut == 1) {
+                    builder.append("statut = " + json.getString("statut"));
+                    return 1;
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
+                    builder.append("message = " + json.getString("message"));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        } catch (MalformedURLException error) {
+            //Handles an incorrectly entered URL
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
+            return -1;
+        } catch (SocketTimeoutException error) {
+            //Handles URL access timeout.
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
+            return -1;
+        } catch (IOException error) {
+            //Handles input and output errors
+            Log.e(TAG, "IOException " + error.toString());
+            return -1;
+        } finally {
+            client.disconnect();
+        }
+
+        return -1;
+    }
+
 
     /**
      * fonction qui étant donné un utilisateur lui associe une photo de profile
@@ -972,6 +1047,73 @@ public class DBServer {
                     builder.append("insertId = " + json.getString("insertId"));
 
                     return Integer.valueOf(json.getString("insertId"));
+                } else {
+                    builder.append("statut = " + json.getString("statut") + "\n");
+                    builder.append("errcode = " + json.getString("errcode") + "\n");
+                    builder.append("message = " + json.getString("message") + "\n");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Log.i(TAG, "reponse = " + builder.toString());
+
+        } catch (MalformedURLException error) {
+            //Handles an incorrectly entered URL
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
+            return -1;
+        } catch (SocketTimeoutException error) {
+            //Handles URL access timeout.
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
+            return -1;
+        } catch (IOException error) {
+            //Handles input and output errors
+            Log.e(TAG, "IOException " + error.toString());
+            return -1;
+        } finally {
+            client.disconnect();
+        }
+
+        return 0;
+    }
+
+    /**
+     * suppression des spots
+     * @param id id du spot à supprimer
+     * @return
+     */
+    public int delete_spot(int id) {
+
+        try {
+            url = new URL(BASE_URL + URL_DELETE_SPOT);
+            client = (HttpURLConnection) url.openConnection();
+            client.setRequestMethod("DELETE");
+            client.setDoOutput(true);
+
+            OutputStream outputPost = new BufferedOutputStream(client.getOutputStream());
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputPost, "UTF-8"));
+
+            ContentValues values = new ContentValues();
+            values.put("apikey", API_KEY);
+            values.put("id", id);
+            writer.write(getQuery(values));
+            writer.flush();
+            writer.close();
+            outputPost.close();
+            Log.i(TAG, getQuery(values));
+
+            StringBuilder builder = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                builder.append(line + "\n");
+            }
+            br.close();
+
+            try {
+                JSONObject json = new JSONObject(builder.toString());
+                int statut = Integer.valueOf(json.getString("statut"));
+                if (statut == 1) {
+                    return 1;
                 } else {
                     builder.append("statut = " + json.getString("statut") + "\n");
                     builder.append("errcode = " + json.getString("errcode") + "\n");
@@ -1966,6 +2108,111 @@ public class DBServer {
         }
     }
 
+    public ArrayList<Spot> find_spot_tag_hash_visibility(String[] tags, String hashs[], int[] visibilities, int offset, int interval) {
+        ArrayList<Spot> spots = new ArrayList<>();
+
+        StringBuilder liste_tag = new StringBuilder();
+        liste_tag.append("[");
+        for (int i = 0; i < tags.length; i++) {
+            if (i < tags.length - 1)
+                liste_tag.append("\"" + tags[i] + "\",");
+            else
+                liste_tag.append("\"" + tags[i] + "\"");
+        }
+        liste_tag.append("]");
+
+        StringBuilder liste_hash = new StringBuilder();
+        liste_hash.append("[");
+        for (int i = 0; i < hashs.length; i++) {
+            if (i < tags.length - 1)
+                liste_hash.append("\"" + hashs[i] + "\",");
+            else
+                liste_hash.append("\"" + hashs[i] + "\"");
+        }
+        liste_hash.append("]");
+
+        StringBuilder liste_v = new StringBuilder();
+        liste_v.append("[");
+        for (int i = 0; i < visibilities.length; i++) {
+            if (i < tags.length - 1)
+                liste_v.append("\"" + visibilities[i] + "\",");
+            else
+                liste_v.append("\"" + visibilities[i] + "\"");
+        }
+        liste_hash.append("]");
+
+        ContentValues values = new ContentValues();
+        values.put("apikey", API_KEY);
+        values.put("hash", liste_hash.toString());
+        values.put("tags", liste_tag.toString());
+        values.put("visibilite", liste_v.toString());
+        if (offset != 0)
+            values.put("offset", offset);
+        if (interval != 0)
+            values.put("interval", interval);
+        try {
+            url = new URL(BASE_URL + URL_FIND_SPOT_4 + "?" + getQuery(values));
+            client = (HttpURLConnection) url.openConnection();
+            client.setRequestMethod("GET");
+
+            StringBuilder builder = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                builder.append(line + "\n");
+            }
+            br.close();
+            Log.i(TAG, url.toString());
+            Log.i(TAG, "reponse = " + builder.toString());
+            try {
+                JSONObject json = new JSONObject(builder.toString());
+                int statut = Integer.valueOf(json.getString("statut"));
+                if (statut == 1) {
+                    JSONArray jArr = json.getJSONArray("data");
+                    for (int i = 0; i < jArr.length(); i++) {
+                        JSONObject json2 = jArr.getJSONObject(i);
+                        Spot spot = new Spot();
+
+                        spot.setRespot((int) json2.get("respot"));
+                        spot.setVisibilite_id((int) json2.get("visibilite_id"));
+                        spot.setGeohash((String) json2.get("hash"));
+                        spot.setId((int) json2.get("idspot"));
+                        spot.setLongitude(json2.getDouble("gpslong") + "");
+                        spot.setLatitude(json2.getDouble("gpslat") + "");
+                        spot.setPhotokey((String) json2.get("photo"));
+                        spot.setUser_id((int) json2.get(SpotsDBAdapteur.COLONNE_USER_ID));
+                        spots.add(spot);
+                    }
+                    return spots;
+                } else {
+                    builder.append("statut = " + json.getString("statut"));
+                    builder.append("errcode = " + json.getString("errcode"));
+                    builder.append("message = " + json.getString("message"));
+
+                    Log.i(TAG, "reponse = " + builder.toString());
+                    return null;
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "JSONException " + e.getMessage());
+                return null;
+            }
+        } catch (MalformedURLException error) {
+            //Handles an incorrectly entered URL
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
+            return null;
+        } catch (SocketTimeoutException error) {
+            //Handles URL access timeout.
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
+            return null;
+        } catch (IOException error) {
+            //Handles input and output errors
+            Log.e(TAG, "IOException " + error.toString());
+            return null;
+        } finally {
+            client.disconnect();
+        }
+    }
+
     public int set_spot_hash(int spot_id, String hash) {
         try {
             url = new URL(BASE_URL + "/api/updatehash");
@@ -2129,9 +2376,6 @@ public class DBServer {
      * @return couple of double representing LatLng object
      */
     public LatLng get_coordinates(String address) {
-        ArrayList<Spot> spots = new ArrayList<>();
-        LatLng result;
-
         ContentValues values = new ContentValues();
         values.put("key", GOOGLE_KEY);
         values.put("address", address);

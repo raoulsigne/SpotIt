@@ -71,6 +71,9 @@ public class SessionManager {
     // <user Id (make variable publics to access from outside)
     public static final String KEY_OFFSET = "offset";
 
+    // <user password
+    public static final String KEY_PASSWORD = "password";
+
     // type connexion Id (make variable publics to access from outside)
     public static final String KEY_TYPE_CONNEXION_ID = "type_connexion_id";
 
@@ -117,6 +120,9 @@ public class SessionManager {
         //storing user profile
         editor.putString(KEY_PHOTO, "");
 
+        //storing user password
+        editor.putString(KEY_PASSWORD, "");
+
         //storing type connexion in pref
         editor.putString(KEY_TYPE_CONNEXION_ID, String.valueOf(0));
 
@@ -127,7 +133,8 @@ public class SessionManager {
     /**
      * Create login session
      * */
-    public void createLoginSession(String name, String email, int id, int spot, int respot, int friends, String photo, int connexionId){
+    public void createLoginSession(String name, String email, int id, int spot, int respot, int friends,
+                                   String password, String photo, int connexionId){
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
 
@@ -151,6 +158,9 @@ public class SessionManager {
 
         //storing user profile
         editor.putString(KEY_PHOTO, photo);
+
+        //storing user password
+        editor.putString(KEY_PASSWORD, password);
 
         //storing offset in pref
         editor.putString(KEY_OFFSET, String.valueOf(0));

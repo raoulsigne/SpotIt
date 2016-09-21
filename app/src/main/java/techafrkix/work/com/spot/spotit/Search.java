@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -14,14 +15,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.ArrayList;
 
+import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.GeoHash;
 
 
 /**
@@ -42,7 +49,7 @@ public class Search extends Fragment {
     public static final String V_FRIEND = "amis";
     public static final String V_PUBLIC = "publics";
 
-    private String visibilite;
+    private String visibilite1, visibilite2, visibilite3;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -53,9 +60,14 @@ public class Search extends Fragment {
     private TextView txtMoi, txtAmis, txtPublic;
     private ImageButton vMoi, vFriend, vPublic;
     private AutoCompleteTextView textView;
+    private EditText edttag;
+    private Button btnSearch;
 
     private ArrayList<String> listes;
     private DBServer server;
+    private LatLng coordones;
+    private GeoHash geoHash;
+    private ArrayList<Spot> spots;
 
     public Search() {
         // Required empty publics constructor
@@ -84,6 +96,9 @@ public class Search extends Fragment {
         super.onCreate(savedInstanceState);
         server = new DBServer(getActivity());
         listes = new ArrayList<>();
+        spots = new ArrayList<>();
+        coordones = new LatLng(0,0);
+        geoHash = new GeoHash();
 
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
@@ -104,48 +119,106 @@ public class Search extends Fragment {
         txtAmis = (TextView) view.findViewById(R.id.txtAmis);
         txtPublic = (TextView) view.findViewById(R.id.txtPublic);
         textView = (AutoCompleteTextView) view.findViewById(R.id.autocomplete_city);
+        edttag = (EditText) view.findViewById(R.id.edtTag);
+        btnSearch = (Button) view.findViewById(R.id.btnSearch);
+
+        visibilite1 = "";
+        visibilite2 = "";
+        visibilite3 = "";
 
         vMoi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                visibilite = V_MOI;
-                txtMoi.setTextColor(getResources().getColor(R.color.myblue));
-                txtAmis.setTextColor(getResources().getColor(R.color.titre_menu));
-                txtPublic.setTextColor(getResources().getColor(R.color.titre_menu));
-
-                vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi_selected));
-                vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend_clicked));
-                vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.publics));
+                if (visibilite1.equals(V_MOI)){
+                    visibilite1 = "";
+                    vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi_));
+                    txtMoi.setTextColor(getResources().getColor(R.color.titre_menu));
+                }else {
+                    visibilite1 = V_MOI;
+                    vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi_selected));
+                    txtMoi.setTextColor(getResources().getColor(R.color.myblue));
+                }
             }
         });
         vFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                visibilite = V_FRIEND;
-                txtMoi.setTextColor(getResources().getColor(R.color.titre_menu));
-                txtAmis.setTextColor(getResources().getColor(R.color.myblue));
-                txtPublic.setTextColor(getResources().getColor(R.color.titre_menu));
-
-                vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi_));
-                vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friends_clicked));
-                vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.publics));
+                if (visibilite1.equals(V_FRIEND)){
+                    visibilite1 = "";
+                    vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friendsaccount));
+                    txtAmis.setTextColor(getResources().getColor(R.color.titre_menu));
+                }else {
+                    visibilite1 = V_FRIEND;
+                    vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friends_clicked));
+                    txtAmis.setTextColor(getResources().getColor(R.color.myblue));
+                }
             }
         });
         vPublic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                visibilite = V_PUBLIC;
-                txtMoi.setTextColor(getResources().getColor(R.color.titre_menu));
-                txtAmis.setTextColor(getResources().getColor(R.color.titre_menu));
-                txtPublic.setTextColor(getResources().getColor(R.color.myblue));
-
-                vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi_));
-                vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friend_clicked));
-                vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.public_clicked));
+                if (visibilite3.equals(V_PUBLIC)){
+                    visibilite3 = "";
+                    vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.publics));
+                    txtPublic.setTextColor(getResources().getColor(R.color.titre_menu));
+                }else {
+                    visibilite3 = V_PUBLIC;
+                    vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.public_clicked));
+                    txtPublic.setTextColor(getResources().getColor(R.color.myblue));
+                }
             }
         });
 
         textView.addTextChangedListener(tw);
+
+        btnSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (TextUtils.isEmpty(edttag.getText().toString()) || TextUtils.isEmpty(textView.getText().toString()))
+                    Toast.makeText(getActivity(), "Renseigner le tag et le lieu", Toast.LENGTH_SHORT).show();
+                else {
+                    Thread t = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            coordones = server.get_coordinates(textView.getText().toString());
+                        }
+                    });
+                    t.start(); // spawn thread
+                    try {
+                        t.join();
+                        geoHash.setLatitude(coordones.latitude);
+                        geoHash.setLongitude(coordones.longitude);
+                        final String[] hashs = geoHash.neighbours_1(geoHash.encoder());
+                        final String[] tags = edttag.getText().toString().split(";");
+                        final int[] visibilities = new int[3];
+                        int n = 0;
+                        if (!visibilite1.isEmpty()) visibilities[n++] = getvisibiliteId(visibilite1);
+                        if (!visibilite2.isEmpty()) visibilities[n++] = getvisibiliteId(visibilite2);
+                        if (!visibilite3.isEmpty()) visibilities[n++] = getvisibiliteId(visibilite3);
+
+
+                        Thread t2 = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                spots = server.find_spot_tag_hash_visibility(tags, hashs, visibilities, 0, 0);
+                            }
+                        });
+                        t2.start(); // spawn thread
+                        try {
+                            t2.join();
+                            if (spots != null){
+                                mListener.onLoadSpot(spots);
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
 
         return view;
     }
@@ -187,6 +260,7 @@ public class Search extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+        void onLoadSpot(ArrayList<Spot> spots);
     }
 
     private TextWatcher tw = new TextWatcher() {
@@ -219,4 +293,13 @@ public class Search extends Fragment {
             }
         }
     };
+
+    public int getvisibiliteId(String visibilite){
+        if (visibilite == DetailSpot_New.V_MOI)
+            return 21;
+        else if (visibilite == DetailSpot_New.V_FRIEND)
+            return 11;
+        else
+            return 1;
+    }
 }

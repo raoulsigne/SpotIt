@@ -65,7 +65,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
     private int offset;
 
     private int preLast;
-    private int type;
+    private int type, retour;
 
 //    private ImageView imgprofile;
     private TextView txtpseudo;
@@ -516,8 +516,33 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
     }
 
     @Override
-    public void delete(int position) {
+    public void delete(final int position) {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (type == 1) {
+                    retour = server.delete_spot(spots.get(position).getId());
+                } else {
+                    retour = server.delete_spot(tampon.get(position).getId());
+                }
+            }});
 
+        t.start(); // spawn thread
+        try{
+            t.join();
+            if (retour == 1) {
+                Toast.makeText(getActivity(), "Spot deleted", Toast.LENGTH_SHORT).show();
+                if (type == 1) {
+                    adapter.remove(spots.get(position));
+                } else {
+                    adapter.remove(tampon.get(position));
+                }
+            } else {
+                Toast.makeText(getActivity(), "unable to delete spot", Toast.LENGTH_SHORT).show();
+            }
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

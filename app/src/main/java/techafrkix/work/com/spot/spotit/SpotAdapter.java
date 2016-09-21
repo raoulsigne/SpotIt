@@ -137,26 +137,27 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
             public void onClick(View view) {
                 like.setBackground(context.getResources().getDrawable(R.drawable.liked));
 
-                if (spot.getUser_id() != Integer.valueOf(profile.get(SessionManager.KEY_ID))) {
-                    Thread t = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            resultat = server.enregistrer_respot(Integer.valueOf(profile.get(SessionManager.KEY_ID)), spot.getId());
-                        }
-                    });
-
-                    t.start(); // spawn thread
-                    try {
-                        t.join();
-                        if (resultat > 0) {
-                            session.increment_nbrespot(); // incremente le nombre de respots d'un utilisateur
-                            Toast.makeText(context, "Operation succeed!", Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } else
-                    Toast.makeText(context, "You cannot respot your own spot!", Toast.LENGTH_SHORT).show();
+                
+//                if (spot.getUser_id() != Integer.valueOf(profile.get(SessionManager.KEY_ID))) {
+//                    Thread t = new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            resultat = server.enregistrer_respot(Integer.valueOf(profile.get(SessionManager.KEY_ID)), spot.getId());
+//                        }
+//                    });
+//
+//                    t.start(); // spawn thread
+//                    try {
+//                        t.join();
+//                        if (resultat > 0) {
+//                            session.increment_nbrespot(); // incremente le nombre de respots d'un utilisateur
+//                            Toast.makeText(context, "Operation succeed!", Toast.LENGTH_SHORT).show();
+//                        }
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                } else
+//                    Toast.makeText(context, "You cannot respot your own spot!", Toast.LENGTH_SHORT).show();
             }
         });
 

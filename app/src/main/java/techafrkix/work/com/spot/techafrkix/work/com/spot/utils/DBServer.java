@@ -424,16 +424,16 @@ public class DBServer {
                 if (statut == 1) {
                     JSONObject json2 = json.getJSONObject("data");
 
-                    user.setPassword((String) json2.get(MaBaseOpenHelper.COLONNE_PASSWORD));
-                    user.setEmail((String) json2.get(MaBaseOpenHelper.COLONNE_EMAIL));
-                    user.setDate_naissance((String) json2.get(MaBaseOpenHelper.COLONNE_DATE_NAISSANCE));
-                    user.setId((int) json2.get(MaBaseOpenHelper.COLONNE_USER_ID));
-                    user.setPseudo((String) json2.get(MaBaseOpenHelper.COLONNE_PSEUDO));
-                    user.setPhoto((String) json2.get(MaBaseOpenHelper.COLONNE_PHOTO_PROFILE));
-                    user.setCreated((String) json2.get(MaBaseOpenHelper.COLONNE_CREATED));
-                    user.setNbrespot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_RESPOT));
-                    user.setNbspot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_SPOT));
-                    user.setTypeconnexion_id((int) json2.get(MaBaseOpenHelper.COLONNE_TYPECONNEXION_ID));
+                    user.setPassword((String) json2.get("password"));
+                    user.setEmail((String) json2.get("email"));
+                    user.setDate_naissance((String) json2.get("birth"));
+                    user.setId((int) json2.get("id"));
+                    user.setPseudo((String) json2.get("pseudo"));
+                    user.setPhoto((String) json2.get("photo"));
+                    user.setCreated((String) json2.get("created"));
+                    user.setNbrespot((int) json2.get("nbrespot"));
+                    user.setNbspot((int) json2.get("nbspot"));
+                    user.setTypeconnexion_id((int) json2.get("typeconnexion_id"));
                     user.setAndroidid((String) json2.get("androidid"));
 
                     return user;
@@ -1149,7 +1149,7 @@ public class DBServer {
      * @param spot_id
      * @return
      */
-    public int enregistrer_respot(int user_id, int spot_id){
+    public int enregistrer_respot(int user_id, int spot_id, int visibilite){
         try {
             url = new URL(BASE_URL + URL_RESPOT);
             client = (HttpURLConnection) url.openConnection();
@@ -1163,6 +1163,7 @@ public class DBServer {
             values.put("apikey", API_KEY);
             values.put("user_id", user_id);
             values.put("spot_id", spot_id);
+            values.put("visibilite", visibilite);
             writer.write(getQuery(values));
             writer.flush();
             writer.close();
@@ -2120,26 +2121,34 @@ public class DBServer {
                 liste_tag.append("\"" + tags[i] + "\"");
         }
         liste_tag.append("]");
+        Log.i(TAG, liste_tag.toString());
 
         StringBuilder liste_hash = new StringBuilder();
         liste_hash.append("[");
         for (int i = 0; i < hashs.length; i++) {
-            if (i < tags.length - 1)
+            if (i < hashs.length - 1)
                 liste_hash.append("\"" + hashs[i] + "\",");
             else
                 liste_hash.append("\"" + hashs[i] + "\"");
         }
         liste_hash.append("]");
+        Log.i(TAG, liste_hash.toString());
+
+        ArrayList<Integer> tampon = new ArrayList<>();
+        for (int i = 0; i < visibilities.length; i++)
+            if (visibilities[i] != 0)
+                tampon.add(visibilities[i]);
 
         StringBuilder liste_v = new StringBuilder();
         liste_v.append("[");
-        for (int i = 0; i < visibilities.length; i++) {
-            if (i < tags.length - 1)
-                liste_v.append("\"" + visibilities[i] + "\",");
+        for (int i = 0; i < tampon.size(); i++) {
+            if (i < tampon.size() - 1)
+                liste_v.append("\"" + tampon.get(i) + "\",");
             else
-                liste_v.append("\"" + visibilities[i] + "\"");
+                liste_v.append("\"" + tampon.get(i) + "\"");
         }
-        liste_hash.append("]");
+        liste_v.append("]");
+        Log.i(TAG, liste_v.toString());
 
         ContentValues values = new ContentValues();
         values.put("apikey", API_KEY);
@@ -2150,6 +2159,7 @@ public class DBServer {
             values.put("offset", offset);
         if (interval != 0)
             values.put("interval", interval);
+
         try {
             url = new URL(BASE_URL + URL_FIND_SPOT_4 + "?" + getQuery(values));
             client = (HttpURLConnection) url.openConnection();

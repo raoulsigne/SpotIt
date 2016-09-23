@@ -328,7 +328,7 @@ public class Connexion extends AppCompatActivity implements DatePickerCallback{
                         t1.join();
 
                         if (utilisateur != null) {
-                            Log.i("BD", "utilisateur connecté");
+                            Log.i("BD", "utilisateur connecté " + utilisateur.toString());
 
                             // Creating user login session
                             // For testing i am stroing name, email as follow

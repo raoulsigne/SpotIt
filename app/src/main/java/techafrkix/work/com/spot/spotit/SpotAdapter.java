@@ -48,13 +48,15 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
     SessionManager session;
     private HashMap<String, String> profile;
     private DBServer server;
-    private int resultat;
+    private int resultat, v_id;
     private int type;
+    private TextView txtme, txtfriend, txtpublic;
 
     public SpotAdapter(Context context, ArrayList<Spot> spots, Fragment fg, int type) {
         super(context, 0, spots);
         this.context = context;
         this.type = type;
+        this.v_id = 1;
         try {
             this.mAdapterCallback = ((AdapterCallback) fg);
         } catch (ClassCastException e) {
@@ -137,27 +139,100 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
             public void onClick(View view) {
                 like.setBackground(context.getResources().getDrawable(R.drawable.liked));
 
-                
-//                if (spot.getUser_id() != Integer.valueOf(profile.get(SessionManager.KEY_ID))) {
-//                    Thread t = new Thread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            resultat = server.enregistrer_respot(Integer.valueOf(profile.get(SessionManager.KEY_ID)), spot.getId());
-//                        }
-//                    });
-//
-//                    t.start(); // spawn thread
-//                    try {
-//                        t.join();
-//                        if (resultat > 0) {
-//                            session.increment_nbrespot(); // incremente le nombre de respots d'un utilisateur
-//                            Toast.makeText(context, "Operation succeed!", Toast.LENGTH_SHORT).show();
-//                        }
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                } else
-//                    Toast.makeText(context, "You cannot respot your own spot!", Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View dialogView = inflater.inflate(R.layout.dialog_visibility, null);
+                dialogBuilder.setView(dialogView);
+
+                txtme = (TextView) dialogView.findViewById(R.id.txtme);
+                txtfriend = (TextView) dialogView.findViewById(R.id.txtfriend);
+                txtpublic = (TextView) dialogView.findViewById(R.id.txtpublic);
+
+                final AlertDialog alertDialog = dialogBuilder.create();
+                alertDialog.setTitle("choose visibility");
+                alertDialog.show();
+
+                txtme.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        v_id = getvisibiliteId(DetailSpot_New.V_MOI);
+                        alertDialog.dismiss();
+                        if (spot.getUser_id() != Integer.valueOf(profile.get(SessionManager.KEY_ID))) {
+                            Thread t = new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    resultat = server.enregistrer_respot(Integer.valueOf(profile.get(SessionManager.KEY_ID)), spot.getId(), v_id);
+                                }
+                            });
+
+                            t.start(); // spawn thread
+                            try {
+                                t.join();
+                                if (resultat > 0) {
+                                    session.increment_nbrespot(); // incremente le nombre de respots d'un utilisateur
+                                    Toast.makeText(context, "Operation succeed!", Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        } else
+                            Toast.makeText(context, "You cannot respot your own spot!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                txtfriend.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        v_id = getvisibiliteId(DetailSpot_New.V_FRIEND);
+                        alertDialog.dismiss();
+                        if (spot.getUser_id() != Integer.valueOf(profile.get(SessionManager.KEY_ID))) {
+                            Thread t = new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    resultat = server.enregistrer_respot(Integer.valueOf(profile.get(SessionManager.KEY_ID)), spot.getId(), v_id);
+                                }
+                            });
+
+                            t.start(); // spawn thread
+                            try {
+                                t.join();
+                                if (resultat > 0) {
+                                    session.increment_nbrespot(); // incremente le nombre de respots d'un utilisateur
+                                    Toast.makeText(context, "Operation succeed!", Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        } else
+                            Toast.makeText(context, "You cannot respot your own spot!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                txtpublic.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        v_id = getvisibiliteId(DetailSpot_New.V_PUBLIC);
+                        alertDialog.dismiss();
+                        if (spot.getUser_id() != Integer.valueOf(profile.get(SessionManager.KEY_ID))) {
+                            Thread t = new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    resultat = server.enregistrer_respot(Integer.valueOf(profile.get(SessionManager.KEY_ID)), spot.getId(), v_id);
+                                }
+                            });
+
+                            t.start(); // spawn thread
+                            try {
+                                t.join();
+                                if (resultat > 0) {
+                                    session.increment_nbrespot(); // incremente le nombre de respots d'un utilisateur
+                                    Toast.makeText(context, "Operation succeed!", Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        } else
+                            Toast.makeText(context, "You cannot respot your own spot!", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
 
@@ -218,6 +293,15 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
 
         // Return the completed view to render on screen
         return convertView;
+    }
+
+    public int getvisibiliteId(String visibilite){
+        if (visibilite == DetailSpot_New.V_MOI)
+            return 21;
+        else if (visibilite == DetailSpot_New.V_FRIEND)
+            return 11;
+        else
+            return 1;
     }
 
     public interface AdapterCallback{

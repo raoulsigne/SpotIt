@@ -111,9 +111,10 @@ public class ChangePassword extends Fragment {
         valider.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String oldpass = BCrypt.hashpw(oldpassword.getText().toString() + Inscription._TO_CONCAT, BCrypt.gensalt(12)).toString();
-                Log.i("repon", oldpass);
-                if (oldpass.equals(profile.get(SessionManager.KEY_PASSWORD))) {
+                String oldpass = oldpassword.getText().toString() + Inscription._TO_CONCAT;
+                Boolean bool = BCrypt.checkpw(oldpass, profile.get(SessionManager.KEY_PASSWORD));
+
+                if (bool) {
                     if (newpassword1.getText().toString().equals(newpassword2.getText().toString())) {
                         Log.i("test", "match");
                         Thread t = new Thread(new Runnable() {

@@ -441,64 +441,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
         Log.i("map", "connexion failed");
     }
 
-    private void showdialogMarker(MyMarker marker, File file) {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-
-        LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-        View promptView = layoutInflater.inflate(R.layout.detail_spot, null);
-        alertDialogBuilder.setView(promptView);
-
-        final TextView latitude = (TextView) promptView.findViewById(R.id.latitude);
-        final TextView longitude = (TextView) promptView.findViewById(R.id.longitude);
-        final TextView date = (TextView) promptView.findViewById(R.id.dateSpot);
-        final ImageView imgspot = (ImageView) promptView.findViewById(R.id.imgspot);
-        final Button fermer = (Button) promptView.findViewById(R.id.btnFermer);
-        final Button respoter = (Button) promptView.findViewById(R.id.btnRespoter);
-
-        latitude.setText(String.valueOf(marker.getmLatitude()));
-        longitude.setText(String.valueOf(marker.getmLongitude()));
-        date.setText(marker.getmDate());
-        imgspot.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
-
-        // create an alert dialog
-        final AlertDialog alert = alertDialogBuilder.create();
-        alert.show();
-
-        fermer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                alert.dismiss();
-            }
-        });
-
-        respoter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.i("dialog", current_spot_id+"");
-                if (current_spot_id != Integer.valueOf(profile.get(SessionManager.KEY_ID))) {
-                    Thread t = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            resultat = server.enregistrer_respot(Integer.valueOf(profile.get(SessionManager.KEY_ID)), current_spot_id);
-                        }
-                    });
-
-                    t.start(); // spawn thread
-                    try {
-                        t.join();
-                        if (resultat > 0) {
-                            session.increment_nbrespot(); // incremente le nombre de respots d'un utilisateur
-                            Toast.makeText(getActivity(), "Operation succeed!", Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } else
-                    Toast.makeText(getActivity(), "You cannot respot your own spot!", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
     public static boolean isNetworkAvailable(final Context context) {
         final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
         return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();

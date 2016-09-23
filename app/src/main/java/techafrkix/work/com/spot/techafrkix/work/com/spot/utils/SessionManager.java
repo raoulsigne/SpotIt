@@ -134,7 +134,7 @@ public class SessionManager {
      * Create login session
      * */
     public void createLoginSession(String name, String email, int id, int spot, int respot, int friends,
-                                   String password, String photo, int connexionId){
+                                   String photo, String password, int connexionId){
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
 
@@ -287,6 +287,9 @@ public class SessionManager {
 
         // user photo profile
         user.put(KEY_PHOTO, pref.getString(KEY_PHOTO, null));
+
+        // user photo profile
+        user.put(KEY_PASSWORD, pref.getString(KEY_PASSWORD, ""));
 
         // user offset to download spot
         user.put(KEY_OFFSET, pref.getString(KEY_OFFSET, null));

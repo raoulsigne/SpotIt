@@ -72,6 +72,7 @@ public class DBServer {
     private static final String URL_FIND_SPOT_USER = "/api/allspotslistwithoffset";
     private static final String URL_UPDATE_USER = "/api/updatepassword";
     private static final String URL_SEND_NOTIFICATION = "/api/testnotif";
+    private static final String URL_DELETE_FRIENDSHIP = "/api/deletefriendship";
 
     private static final int STATUT_REQUEST = 0;
     private static final int STATUT_CONFIRM = 1;
@@ -773,6 +774,73 @@ public class DBServer {
     }
 
     /**
+     * suppression d'une relation d'amitié
+     * @param friendship_id id de la relation
+     * @return
+     */
+    public int delete_friendship(int friendship_id) {
+
+        try {
+            url = new URL(BASE_URL + URL_DELETE_FRIENDSHIP);
+            client = (HttpURLConnection) url.openConnection();
+            client.setRequestMethod("DELETE");
+            client.setDoOutput(true);
+
+            OutputStream outputPost = new BufferedOutputStream(client.getOutputStream());
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputPost, "UTF-8"));
+
+            ContentValues values = new ContentValues();
+            values.put("apikey", API_KEY);
+            values.put("id", friendship_id);
+            writer.write(getQuery(values));
+            writer.flush();
+            writer.close();
+            outputPost.close();
+            Log.i(TAG, getQuery(values));
+
+            StringBuilder builder = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                builder.append(line + "\n");
+            }
+            br.close();
+
+            try {
+                JSONObject json = new JSONObject(builder.toString());
+                int statut = Integer.valueOf(json.getString("statut"));
+                if (statut == 1) {
+                    return 1;
+                } else {
+                    builder.append("statut = " + json.getString("statut") + "\n");
+                    builder.append("errcode = " + json.getString("errcode") + "\n");
+                    builder.append("message = " + json.getString("message") + "\n");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Log.i(TAG, "reponse = " + builder.toString());
+
+        } catch (MalformedURLException error) {
+            //Handles an incorrectly entered URL
+            Log.e(TAG, "MalformedURLException " + error.getMessage());
+            return -1;
+        } catch (SocketTimeoutException error) {
+            //Handles URL access timeout.
+            Log.e(TAG, "SocketTimeoutException " + error.getMessage());
+            return -1;
+        } catch (IOException error) {
+            //Handles input and output errors
+            Log.e(TAG, "IOException " + error.toString());
+            return -1;
+        } finally {
+            client.disconnect();
+        }
+
+        return -1;
+    }
+
+    /**
      * fonction qui retourne la liste des amis d'un utilisateur
      *
      * @param user_id represente l'id de l'utilisateur concerné
@@ -802,6 +870,8 @@ public class DBServer {
             }
             br.close();
 
+            Log.i("reponse", builder.toString());
+
             try {
                 JSONObject json = new JSONObject(builder.toString());
                 int statut = Integer.valueOf(json.getString("statut"));
@@ -811,12 +881,12 @@ public class DBServer {
                         JSONObject json2 = jArr.getJSONObject(i);
 
                         user = new Utilisateur();
-                        user.setEmail((String) json2.get(MaBaseOpenHelper.COLONNE_EMAIL));
-                        user.setId((int) json2.get(MaBaseOpenHelper.COLONNE_USER_ID));
-                        user.setPseudo((String) json2.get(MaBaseOpenHelper.COLONNE_PSEUDO));
-                        user.setPhoto((String) json2.get(MaBaseOpenHelper.COLONNE_PHOTO_PROFILE));
-                        user.setNbrespot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_RESPOT));
-                        user.setNbspot((int) json2.get(MaBaseOpenHelper.COLONNE_NB_SPOT));
+                        user.setEmail((String) json2.get("email"));
+                        user.setId((int) json2.get("id"));
+                        user.setPseudo((String) json2.get("pseudo"));
+                        user.setPhoto((String) json2.get("photo"));
+                        user.setNbrespot((int) json2.get("nbrespot"));
+                        user.setNbspot((int) json2.get("nbspot"));
                         user.setNbfriends((int) json2.get("nbfriend"));
                         user.setFriendship_id((int)json2.get("friendship_id"));
                         user.setStatut((int) json2.get("statut"));
@@ -2111,50 +2181,56 @@ public class DBServer {
 
     public ArrayList<Spot> find_spot_tag_hash_visibility(String[] tags, String hashs[], int[] visibilities, int offset, int interval) {
         ArrayList<Spot> spots = new ArrayList<>();
-
-        StringBuilder liste_tag = new StringBuilder();
-        liste_tag.append("[");
-        for (int i = 0; i < tags.length; i++) {
-            if (i < tags.length - 1)
-                liste_tag.append("\"" + tags[i] + "\",");
-            else
-                liste_tag.append("\"" + tags[i] + "\"");
-        }
-        liste_tag.append("]");
-        Log.i(TAG, liste_tag.toString());
-
-        StringBuilder liste_hash = new StringBuilder();
-        liste_hash.append("[");
-        for (int i = 0; i < hashs.length; i++) {
-            if (i < hashs.length - 1)
-                liste_hash.append("\"" + hashs[i] + "\",");
-            else
-                liste_hash.append("\"" + hashs[i] + "\"");
-        }
-        liste_hash.append("]");
-        Log.i(TAG, liste_hash.toString());
-
-        ArrayList<Integer> tampon = new ArrayList<>();
-        for (int i = 0; i < visibilities.length; i++)
-            if (visibilities[i] != 0)
-                tampon.add(visibilities[i]);
-
-        StringBuilder liste_v = new StringBuilder();
-        liste_v.append("[");
-        for (int i = 0; i < tampon.size(); i++) {
-            if (i < tampon.size() - 1)
-                liste_v.append("\"" + tampon.get(i) + "\",");
-            else
-                liste_v.append("\"" + tampon.get(i) + "\"");
-        }
-        liste_v.append("]");
-        Log.i(TAG, liste_v.toString());
-
         ContentValues values = new ContentValues();
+
+        if (tags != null && tags.length > 0) {
+            StringBuilder liste_tag = new StringBuilder();
+            liste_tag.append("[");
+            for (int i = 0; i < tags.length; i++) {
+                if (i < tags.length - 1)
+                    liste_tag.append("\"" + tags[i] + "\",");
+                else
+                    liste_tag.append("\"" + tags[i] + "\"");
+            }
+            liste_tag.append("]");
+            Log.i(TAG, liste_tag.toString());
+            values.put("tags", liste_tag.toString());
+        }
+
+        if (hashs != null && hashs.length > 0) {
+            StringBuilder liste_hash = new StringBuilder();
+            liste_hash.append("[");
+            for (int i = 0; i < hashs.length; i++) {
+                if (i < hashs.length - 1)
+                    liste_hash.append("\"" + hashs[i] + "\",");
+                else
+                    liste_hash.append("\"" + hashs[i] + "\"");
+            }
+            liste_hash.append("]");
+            Log.i(TAG, liste_hash.toString());
+            values.put("hash", liste_hash.toString());
+        }
+
+        if (visibilities != null && visibilities.length > 0) {
+            ArrayList<Integer> tampon = new ArrayList<>();
+            for (int i = 0; i < visibilities.length; i++)
+                if (visibilities[i] != 0)
+                    tampon.add(visibilities[i]);
+
+            StringBuilder liste_v = new StringBuilder();
+            liste_v.append("[");
+            for (int i = 0; i < tampon.size(); i++) {
+                if (i < tampon.size() - 1)
+                    liste_v.append("\"" + tampon.get(i) + "\",");
+                else
+                    liste_v.append("\"" + tampon.get(i) + "\"");
+            }
+            liste_v.append("]");
+            Log.i(TAG, liste_v.toString());
+            values.put("visibilite", liste_v.toString());
+        }
+
         values.put("apikey", API_KEY);
-        values.put("hash", liste_hash.toString());
-        values.put("tags", liste_tag.toString());
-        values.put("visibilite", liste_v.toString());
         if (offset != 0)
             values.put("offset", offset);
         if (interval != 0)
@@ -2176,6 +2252,7 @@ public class DBServer {
             Log.i(TAG, "reponse = " + builder.toString());
             try {
                 JSONObject json = new JSONObject(builder.toString());
+                ArrayList<String> spot_tags = new ArrayList<>();
                 int statut = Integer.valueOf(json.getString("statut"));
                 if (statut == 1) {
                     JSONArray jArr = json.getJSONArray("data");
@@ -2190,7 +2267,16 @@ public class DBServer {
                         spot.setLongitude(json2.getDouble("gpslong") + "");
                         spot.setLatitude(json2.getDouble("gpslat") + "");
                         spot.setPhotokey((String) json2.get("photo"));
-                        spot.setUser_id((int) json2.get(SpotsDBAdapteur.COLONNE_USER_ID));
+                        spot.setPhotouser((String) json2.get("photouser"));
+                        spot.setUser_id((int) json2.get("user_id"));
+                        JSONArray jArrtag = json2.getJSONArray("tags");
+                        spot_tags = new ArrayList<>();
+                        for (int j = 0; j < jArrtag.length(); j++) {
+                            JSONObject json3 = jArrtag.getJSONObject(j);
+                            spot_tags.add((String) json3.get("tag"));
+                        }
+                        spot.setTags(spot_tags);
+
                         spots.add(spot);
                     }
                     return spots;

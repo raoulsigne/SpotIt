@@ -207,6 +207,9 @@ public class DetailSpot_New extends Fragment {
                         if (cle > -1) {
                             spot.setId(cle);
                             session.increment_nbspot(); // increment the number of spots
+                            session.add_spot_name(temps);
+
+                            Log.i("spot-name", session.get_list_spot_name().toString());
 
                             //stockage de la photo sur le serveur amazon
                             try {

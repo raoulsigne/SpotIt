@@ -49,6 +49,8 @@ public class Search extends Fragment {
     public static final String V_FRIEND = "amis";
     public static final String V_PUBLIC = "publics";
 
+    public static final int LONG_BIT = 5;
+
     private String visibilite1, visibilite2, visibilite3;
 
     // TODO: Rename and change types of parameters
@@ -99,6 +101,7 @@ public class Search extends Fragment {
         spots = new ArrayList<>();
         coordones = new LatLng(0,0);
         geoHash = new GeoHash();
+        geoHash.setLong_bits(20);
 
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
@@ -175,7 +178,7 @@ public class Search extends Fragment {
             @Override
             public void onClick(View view) {
                 if (TextUtils.isEmpty(edttag.getText().toString()) || TextUtils.isEmpty(textView.getText().toString()))
-                    Toast.makeText(getActivity(), "Renseigner le tag et le lieu", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Renseigner le tag et/ou le lieu", Toast.LENGTH_SHORT).show();
                 else {
                     Thread t = new Thread(new Runnable() {
                         @Override

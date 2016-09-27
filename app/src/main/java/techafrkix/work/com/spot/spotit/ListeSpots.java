@@ -83,6 +83,8 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
         server = new DBServer(getActivity());
         profile = session.getUserDetails();
 
+        Log.i("spot-name", session.get_list_spot_name().toString());
+
         if (getArguments() != null) {
             type = (int) getArguments().getInt("type");
             if (type == 0) {
@@ -533,8 +535,16 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
             if (retour == 1) {
                 Toast.makeText(getActivity(), "Spot deleted", Toast.LENGTH_SHORT).show();
                 if (type == 1) {
+                    if (spots.get(position).getRespot() == 1)
+                        session.decrement_nbrespot();
+                    else
+                        session.decrement_nbspot();
                     adapter.remove(spots.get(position));
                 } else {
+                    if (tampon.get(position).getRespot() == 1)
+                        session.decrement_nbrespot();
+                    else
+                        session.decrement_nbspot();
                     adapter.remove(tampon.get(position));
                 }
             } else {

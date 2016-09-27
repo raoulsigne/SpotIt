@@ -19,6 +19,8 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
@@ -31,6 +33,7 @@ public class Welcome extends AppCompatActivity {
     private ProgressBar bar = null;
     private int mProgressStatus = 0;
     private ArrayList<Spot> spots;
+    private ArrayList<String> spot_name;
 
     private SessionManager session;
     private HashMap<String, String> profile;
@@ -53,6 +56,7 @@ public class Welcome extends AppCompatActivity {
                 Color.WHITE, android.graphics.PorterDuff.Mode.SRC_IN);
 
         profile = session.getUserDetails();
+        spot_name = new ArrayList<>();
 
         if (MapsActivity.isNetworkAvailable(this)) {
             loadSpots();  //chargement des spots
@@ -93,7 +97,7 @@ public class Welcome extends AppCompatActivity {
             @Override
             public void run() {
                 spots = server.find_spot_user(Integer.valueOf(profile.get(SessionManager.KEY_ID)), 0,
-                        Integer.valueOf(profile.get(SessionManager.KEY_SPOT)));
+                        Integer.valueOf(profile.get(SessionManager.KEY_SPOT)) + Integer.valueOf(profile.get(SessionManager.KEY_RESPOT)));
             }});
 
         t.start(); // spawn thread
@@ -110,6 +114,8 @@ public class Welcome extends AppCompatActivity {
 
 
                     for (final Spot s : spots) {
+                        spot_name.add(s.getPhotokey());
+
                         final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + s.getPhotokey() + ".jpg");
                         Log.i("dialog", file.getAbsolutePath());
                         AWS_Tools aws_tools = new AWS_Tools(getApplicationContext());
@@ -155,6 +161,8 @@ public class Welcome extends AppCompatActivity {
 
                         });
                     }
+                    Set<String> set = new HashSet<>(spot_name);
+                    session.store_list_spot_names(set);
                 }
                 else{
                     final Intent itmain = new Intent(getApplicationContext(), MainActivity.class);

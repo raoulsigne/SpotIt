@@ -10,7 +10,10 @@ import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import techafrkix.work.com.spot.spotit.Accueil;
 import techafrkix.work.com.spot.spotit.Connexion;
@@ -80,6 +83,9 @@ public class SessionManager {
     // type connexion Id (make variable publics to access from outside)
     public static final String KEY_USER_REGISTERED = "user_registered";
 
+    // liste des noms des spots de l'utilisateur
+    public static final String KEY_LIST_SPOTS_NAME = "spots_name";
+
     // Constructor
     public SessionManager(Context context){
 
@@ -126,6 +132,9 @@ public class SessionManager {
         //storing type connexion in pref
         editor.putString(KEY_TYPE_CONNEXION_ID, String.valueOf(0));
 
+        //storing list of spots names
+        editor.putStringSet(KEY_LIST_SPOTS_NAME, null);
+
         // commit changes
         editor.commit();
     }
@@ -167,6 +176,9 @@ public class SessionManager {
 
         //storing type connexion in pref
         editor.putString(KEY_TYPE_CONNEXION_ID, String.valueOf(connexionId));
+
+        //storing list of spots names
+        editor.putStringSet(KEY_LIST_SPOTS_NAME, null);
 
         // commit changes
         editor.commit();
@@ -228,6 +240,82 @@ public class SessionManager {
 
         // commit changes
         editor.commit();
+    }
+
+    /**
+     * fonction qui incrémente de 1 le nombre de spots
+     */
+    public void decrement_nbspot(){
+        int nb = Integer.valueOf(pref.getString(KEY_SPOT, null)) - 1;
+        if (nb == 0)
+            editor.putString(KEY_SPOT, String.valueOf(0));
+        else
+            editor.putString(KEY_SPOT, String.valueOf(nb));
+
+        // commit changes
+        editor.commit();
+    }
+
+    /**
+     * fonction qui decrémente de 1 le nombre de respots
+     */
+    public void decrement_nbrespot(){
+        int nb = Integer.valueOf(pref.getString(KEY_RESPOT, null)) - 1;
+        if (nb == 0)
+            editor.putString(KEY_RESPOT, String.valueOf(0));
+        else
+            editor.putString(KEY_RESPOT, String.valueOf(nb));
+
+        // commit changes
+        editor.commit();
+    }
+
+    /**
+     * fonction qui decrémente de 1 le nombre de ses amis
+     */
+    public void decrement_nbfriend(){
+        int nb = Integer.valueOf(pref.getString(KEY_FRIENDS, null)) - 1;
+        if (nb == 0)
+            editor.putString(KEY_FRIENDS, String.valueOf(0));
+        else
+            editor.putString(KEY_FRIENDS, String.valueOf(nb));
+
+        // commit changes
+        editor.commit();
+    }
+
+    /**
+     * fonction qui sauvegarde la liste des noms des spots de l'utilisateur
+     * @param listes
+     */
+    public void store_list_spot_names(Set<String> listes){
+        //storing friend's number in pref
+        editor.putStringSet(KEY_LIST_SPOTS_NAME, listes);
+
+        // commit changes
+        editor.commit();
+    }
+
+    /**
+     * fonction qui ajoute un nom à la liste des nom de spots de l'utilisateur
+     * @param spot_name
+     */
+    public void add_spot_name(String spot_name){
+        Set<String> liste = pref.getStringSet(KEY_LIST_SPOTS_NAME, null);
+        if (liste != null){
+            liste.add(spot_name);
+        }else {
+            liste = new HashSet<>(Arrays.asList(spot_name));
+        }
+        store_list_spot_names(liste);
+    }
+
+    /**
+     * recupere la liste des noms de spot de l'utilisateur
+     * @return
+     */
+    public Set<String> get_list_spot_name(){
+        return pref.getStringSet(KEY_LIST_SPOTS_NAME, null);
     }
 
     /**

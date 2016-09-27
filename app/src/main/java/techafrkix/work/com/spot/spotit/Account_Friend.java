@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
@@ -73,8 +74,9 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
     private HashMap<MyMarker, Spot> mappage;
     private ArrayList<MyMarker> mMyMarkersArray = new ArrayList<MyMarker>();
     private DBServer server;
+    private SessionManager session;
 
-    private int total_spot;
+    private int total_spot, retour;
 
     private OnFragmentInteractionListener mListener;
     private ImageView imgmap, imgspots, imgfriends, imgretour;
@@ -124,6 +126,8 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
         mMarkersHashMap = new HashMap<Marker, MyMarker>();
         mappage = new HashMap<>();
         server = new DBServer(getActivity());
+        session = new SessionManager(getActivity());
+        retour = 0;
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_account__friend, container, false);
@@ -144,6 +148,7 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
         TextView txtRespot = (TextView) view.findViewById(R.id.txtRespots_friend);
         TextView txtNbSpot = (TextView) view.findViewById(R.id.txtMySpots_friends);
         TextView txtNbFriend = (TextView) view.findViewById(R.id.txtFriends_friend);
+        Button btnremove = (Button) view.findViewById(R.id.btnremove);
 
         if (friend != null){
             txtPseudo.setText(friend.getPseudo());
@@ -227,6 +232,32 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
             @Override
             public void onClick(View view) {
                 mListener.onLoadAccount(2);
+            }
+        });
+
+        btnremove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        retour = server.delete_friendship(friend.getFriendship_id());
+                    }
+                });
+
+                t.start(); // spawn thread
+                try {
+                    t.join();
+                    if (retour == 1) {
+                        Toast.makeText(getActivity(), friend.getPseudo() + " is not your friend anymore ", Toast.LENGTH_SHORT).show();
+                        session.decrement_nbfriend();
+                        mListener.onLoadAccount(2);
+                    }else
+                        Toast.makeText(getActivity(), "unable to delete, we encounter some problems ", Toast.LENGTH_SHORT).show();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         });
 

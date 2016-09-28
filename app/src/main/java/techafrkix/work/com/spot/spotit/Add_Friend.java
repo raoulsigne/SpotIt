@@ -74,8 +74,9 @@ public class Add_Friend extends Fragment implements FriendCallback{
     private Utilisateur[] tampons;
     private SessionManager session;
     private HashMap<String, String> profile;
-    private int response;
+    private int response, count;
     private Utilisateur friend;
+    private CustomList adapter;
 
     private OnFragmentInteractionListener mListener;
 
@@ -187,8 +188,57 @@ public class Add_Friend extends Fragment implements FriendCallback{
                             friends.add(users.get(i).getPseudo());
                     }
 
-                    CustomList adapter = new CustomList(getActivity(), tampons, Add_Friend.this);
-                    lvfriends.setAdapter(adapter);
+                    final ProgressDialog dialog = ProgressDialog.show(getActivity(), "",
+                            "Loading. Please wait...", true);
+                    dialog.show();
+                    count = 0;
+                    for (i = 0; i < tampons.length; i++) {
+                        final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + tampons[i].getPhoto() + ".jpg");
+                        if (file.exists()) {
+                            count++;
+                            if (count == tampons.length) {
+                                adapter = new CustomList(getActivity(), tampons, Add_Friend.this);
+                                lvfriends.setAdapter(adapter);
+                                dialog.dismiss();
+                            }
+                        } else {
+                            AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
+                            int transfertId = aws_tools.download(file, tampons[i].getPhoto());
+                            TransferUtility transferUtility = aws_tools.getTransferUtility();
+                            TransferObserver observer = transferUtility.getTransferById(transfertId);
+                            observer.setTransferListener(new TransferListener() {
+                                @Override
+                                public void onStateChanged(int id, TransferState state) {
+                                    // do something
+                                }
+
+                                @Override
+                                public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                                    int rapport = (int) (bytesCurrent * 100);
+                                    if (bytesTotal != 0) {
+                                        rapport /= bytesTotal;
+                                        if (rapport == 100) {
+                                            count++;
+                                        }
+                                    } else {
+                                        count++;
+                                    }
+                                    if (count == tampons.length) {
+                                        adapter = new CustomList(getActivity(), tampons, Add_Friend.this);
+                                        lvfriends.setAdapter(adapter);
+                                        dialog.dismiss();
+                                    }
+                                }
+
+                                @Override
+                                public void onError(int id, Exception ex) {
+                                    // do something
+//                                barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
+                                }
+
+                            });
+                        }
+                    }
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -382,6 +432,8 @@ public class Add_Friend extends Fragment implements FriendCallback{
         }
         @Override
         public View getView(final int position, View view, ViewGroup parent) {
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 8;
             LayoutInflater inflater = context.getLayoutInflater();
             View rowView= inflater.inflate(R.layout.item_friend, null, true);
 
@@ -401,72 +453,8 @@ public class Add_Friend extends Fragment implements FriendCallback{
 
             if (utilisateurs[position].getPhoto() != "") {
                 final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + utilisateurs[position].getPhoto() + ".jpg");
-
-                if (file.exists()) {
-                    // marker.showInfoWindow();
-                    Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                    imgProfile.setImageBitmap(bitmap);
-                    Log.i("file", "file exists");
-                } else {
-                    if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
-                        Log.i("file", "file not exists");
-                        AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
-                        final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
-                        barProgressDialog.setTitle("Chargement des profiles ...");
-                        barProgressDialog.setMessage("Opération en progression ...");
-                        barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
-                        barProgressDialog.setProgress(0);
-                        barProgressDialog.setMax(100);
-                        barProgressDialog.show();
-                        int transfertId = aws_tools.download(file, utilisateurs[position].getPhoto());
-                        TransferUtility transferUtility = aws_tools.getTransferUtility();
-                        TransferObserver observer = transferUtility.getTransferById(transfertId);
-                        observer.setTransferListener(new TransferListener() {
-
-                            @Override
-                            public void onStateChanged(int id, TransferState state) {
-                                // do something
-                            }
-
-                            @Override
-                            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                                int rapport = (int) (bytesCurrent * 100);
-                                try {
-                                    Log.i("dialog", bytesCurrent + " " + bytesTotal);
-                                    rapport /= bytesTotal;
-                                    barProgressDialog.setProgress(rapport);
-                                    if (rapport == 100) {
-                                        barProgressDialog.dismiss();
-                                        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                                        imgProfile.setImageBitmap(bitmap);
-                                    }
-                                }catch (Exception e){
-                                    Log.e("chargement", e.getMessage());
-                                    barProgressDialog.dismiss();
-                                }
-                            }
-
-                            @Override
-                            public void onError(int id, Exception ex) {
-                                // do something
-                                barProgressDialog.dismiss();
-                            }
-
-                        });
-                    } else {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setTitle("Spot It:Information")
-                                .setMessage("Vérifiez votre connexion Internet")
-                                .setCancelable(false)
-                                .setNegativeButton("Close", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                });
-                        AlertDialog alert = builder.create();
-                        alert.show();
-                    }
-                }
+                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+                imgProfile.setImageBitmap(bitmap);
             }
 
             if (friends != null){

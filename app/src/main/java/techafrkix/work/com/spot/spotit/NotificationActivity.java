@@ -174,6 +174,7 @@ public class NotificationActivity extends Fragment {
 
                             if (spot != null){
                                 args.putSerializable("spot", spot);
+                                args.putInt("type", 4);
                                 fgDetailspot.setArguments(args);
                                 getActivity().getSupportFragmentManager().beginTransaction()
                                         .replace(R.id.container, fgDetailspot, "DETAIL")

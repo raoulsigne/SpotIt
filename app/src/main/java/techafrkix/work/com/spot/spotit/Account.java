@@ -193,14 +193,27 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
         setAciveTab(activetab);
 
         if (activetab != 1){
-            getChildFragmentManager().beginTransaction().remove(fgAddfrient).commit();
-            fgAddfrient = new Add_Friend();
-            Bundle args = new Bundle();
-            args.putInt("type", 0);
-            fgAddfrient.setArguments(args);
-            getChildFragmentManager().beginTransaction()
-                    .replace(R.id.mymap, fgAddfrient, "FRIEND")
-                    .commit();
+            if (activetab == 2) {
+                getChildFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+                fgAddfrient = new Add_Friend();
+                Bundle args = new Bundle();
+                args.putInt("type", 0);
+                fgAddfrient.setArguments(args);
+                getChildFragmentManager().beginTransaction()
+                        .replace(R.id.mymap, fgAddfrient, "FRIEND")
+                        .commit();
+            }
+            else if (activetab == 3){
+                ShortcutBadger.removeCount(getActivity());
+                setAciveTab(4);
+                notif_count.setVisibility(View.INVISIBLE);
+                notif_count.setText("0");
+                notifs = 0;
+                mListener.onDeleteNotification();
+                getChildFragmentManager().beginTransaction()
+                        .replace(R.id.mymap, fgNotificationActivity, "NOTIFICATION")
+                        .commit();
+            }
         }
 
         imghome.setOnClickListener(new View.OnClickListener() {
@@ -255,6 +268,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
             }
         });
         imgnotification.setOnClickListener(new View.OnClickListener() {
@@ -301,13 +315,9 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
                 if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
                     Log.i("file", "file not exists");
                     AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
-                    final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
-                    barProgressDialog.setTitle("Telechargement du spot ...");
-                    barProgressDialog.setMessage("Opération en progression ...");
-                    barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
-                    barProgressDialog.setProgress(0);
-                    barProgressDialog.setMax(100);
-                    barProgressDialog.show();
+                    final ProgressDialog dialog = ProgressDialog.show(getActivity(), "",
+                            "Loading. Please wait...", true);
+                    dialog.show();
                     int transfertId = aws_tools.download(file, profile.get(SessionManager.KEY_PHOTO));
                     TransferUtility transferUtility = aws_tools.getTransferUtility();
                     TransferObserver observer = transferUtility.getTransferById(transfertId);
@@ -324,19 +334,18 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
                             if (bytesTotal != 0) {
                                 rapport /= bytesTotal;
                                 if (rapport == 100) {
-                                    barProgressDialog.dismiss();
                                     imageprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                                    dialog.dismiss();
                                 }
-                                barProgressDialog.setProgress(rapport);
                             } else {
-                                barProgressDialog.dismiss();
+                                dialog.dismiss();
                             }
                         }
 
                         @Override
                         public void onError(int id, Exception ex) {
                             // do something
-                            barProgressDialog.dismiss();
+                            dialog.dismiss();
                         }
 
                     });

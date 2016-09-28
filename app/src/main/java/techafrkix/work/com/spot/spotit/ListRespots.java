@@ -46,6 +46,7 @@ public class ListRespots extends Fragment implements SpotAdapter.AdapterCallback
 
     private ArrayList<Spot> spots;
     private Spot s;
+    private int count;
     //    private HashMap<String, Bitmap> spotsimages;
     private SpotAdapter adapter;
     private ListView listView;
@@ -103,27 +104,23 @@ public class ListRespots extends Fragment implements SpotAdapter.AdapterCallback
 
         Log.i("test", spots.toString());
 
-        final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
-        barProgressDialog.setTitle("Telechargement des spots ...");
-        barProgressDialog.setMessage("Opération en progression ...");
-        barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
-        barProgressDialog.setProgress(0);
-        barProgressDialog.setMax(spots.size());
-        barProgressDialog.show();
+        final ProgressDialog dialog = ProgressDialog.show(getActivity(), "",
+                "Loading. Please wait...", true);
+        dialog.show();
+        count = 0;
 
         for (int i = 0; i < spots.size(); i++) {
             s = new Spot();
             s = spots.get(i);
             final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + s.getPhotokey() + ".jpg");
             if (file.exists()) {
-                barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
-
-                if (barProgressDialog.getProgress() == barProgressDialog.getMax()) {
-                    barProgressDialog.dismiss();
+                count++;
+                if (count == spots.size()) {
                     // Create the adapter to convert the array to views
                     adapter = new SpotAdapter(getActivity(), spots, ListRespots.this, 1);
                     // Attach the adapter to a ListView
                     listView.setAdapter(adapter);
+                    dialog.dismiss();
                 }
             } else {
                 AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
@@ -142,19 +139,18 @@ public class ListRespots extends Fragment implements SpotAdapter.AdapterCallback
                         if (bytesTotal != 0) {
                             rapport /= bytesTotal;
                             if (rapport == 100) {
-                                barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
+                                count++;
                             }
                         } else {
-                            barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
+                            count++;
                             spots.remove(s);
                         }
-                        if (barProgressDialog.getProgress() == barProgressDialog.getMax()) {
-                            barProgressDialog.dismiss();
-
+                        if (count == spots.size()) {
                             // Create the adapter to convert the array to views
                             adapter = new SpotAdapter(getActivity(), spots, ListRespots.this, 1);
                             // Attach the adapter to a ListView
                             listView.setAdapter(adapter);
+                            dialog.dismiss();
                         }
                     }
 

@@ -130,6 +130,8 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_liste_spots_friend, container, false);
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = 8;
 
         imgprofile = (ImageView) view.findViewById(R.id.item_profile);
         txtpseudo = (TextView)view.findViewById(R.id.txtPseudo_friend);
@@ -148,7 +150,7 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
                 final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + friend.getPhoto() + ".jpg");
 
                 if (file.exists()) {
-                    imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                    imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath(), options));
                     Log.i("file", "file exists");
                 } else {
                     if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
@@ -179,7 +181,7 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
                                     barProgressDialog.setProgress(rapport);
                                     if (rapport == 100) {
                                         barProgressDialog.dismiss();
-                                        imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                                        imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath(), options));
                                     }
                                 }catch (Exception e){
                                     Log.e("erreur", e.getMessage());
@@ -512,6 +514,9 @@ class SpotFriendAdapter extends ArrayAdapter<Spot> {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = 8;
+
         TextView spotDate, spotTag;
         final ImageButton share, comment, letsgo, like;
         ImageView spotPhoto;
@@ -685,7 +690,7 @@ class SpotFriendAdapter extends ArrayAdapter<Spot> {
             //photo du spot
             File file = new File(DBServer.DOSSIER_IMAGE + File.separator + spot.getPhotokey() + ".jpg");
             if (file.exists()) {
-                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
 
                 // Get height or width of screen at runtime
                 Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
@@ -712,7 +717,7 @@ class SpotFriendAdapter extends ArrayAdapter<Spot> {
             }
 
         }catch (Exception e){
-            Log.e("spot", e.getMessage());}
+            Log.e("spot", "error in spotfriendadapter");}
 
 
 

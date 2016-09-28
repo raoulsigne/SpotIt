@@ -1,5 +1,6 @@
 package techafrkix.work.com.spot.spotit;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -36,6 +37,9 @@ public class Accueil extends AppCompatActivity {
             finish();
         }
 
+//        ProgressDialog dialog = ProgressDialog.show(Accueil.this, "",
+//                "Loading. Please wait...", true);
+//        dialog.show();
         //recuperation des boutons à partir du xml
         login = (Button)findViewById(R.id.btnLogin);
         signin = (Button)findViewById(R.id.btnSignin);
@@ -47,7 +51,7 @@ public class Accueil extends AppCompatActivity {
                 LoginManager.getInstance().logOut();
             }
         }catch (Exception e){
-            Log.e("error", e.getMessage());
+            Log.e("error", "error starting accueil ");
         }
 
         //fenetre de connexion

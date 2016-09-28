@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.Point;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -175,6 +177,10 @@ public class DetailSpot extends Fragment {
                         mListener.onLoadSpot(spots);
                         Log.i("numero", "3");
                         break;
+                    case 4:
+                        mListener.onLoadAccount(3);
+                    default:
+                        break;
                 }
             }
         });
@@ -185,6 +191,9 @@ public class DetailSpot extends Fragment {
                 like.setBackground(getActivity().getResources().getDrawable(R.drawable.liked));
             }
         });
+
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = 8;
 
 //        respot.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -303,21 +312,28 @@ public class DetailSpot extends Fragment {
 
             if (!file.exists())
                 chargement_image(spot.getPhotokey());
-
-            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-
-            // Get height or width of screen at runtime
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
             Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
             Point size = new Point();
             display.getSize(size);
             int width = size.x;
             //reduce the photo dimension keeping the ratio so that it'll fit in the imageview
+            Log.e("spot", "2 " +  bitmap.getWidth() );
             int nh = (int) (bitmap.getHeight() * (Double.valueOf(width) / bitmap.getWidth()));
             Bitmap scaled = Bitmap.createScaledBitmap(bitmap, width, nh, true);
+
             //define the image source of the imageview
-            imgspot.setImageBitmap(scaled);
+            ExifInterface exif = new ExifInterface(file.getAbsolutePath());
+            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
+            Log.i("ori", orientation + " ");if ((orientation == 3) || (orientation == 6) || (orientation == 9)){
+                Matrix matrix = new Matrix();
+                matrix.postRotate(90);
+                Bitmap rotatedBitmap = Bitmap.createBitmap(scaled, 0, 0, scaled.getWidth(), scaled.getHeight(), matrix, true);
+                imgspot.setImageBitmap(rotatedBitmap);
+            }else
+                imgspot.setImageBitmap(scaled);
         } catch (Exception e) {
-            Log.e("spot", e.getMessage());
+            Log.e("spot", "error in detail spot");
         }
 
         if (friend != null) {
@@ -326,7 +342,7 @@ public class DetailSpot extends Fragment {
 
                 if (file.exists()) {
                     // marker.showInfoWindow();
-                    imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                    imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath(), options));
                     Log.i("file", "file exists");
                 } else {
                     if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
@@ -357,7 +373,7 @@ public class DetailSpot extends Fragment {
                                     barProgressDialog.setProgress(rapport);
                                     if (rapport == 100) {
                                         barProgressDialog.dismiss();
-                                        imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                                        imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath(), options));
                                     }
                                 }else
                                     barProgressDialog.dismiss();
@@ -391,19 +407,15 @@ public class DetailSpot extends Fragment {
 
             if (file.exists()) {
                 // marker.showInfoWindow();
-                imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath(), options));
                 Log.i("file", "file exists");
             } else {
                 if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
                     Log.i("file", "file not exists");
                     AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
-                    final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
-                    barProgressDialog.setTitle("Telechargement du spot ...");
-                    barProgressDialog.setMessage("Opération en progression ...");
-                    barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
-                    barProgressDialog.setProgress(0);
-                    barProgressDialog.setMax(100);
-                    barProgressDialog.show();
+                    final ProgressDialog dialog = ProgressDialog.show(getActivity(), "",
+                            "Loading. Please wait...", true);
+                    dialog.show();
                     int transfertId = aws_tools.download(file, spot.getPhotouser());
                     TransferUtility transferUtility = aws_tools.getTransferUtility();
                     TransferObserver observer = transferUtility.getTransferById(transfertId);
@@ -419,19 +431,18 @@ public class DetailSpot extends Fragment {
                             int rapport = (int) (bytesCurrent * 100);
                             if (bytesTotal != 0) {
                                 rapport /= bytesTotal;
-                                barProgressDialog.setProgress(rapport);
                                 if (rapport == 100) {
-                                    barProgressDialog.dismiss();
-                                    imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                                    imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath(), options));
+                                    dialog.dismiss();
                                 }
                             }else
-                                barProgressDialog.dismiss();
+                                dialog.dismiss();
                         }
 
                         @Override
                         public void onError(int id, Exception ex) {
                             // do something
-                            barProgressDialog.dismiss();
+                            dialog.dismiss();
                         }
 
                     });
@@ -519,6 +530,7 @@ public class DetailSpot extends Fragment {
         void onLoadSpot(ArrayList<Spot> spots);
         void onLoadAccueil();
         void onLoadAccount();
+        void onLoadAccount(int i);
     }
 
     private void loadComment() {
@@ -562,6 +574,8 @@ public class DetailSpot extends Fragment {
 
     public void chargement_image(String photokey){
         final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + photokey + ".jpg");
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = 8;
 
         AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
         final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
@@ -588,7 +602,7 @@ public class DetailSpot extends Fragment {
                     rapport /= bytesTotal;
                     barProgressDialog.setProgress(rapport);
                     if (rapport == 100) {
-                        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
 
                         // Get height or width of screen at runtime
                         Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
@@ -631,6 +645,8 @@ class CommentAdapter extends ArrayAdapter<Commentaire> {
     public View getView(final int position, View convertView, ViewGroup parent) {
         final TextView txtnom, txtcomment, txttemps;
         final ImageView photoprofile;
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = 8;
 
         // Get the data item for this position
         Commentaire commentaire = getItem(position);
@@ -653,7 +669,7 @@ class CommentAdapter extends ArrayAdapter<Commentaire> {
             final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + commentaire.getPhotokey() + ".jpg");
 
             if (file.exists()) {
-                photoprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                photoprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath(), options));
                 Log.i("file", "file exists");
             } else {
                 if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
@@ -684,7 +700,7 @@ class CommentAdapter extends ArrayAdapter<Commentaire> {
                                 barProgressDialog.setProgress(rapport);
                                 if (rapport == 100) {
                                     barProgressDialog.dismiss();
-                                    photoprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                                    photoprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath(), options));
                                 }
                             }else
                                 barProgressDialog.dismiss();

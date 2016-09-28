@@ -93,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public static final int MENU_ACTIF_NOTIFICATION = 4;
     public static final int MENU_ACTIF_ACCOUNT = 5;
     public static final int MENU_ACTIF_ACCOUNT_2 = 6;
+    public static final int MENU_ACTIF_ACCOUNT_3 = 7;
 
     private static final int CAMERA_REQUEST = 1;
     private static final int WRITE_REQUEST = 2;
@@ -849,7 +850,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         setAciveTab(MENU_ACTIF_ACCOUNT);
 
         //traitement de l'action lors du click
-        startFragment(MENU_ACTIF_ACCOUNT_2);
+        if (i == 2)
+            startFragment(MENU_ACTIF_ACCOUNT_2);
+        else
+            startFragment(MENU_ACTIF_ACCOUNT_3);
     }
 
     @Override
@@ -938,6 +942,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     Bundle args = new Bundle();
                     args.putInt("notif_count", Integer.parseInt(notif_count.getText().toString()));
                     args.putInt("menuactif", 2);
+                    fgAccount.setArguments(args);
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, fgAccount, "ACCOUNT")
+                            .commit();
+                    menuactif = MENU_ACTIF_ACCOUNT;
+                } catch (Exception e) {
+                    Log.e("fragment", e.getMessage());
+                }
+
+                break;
+
+            case MENU_ACTIF_ACCOUNT_3:
+                try {
+                    Bundle args = new Bundle();
+                    args.putInt("notif_count", Integer.parseInt(notif_count.getText().toString()));
+                    args.putInt("menuactif", 3);
                     fgAccount.setArguments(args);
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.container, fgAccount, "ACCOUNT")

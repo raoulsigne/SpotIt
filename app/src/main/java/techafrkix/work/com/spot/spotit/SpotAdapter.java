@@ -266,8 +266,11 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
 
             //photo du spot
             File file = new File(DBServer.DOSSIER_IMAGE + File.separator + spot.getPhotokey() + ".jpg");
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 8;
+
             if (file.exists()) {
-                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
 
                 // Get height or width of screen at runtime
                 Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
@@ -294,12 +297,12 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
             //photo de profile du spoteur
             final File file1 = new File(DBServer.DOSSIER_IMAGE + File.separator + spot.getPhotouser() + ".jpg");
             if (file1.exists()) {
-                Bitmap bitmap = BitmapFactory.decodeFile(file1.getAbsolutePath());
+                Bitmap bitmap = BitmapFactory.decodeFile(file1.getAbsolutePath(), options);
                 // marker.showInfoWindow();
                 photoprofile.setImageBitmap(bitmap);
             }
         }catch (Exception e){
-            Log.e("spot", e.getMessage());}
+            Log.e("spot", "error in spotadapter");}
 
         SessionManager session = new SessionManager(context);
         HashMap<String, String> profile = session.getUserDetails();

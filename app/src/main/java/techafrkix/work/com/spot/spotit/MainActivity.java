@@ -4,15 +4,18 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Parcelable;
@@ -61,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Search.OnFragmentInteractionListener, Add_Friend.OnFragmentInteractionListener, Account_Friend.OnFragmentInteractionListener,
         ListeSpots_Friend.OnFragmentInteractionListener, NotificationActivity.OnFragmentInteractionListener, SpotUser.OnFragmentInteractionListener,
         UserSettings.OnFragmentInteractionListener, ShowInformation.OnFragmentInteractionListener, ChangePassword.OnFragmentInteractionListener,
-        TakeSnap.OnFragmentInteractionListener, ListRespots.OnFragmentInteractionListener{
+        TakeSnap.OnFragmentInteractionListener, ListRespots.OnFragmentInteractionListener {
 
     static final int REQUEST_IMAGE_CAPTURE = 10;
 
@@ -76,10 +79,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     UserSettings fgUserSettings;
     ShowInformation fgInformation;
     ChangePassword fgChangePassword;
-//    Add_Friend fgAddfrient;
+    //    Add_Friend fgAddfrient;
     Account_Friend fgFriendAcount;
     ListeSpots_Friend fgSpots_friend;
-//    NotificationActivity fgNotificationActivity;
+    //    NotificationActivity fgNotificationActivity;
     FragmentTransaction ft;
 
     static MainActivity instance;
@@ -97,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     private static final int CAMERA_REQUEST = 1;
     private static final int WRITE_REQUEST = 2;
+    private static final int CROP_FROM_CAMERA = 3;
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
     LocationRequest locationRequest;
@@ -109,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private DBServer server;
 
     ImageButton imgHome, imgNew, imgAccount;
-//    TextView txtHome, txtNew, txtAccount;
+    //    TextView txtHome, txtNew, txtAccount;
     TextView notif_count;
     LinearLayout groupeHome, groupeNewspot, groupeAccount;
 
@@ -152,9 +156,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         // txtHome = (TextView) findViewById(R.id.txtHome);
         // txtNew = (TextView) findViewById(R.id.txtAdd);
         // txtAccount = (TextView) findViewById(R.id.txtAccount);
-        groupeHome = (LinearLayout)findViewById(R.id.groupeHome);
-        groupeNewspot = (LinearLayout)findViewById(R.id.groupeNewspot);
-        groupeAccount = (LinearLayout)findViewById(R.id.groupeAccount);
+        groupeHome = (LinearLayout) findViewById(R.id.groupeHome);
+        groupeNewspot = (LinearLayout) findViewById(R.id.groupeNewspot);
+        groupeAccount = (LinearLayout) findViewById(R.id.groupeAccount);
 
         notif_count = (TextView) findViewById(R.id.notif_count);
         if (Integer.parseInt(notif_count.getText().toString()) == 0)
@@ -268,7 +272,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                 CheckEnableGPS();
             }
-        }else {
+        } else {
             //add the main map fragment
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, fgAccueil, "ACCUEIL")
@@ -316,7 +320,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     try {
                         Bundle extras = data.getExtras();
                         imageBitmap = (Bitmap) extras.get("data");
-                    }catch (Exception e) {
+
+                    } catch (Exception e) {
                         Uri selectedImage = data.getData();
                         String[] filePathColumn = {MediaStore.Images.Media.DATA};
                         Cursor cursor = getContentResolver().query(selectedImage,
@@ -326,30 +331,77 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         String picturePath = cursor.getString(columnIndex);
                         cursor.close();
                         imageBitmap = BitmapFactory.decodeFile(picturePath);
+
                     }
-                    //imageBitmap = Bitmap.createScaledBitmap(imageBitmap, 400, 400, true);
+
                     final String temps = profile.get(SessionManager.KEY_ID) + "_" + String.valueOf(System.currentTimeMillis());
-                    File file = new File(DBServer.DOSSIER_IMAGE + temps + ".jpg");
+                    File file = new File(DBServer.DOSSIER_IMAGE + File.separator + temps + ".jpg");
                     try {
                         OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
                         imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
                         os.close();
 
+                        Intent intent = new Intent("com.android.camera.action.CROP");
+                        intent.setType("image/*");
+                        List<ResolveInfo> list = getPackageManager().queryIntentActivities(
+                                intent, 0);
+                        int size = list.size();
+                        if (size == 0) {
+                            Toast.makeText(this, "Can not find image crop app",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        } else {
+                            Uri mImageCaptureUri = ListeSpots.getImageContentUri(getApplicationContext(), file);
+                            intent.setData(mImageCaptureUri);
+
+                            intent.putExtra("aspectX", 1);
+                            intent.putExtra("aspectY", 1);
+                            intent.putExtra("outputX", 320);
+                            intent.putExtra("outputY", 320);
+                            intent.putExtra("scale", true);
+                            intent.putExtra("return-data", true);
+
+                            Intent i = new Intent(intent);
+                            ResolveInfo res = list.get(0);
+
+                            i.setComponent(new ComponentName(res.activityInfo.packageName,
+                                    res.activityInfo.name));
+
+                            startActivityForResult(i, CROP_FROM_CAMERA);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    break;
+                case CROP_FROM_CAMERA:
+
+                    Bundle extras = data.getExtras();
+                    Bitmap selectedBitmap = extras.getParcelable("data");
+
+                    final String temps1 = profile.get(SessionManager.KEY_ID) + "_" + String.valueOf(System.currentTimeMillis());
+                    File file1 = new File(DBServer.DOSSIER_IMAGE + File.separator + temps1 + ".jpg");
+                    try {
+                        OutputStream os = new BufferedOutputStream(new FileOutputStream(file1));
+                        selectedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                        os.close();
+
                         Thread t = new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                resultat = server.set_profile_picture(Integer.valueOf(profile.get(SessionManager.KEY_ID)), temps);
-                            }});
+                                resultat = server.set_profile_picture(Integer.valueOf(profile.get(SessionManager.KEY_ID)), temps1);
+                            }
+                        });
 
                         t.start(); // spawn thread
-                        try{
+                        try {
                             t.join();
                             if (resultat > -1) {
                                 AWS_Tools aws_tools = new AWS_Tools(MainActivity.this);
-                                aws_tools.uploadPhoto(file, temps);
-                                session.store_photo_profile(temps);
+                                aws_tools.uploadPhoto(file1, temps1);
+                                session.store_photo_profile(temps1);
                             }
-                        }catch (Exception e){
+                        } catch (Exception e) {
 
                         }
 
@@ -360,10 +412,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         } catch (Exception e) {
                             Log.e("fragment", e.getMessage());
                         }
-                    } catch (Exception e) {
-                        Log.e("file", e.getMessage());
-                    }
 
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     break;
             }
         } else {
@@ -737,7 +789,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 //            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
 //        }
 
-        List<Intent> allIntents = new  ArrayList<>();
+        List<Intent> allIntents = new ArrayList<>();
 
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         allIntents.add(takePictureIntent);
@@ -836,7 +888,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     @Override
-    public void onLoadAccueil(){
+    public void onLoadAccueil() {
         //changement des couleurs des widgets
         setAciveTab(MENU_ACTIF_HOME);
 
@@ -876,8 +928,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-    public void startFragment(int menu){
-        switch (menu){
+    public void startFragment(int menu) {
+        switch (menu) {
             case MENU_ACTIF_HOME:
                 try {
                     getSupportFragmentManager().beginTransaction()
@@ -898,7 +950,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     Log.i("location", "location not null");
                     bundle.putDouble("longitude", mLastLocation.getLongitude());
                     bundle.putDouble("latitude", mLastLocation.getLatitude());
-                }else {
+                } else {
                     Log.i("location", "your location is null");
                     bundle.putDouble("longitude", 0);
                     bundle.putDouble("latitude", 0);
@@ -972,8 +1024,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
-    public void setAciveTab(int menu){
-        switch (menu){
+    public void setAciveTab(int menu) {
+        switch (menu) {
             case MENU_ACTIF_HOME:
 
                 imgHome.setBackground(getResources().getDrawable(R.drawable.world_clicked));
@@ -1049,7 +1101,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             Log.i("localbroadcast", "new notif increment the number " + Integer.parseInt(notif_count.getText().toString()));
             fgAccount.updatenotif_count(Integer.parseInt(notif_count.getText().toString()));
             ShortcutBadger.applyCount(getApplicationContext(), Integer.parseInt(notif_count.getText().toString()) + 1);
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.e("notif", e.getMessage());
         }
 
@@ -1061,7 +1113,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             notif_count.setVisibility(View.VISIBLE);
             notif_count.setText(String.valueOf(number));
             fgAccount.updatenotif_count(number);
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.e("notif", e.getMessage());
         }
 

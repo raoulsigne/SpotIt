@@ -2179,12 +2179,12 @@ public class DBServer {
         }
     }
 
-    public ArrayList<Spot> find_spot_tag_hash_visibility(String[] tags, String hashs[], int[] visibilities, int offset, int interval) {
+    public ArrayList<Spot> find_spot_tag_hash_visibility(int user_id, String[] tags, String hashs[], int visibility, int offset, int interval) {
         ArrayList<Spot> spots = new ArrayList<>();
         ContentValues values = new ContentValues();
 
+        StringBuilder liste_tag = new StringBuilder();
         if (tags != null && tags.length > 0) {
-            StringBuilder liste_tag = new StringBuilder();
             liste_tag.append("[");
             for (int i = 0; i < tags.length; i++) {
                 if (i < tags.length - 1)
@@ -2194,11 +2194,14 @@ public class DBServer {
             }
             liste_tag.append("]");
             Log.i(TAG, liste_tag.toString());
-            values.put("tags", liste_tag.toString());
+        }else {
+            liste_tag.append("[");
+            liste_tag.append("]");
         }
+        values.put("tags", liste_tag.toString());
 
+        StringBuilder liste_hash = new StringBuilder();
         if (hashs != null && hashs.length > 0) {
-            StringBuilder liste_hash = new StringBuilder();
             liste_hash.append("[");
             for (int i = 0; i < hashs.length; i++) {
                 if (i < hashs.length - 1)
@@ -2208,28 +2211,33 @@ public class DBServer {
             }
             liste_hash.append("]");
             Log.i(TAG, liste_hash.toString());
-            values.put("hash", liste_hash.toString());
+        }else {
+            liste_hash.append("[");
+            liste_hash.append("]");
         }
+        values.put("hash", liste_hash.toString());
 
-        if (visibilities != null && visibilities.length > 0) {
-            ArrayList<Integer> tampon = new ArrayList<>();
-            for (int i = 0; i < visibilities.length; i++)
-                if (visibilities[i] != 0)
-                    tampon.add(visibilities[i]);
+//        if (visibilities != null && visibilities.length > 0) {
+//            ArrayList<Integer> tampon = new ArrayList<>();
+//            for (int i = 0; i < visibilities.length; i++)
+//                if (visibilities[i] != 0)
+//                    tampon.add(visibilities[i]);
+//
+//            StringBuilder liste_v = new StringBuilder();
+//            liste_v.append("[");
+//            for (int i = 0; i < tampon.size(); i++) {
+//                if (i < tampon.size() - 1)
+//                    liste_v.append("\"" + tampon.get(i) + "\",");
+//                else
+//                    liste_v.append("\"" + tampon.get(i) + "\"");
+//            }
+//            liste_v.append("]");
+//            Log.i(TAG, liste_v.toString());
+//            values.put("visibilite", visibility);
+//        }
 
-            StringBuilder liste_v = new StringBuilder();
-            liste_v.append("[");
-            for (int i = 0; i < tampon.size(); i++) {
-                if (i < tampon.size() - 1)
-                    liste_v.append("\"" + tampon.get(i) + "\",");
-                else
-                    liste_v.append("\"" + tampon.get(i) + "\"");
-            }
-            liste_v.append("]");
-            Log.i(TAG, liste_v.toString());
-            values.put("visibilite", liste_v.toString());
-        }
-
+        values.put("visibilite", visibility);
+        values.put("user_id", user_id);
         values.put("apikey", API_KEY);
         if (offset != 0)
             values.put("offset", offset);
@@ -2263,7 +2271,7 @@ public class DBServer {
                         spot.setRespot((int) json2.get("respot"));
                         spot.setVisibilite_id((int) json2.get("visibilite_id"));
                         spot.setGeohash((String) json2.get("hash"));
-                        spot.setId((int) json2.get("idspot"));
+                        spot.setId((int) json2.get("id"));
                         spot.setLongitude(json2.getDouble("gpslong") + "");
                         spot.setLatitude(json2.getDouble("gpslat") + "");
                         spot.setPhotokey((String) json2.get("photo"));

@@ -30,6 +30,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
@@ -44,6 +45,7 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
     HashMap<String, Bitmap> mapimages;
     private AdapterCallback mAdapterCallback;
     private Context context;
+    private Set<String> spots_name;
 
     SessionManager session;
     private HashMap<String, String> profile;
@@ -67,6 +69,7 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
         profile = new HashMap<>();
         profile = session.getUserDetails();
         server = new DBServer(context);
+        spots_name = session.get_list_spot_name();
     }
 
     @Override
@@ -135,10 +138,18 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
             }
         });
 
-        if (type == 1)
-            if (spot.getRespot() == 1){
+        if (type == 1) {
+            if (spot.getRespot() == 1) {
                 like.setBackground(context.getResources().getDrawable(R.drawable.liked));
-            }
+            } else
+                like.setBackground(context.getResources().getDrawable(R.drawable.like));
+        }else {
+            if (is_inside(spots_name, spot.getPhotokey())){
+                like.setBackground(context.getResources().getDrawable(R.drawable.liked));
+            }else
+                like.setBackground(context.getResources().getDrawable(R.drawable.like));
+
+        }
 
         like.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,7 +159,7 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
                         Toast.makeText(context, "you can not respot your respot", Toast.LENGTH_SHORT).show();
                     }
                 }
-                else {
+                else if (!is_inside(spots_name, getItem(position).getPhotokey())) {
                     like.setBackground(context.getResources().getDrawable(R.drawable.liked));
 
                     AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
@@ -245,7 +256,8 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
                                 Toast.makeText(context, "You cannot respot your own spot!", Toast.LENGTH_SHORT).show();
                         }
                     });
-                }
+                }else
+                    Toast.makeText(context, "You can not respot your respot", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -266,17 +278,15 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
 
             //photo du spot
             File file = new File(DBServer.DOSSIER_IMAGE + File.separator + spot.getPhotokey() + ".jpg");
-            final BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 8;
 
             if (file.exists()) {
-                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
-
                 // Get height or width of screen at runtime
                 Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
                 Point size = new Point();
                 display.getSize(size);
                 int width = size.x;
+
+                Bitmap bitmap = decodeSampledBitmapFromFile(file, width, width);
 
                 //reduce the photo dimension keeping the ratio so that it'll fit in the imageview
                 int nh = (int) ( bitmap.getHeight() * (Double.valueOf(width) / bitmap.getWidth()) );
@@ -297,7 +307,7 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
             //photo de profile du spoteur
             final File file1 = new File(DBServer.DOSSIER_IMAGE + File.separator + spot.getPhotouser() + ".jpg");
             if (file1.exists()) {
-                Bitmap bitmap = BitmapFactory.decodeFile(file1.getAbsolutePath(), options);
+                Bitmap bitmap = decodeSampledBitmapFromFile(file1, 320, 320);
                 // marker.showInfoWindow();
                 photoprofile.setImageBitmap(bitmap);
             }
@@ -318,6 +328,53 @@ public class SpotAdapter extends ArrayAdapter<Spot> {
             return 11;
         else
             return 1;
+    }
+
+    public boolean is_inside(Set<String> set, String s){
+        for (String string : set) {
+            if (string.equals(s)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) >= reqHeight
+                    && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
+    }
+
+    public static Bitmap decodeSampledBitmapFromFile(File file, int reqWidth, int reqHeight) {
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFile(file.getAbsolutePath(), options);
     }
 
     public interface AdapterCallback{

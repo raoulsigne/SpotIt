@@ -192,9 +192,6 @@ public class DetailSpot extends Fragment {
             }
         });
 
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 8;
-
 //        respot.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -309,14 +306,14 @@ public class DetailSpot extends Fragment {
             }
 
             final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + spot.getPhotokey() + ".jpg");
-
-            if (!file.exists())
-                chargement_image(spot.getPhotokey());
-            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+            Log.i("test", file.getAbsolutePath());
             Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
             Point size = new Point();
             display.getSize(size);
             int width = size.x;
+
+            Bitmap bitmap = SpotAdapter.decodeSampledBitmapFromFile(file, width, width);
+
             //reduce the photo dimension keeping the ratio so that it'll fit in the imageview
             Log.e("spot", "2 " +  bitmap.getWidth() );
             int nh = (int) (bitmap.getHeight() * (Double.valueOf(width) / bitmap.getWidth()));
@@ -342,7 +339,7 @@ public class DetailSpot extends Fragment {
 
                 if (file.exists()) {
                     // marker.showInfoWindow();
-                    imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath(), options));
+                    imgprofile.setImageBitmap(SpotAdapter.decodeSampledBitmapFromFile(file, 320, 320));
                     Log.i("file", "file exists");
                 } else {
                     if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
@@ -373,7 +370,7 @@ public class DetailSpot extends Fragment {
                                     barProgressDialog.setProgress(rapport);
                                     if (rapport == 100) {
                                         barProgressDialog.dismiss();
-                                        imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath(), options));
+                                        imgprofile.setImageBitmap(SpotAdapter.decodeSampledBitmapFromFile(file, 320, 320));
                                     }
                                 }else
                                     barProgressDialog.dismiss();
@@ -407,7 +404,7 @@ public class DetailSpot extends Fragment {
 
             if (file.exists()) {
                 // marker.showInfoWindow();
-                imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath(), options));
+                imgprofile.setImageBitmap(SpotAdapter.decodeSampledBitmapFromFile(file, 320, 320));
                 Log.i("file", "file exists");
             } else {
                 if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
@@ -432,7 +429,7 @@ public class DetailSpot extends Fragment {
                             if (bytesTotal != 0) {
                                 rapport /= bytesTotal;
                                 if (rapport == 100) {
-                                    imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath(), options));
+                                    imgprofile.setImageBitmap(SpotAdapter.decodeSampledBitmapFromFile(file, 320, 320));
                                     dialog.dismiss();
                                 }
                             }else

@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -40,6 +41,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.bd.Utilisateur;
@@ -130,8 +132,6 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_liste_spots_friend, container, false);
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 8;
 
         imgprofile = (ImageView) view.findViewById(R.id.item_profile);
         txtpseudo = (TextView)view.findViewById(R.id.txtPseudo_friend);
@@ -150,7 +150,7 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
                 final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + friend.getPhoto() + ".jpg");
 
                 if (file.exists()) {
-                    imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath(), options));
+                    imgprofile.setImageBitmap(SpotAdapter.decodeSampledBitmapFromFile(file, 320, 320));
                     Log.i("file", "file exists");
                 } else {
                     if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
@@ -181,7 +181,7 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
                                     barProgressDialog.setProgress(rapport);
                                     if (rapport == 100) {
                                         barProgressDialog.dismiss();
-                                        imgprofile.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath(), options));
+                                        imgprofile.setImageBitmap(SpotAdapter.decodeSampledBitmapFromFile(file, 320, 320));
                                     }
                                 }catch (Exception e){
                                     Log.e("erreur", e.getMessage());
@@ -212,25 +212,7 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
             }
         }
 
-//        // Creating a button - Load More
-//        Button btnLoadMore = new Button(getActivity());
-//        btnLoadMore.setText("Load More");
-//        btnLoadMore.setBackground(getResources().getDrawable(R.drawable.button_blue));
-//        // Adding button to listview at footer
-//        listspots.addFooterView(btnLoadMore);
-
         loadSpots();
-
-        /**
-         * Listening to Load More button click event
-         * */
-//        btnLoadMore.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View arg0) {
-//                // Starting a new async task
-//                loadSpots();
-//            }
-//        });
 
         /**
          * Handle when reaching the end of the list
@@ -495,6 +477,7 @@ class SpotFriendAdapter extends ArrayAdapter<Spot> {
     private DBServer server;
     private int resultat, v_id;
     private TextView txtme, txtfriend, txtpublic;
+    private Set<String> spots_name;
 
     public SpotFriendAdapter(Context context, ArrayList<Spot> spots, Fragment fg) {
         super(context, 0, spots);
@@ -510,6 +493,7 @@ class SpotFriendAdapter extends ArrayAdapter<Spot> {
         profile = new HashMap<>();
         profile = session.getUserDetails();
         server = new DBServer(context);
+        spots_name = session.get_list_spot_name();
     }
 
     @Override
@@ -564,14 +548,17 @@ class SpotFriendAdapter extends ArrayAdapter<Spot> {
             }
         });
 
-        if (spot.getRespot() == 1){
+        Log.i("sss", spots_name.toString());
+        Log.i("sss", getItem(position).getPhotokey().toString());
+        if (is_inside(spots_name, spot.getPhotokey())){
             like.setBackground(context.getResources().getDrawable(R.drawable.liked));
-        }
+        }else
+            like.setBackground(context.getResources().getDrawable(R.drawable.like));
 
         like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (spot.getRespot() != 1) {
+                if (!is_inside(spots_name, getItem(position).getPhotokey())) {
                     like.setBackground(context.getResources().getDrawable(R.drawable.liked));
 
                     AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
@@ -690,13 +677,13 @@ class SpotFriendAdapter extends ArrayAdapter<Spot> {
             //photo du spot
             File file = new File(DBServer.DOSSIER_IMAGE + File.separator + spot.getPhotokey() + ".jpg");
             if (file.exists()) {
-                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
-
                 // Get height or width of screen at runtime
                 Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
                 Point size = new Point();
                 display.getSize(size);
                 int width = size.x;
+
+                Bitmap bitmap = SpotAdapter.decodeSampledBitmapFromFile(file, width, width);
 
                 //reduce the photo dimension keeping the ratio so that it'll fit in the imageview
                 int nh = (int) ( bitmap.getHeight() * (Double.valueOf(width) / bitmap.getWidth()) );
@@ -732,6 +719,15 @@ class SpotFriendAdapter extends ArrayAdapter<Spot> {
             return 11;
         else
             return 1;
+    }
+
+    public boolean is_inside(Set<String> set, String s){
+        for (String string : set) {
+            if (string.equals(s)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public interface AdapterCallback{

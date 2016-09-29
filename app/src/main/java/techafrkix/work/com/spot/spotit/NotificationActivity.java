@@ -267,6 +267,8 @@ public class NotificationActivity extends Fragment {
         public View getView(final int position, View view, ViewGroup parent) {
             LayoutInflater inflater = context.getLayoutInflater();
             View rowView= inflater.inflate(R.layout.notification_item, null, true);
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 8;
 
             final ImageView imgProfile = (ImageView) rowView.findViewById(R.id.item_profile);
             final ImageView icon = (ImageView) rowView.findViewById(R.id.icon_notif);

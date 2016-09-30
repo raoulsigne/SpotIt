@@ -33,6 +33,21 @@
                 android:textColorHint="@color/blanc"
                 android:textSize="12sp" />
 
+            <TextView
+                android:id="@+id/txtcancel"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="5dp"
+                android:background="@color/myblue"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:textColor="@color/blanc"
+                android:textSize="12dp"
+                android:text="Cancel"
+                android:visibility="gone"/>
+
         </RelativeLayout>
 
         <LinearLayout
@@ -52,9 +67,9 @@
 
                 <com.mikhaellopez.circularimageview.CircularImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/profile_image"
-                    android:layout_width="90dp"
-                    android:layout_height="90dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="0dp"
                     android:scaleType="centerCrop"
                     app:civ_border_color="#FF000000"
                     app:civ_border_width="0dp" />
@@ -63,7 +78,7 @@
                     android:id="@+id/txtPseudo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="0dp"
                     android:text="Stephen"
                     android:textAlignment="center"
                     android:textColor="@color/noir"
@@ -97,8 +112,7 @@
                             android:text="28"
                             android:textAlignment="center"
                             android:textColor="@color/noir"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:textSize="14sp" />
 
                         <TextView
                             android:layout_width="match_parent"
@@ -108,7 +122,7 @@
                             android:text="spots"
                             android:textAlignment="center"
                             android:textColor="@color/titre_menu"
-                            android:textSize="13sp" />
+                            android:textSize="11sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -125,8 +139,7 @@
                             android:text="28"
                             android:textAlignment="center"
                             android:textColor="@color/noir"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:textSize="14sp" />
 
                         <TextView
                             android:layout_width="match_parent"
@@ -136,7 +149,7 @@
                             android:text="respots"
                             android:textAlignment="center"
                             android:textColor="@color/titre_menu"
-                            android:textSize="13sp" />
+                            android:textSize="11sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -153,8 +166,7 @@
                             android:text="28"
                             android:textAlignment="center"
                             android:textColor="@color/noir"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:textSize="14sp" />
 
                         <TextView
                             android:layout_width="match_parent"
@@ -164,7 +176,7 @@
                             android:text="friends"
                             android:textAlignment="center"
                             android:textColor="@color/titre_menu"
-                            android:textSize="13sp" />
+                            android:textSize="11sp" />
                     </LinearLayout>
 
                 </LinearLayout>

@@ -482,7 +482,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, androi
             int count = hashs.length;
             long totalSize = 0;
             for (int i = 0; i < count; i++) {
-                spots = server.find_spots(hashs[i]);
+                spots = server.find_spots(Integer.valueOf(profile.get(SessionManager.KEY_ID)), hashs[i]);
 
                 // Escape early if cancel() is called
                 if (isCancelled()) break;

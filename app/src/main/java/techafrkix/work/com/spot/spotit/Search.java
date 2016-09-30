@@ -1,6 +1,7 @@
 package techafrkix.work.com.spot.spotit;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -178,104 +179,65 @@ public class Search extends Fragment {
             }
         });
 
-//        vMoi.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (visibilite1.equals(V_MOI)){
-//                    visibilite1 = "";
-//                    vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi_));
-//                    txtMoi.setTextColor(getResources().getColor(R.color.titre_menu));
-//                }else {
-//                    visibilite1 = V_MOI;
-//                    vMoi.setBackgroundDrawable(getResources().getDrawable(R.drawable.moi_selected));
-//                    txtMoi.setTextColor(getResources().getColor(R.color.myblue));
-//                }
-//            }
-//        });
-//        vFriend.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (visibilite1.equals(V_FRIEND)){
-//                    visibilite1 = "";
-//                    vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friendsaccount));
-//                    txtAmis.setTextColor(getResources().getColor(R.color.titre_menu));
-//                }else {
-//                    visibilite1 = V_FRIEND;
-//                    vFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.friends_clicked));
-//                    txtAmis.setTextColor(getResources().getColor(R.color.myblue));
-//                }
-//            }
-//        });
-//        vPublic.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (visibilite3.equals(V_PUBLIC)){
-//                    visibilite3 = "";
-//                    vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.publics));
-//                    txtPublic.setTextColor(getResources().getColor(R.color.titre_menu));
-//                }else {
-//                    visibilite3 = V_PUBLIC;
-//                    vPublic.setBackgroundDrawable(getResources().getDrawable(R.drawable.public_clicked));
-//                    txtPublic.setTextColor(getResources().getColor(R.color.myblue));
-//                }
-//            }
-//        });
-
         textView.addTextChangedListener(tw);
 
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                Thread t = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (TextUtils.isEmpty(textView.getText().toString()))
-                            coordones = null;
-                        else
-                            coordones = server.get_coordinates(textView.getText().toString());
-                    }
-                });
-                t.start(); // spawn thread
-                try {
-                    t.join();
-                    if (coordones != null) {
-                        geoHash.setLatitude(coordones.latitude);
-                        geoHash.setLongitude(coordones.longitude);
-                        hashs = geoHash.neighbours_1(geoHash.encoder());
-                    }else
-                        hashs = null;
-                    if (TextUtils.isEmpty(edttag.getText().toString()))
-                        tags = null;
-                    else
-                        tags = edttag.getText().toString().split(";");
-                    final int visibility = getvisibiliteId(visibilite);
+                if (TextUtils.isEmpty(textView.getText().toString()) &&  TextUtils.isEmpty(edttag.getText().toString())){
+                    Toast.makeText(getActivity(), "renseignez le tag et/ou le lieu", Toast.LENGTH_SHORT).show();
+                }else {
+                    final ProgressDialog dialog = ProgressDialog.show(getActivity(), "",
+                            "Loading. Please wait...", true);
+                    dialog.show();
 
-//                        final int[] visibilities = new int[3];
-//                        int n = 0;
-//                        if (!visibilite1.isEmpty()) visibilities[n++] = getvisibiliteId(visibilite1);
-//                        if (!visibilite2.isEmpty()) visibilities[n++] = getvisibiliteId(visibilite2);
-//                        if (!visibilite3.isEmpty()) visibilities[n++] = getvisibiliteId(visibilite3);
-
-
-                    Thread t2 = new Thread(new Runnable() {
+                    Thread t = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            spots = server.find_spot_tag_hash_visibility(Integer.valueOf(profile.get(SessionManager.KEY_ID)), tags, hashs, visibility, 0, 0);
+                            if (TextUtils.isEmpty(textView.getText().toString()))
+                                coordones = null;
+                            else
+                                coordones = server.get_coordinates(textView.getText().toString());
                         }
                     });
-                    t2.start(); // spawn thread
+                    t.start(); // spawn thread
                     try {
-                        t2.join();
-                        if (spots != null) {
-                            mListener.onLoadSpot(spots);
+                        t.join();
+                        if (coordones != null) {
+                            geoHash.setLatitude(coordones.latitude);
+                            geoHash.setLongitude(coordones.longitude);
+                            hashs = geoHash.neighbours_1(geoHash.encoder());
+                        } else
+                            hashs = null;
+                        if (TextUtils.isEmpty(edttag.getText().toString()))
+                            tags = null;
+                        else
+                            tags = edttag.getText().toString().split(";");
+                        final int visibility = getvisibiliteId(visibilite);
+
+                        Thread t2 = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                spots = server.find_spot_tag_hash_visibility(Integer.valueOf(profile.get(SessionManager.KEY_ID)), tags, hashs, visibility, 0, 0);
+                            }
+                        });
+                        t2.start(); // spawn thread
+                        try {
+                            t2.join();
+                            if (spots != null) {
+                                mListener.onLoadSpot(spots);
+                            }
+                            dialog.dismiss();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                            dialog.dismiss();
                         }
+
                     } catch (InterruptedException e) {
                         e.printStackTrace();
+                        dialog.dismiss();
                     }
-
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
             }
         });

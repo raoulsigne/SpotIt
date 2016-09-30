@@ -202,6 +202,7 @@ public class Account_Friend extends Fragment implements OnMapReadyCallback, Goog
                         fgRespot = new ListRespots();
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("spots", respots);
+                        bundle.putInt("type", 0);
                         fgRespot.setArguments(bundle);
                         getChildFragmentManager().beginTransaction()
                                 .replace(R.id.friendmap, fgRespot, "RESPOT")

@@ -51,7 +51,7 @@
             android:layout_marginTop="0dp"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/button_white"
-            android:text="Login"
+            android:text="Log in"
             android:textAllCaps="false"
             android:textStyle="bold"
             android:textColor="@color/mainblue"

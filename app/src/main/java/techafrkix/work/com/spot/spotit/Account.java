@@ -260,6 +260,7 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
                         fgRespot = new ListRespots();
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("spots", respots);
+                        bundle.putInt("type", 1);
                         fgRespot.setArguments(bundle);
                         getChildFragmentManager().beginTransaction()
                                 .replace(R.id.mymap, fgRespot, "RESPOT")
@@ -377,7 +378,6 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
                 if (before == 0 && count == 1 && s.charAt(start) == '\n') {
 
                     searchfriend.getText().replace(start, start + 1, ""); //remove the <enter>
-                    Toast.makeText(getActivity(), searchfriend.getText(), Toast.LENGTH_SHORT).show();
 
                     InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
@@ -399,14 +399,14 @@ public class Account extends Fragment implements OnMapReadyCallback, LocationLis
                             t.join();
                             if (users != null) {
                                 setAciveTab(0);
-                                getChildFragmentManager().beginTransaction().remove(fgAddfrient).commit();
+                                getActivity().getSupportFragmentManager().beginTransaction().remove(fgAddfrient).commit();
                                 fgAddfrient = new Add_Friend();
                                 Bundle args = new Bundle();
                                 args.putInt("type", 1);
                                 args.putSerializable("users", users);
                                 args.putString("cle", cle);
                                 fgAddfrient.setArguments(args);
-                                getChildFragmentManager().beginTransaction().replace(R.id.mymap, fgAddfrient, "FRIEND").commit();
+                                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.container, fgAddfrient, "FRIEND").commit();
                             }
                         } catch (InterruptedException e) {
                             e.printStackTrace();

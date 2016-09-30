@@ -10,7 +10,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -25,6 +27,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,8 +68,9 @@ public class Add_Friend extends Fragment implements FriendCallback{
     private String mParam2;
 
     private ListView lvfriends;
-//    private EditText edtFindspot;
-//    private Button btnLaunch;
+    private EditText searchfriend;
+    private TextView txtcancel;
+    private RelativeLayout layout;
 
     private DBServer server;
     private ArrayList<String> friends;
@@ -77,6 +81,7 @@ public class Add_Friend extends Fragment implements FriendCallback{
     private int response, count;
     private Utilisateur friend;
     private CustomList adapter;
+    private Account fgAccount;
 
     private OnFragmentInteractionListener mListener;
 
@@ -125,6 +130,7 @@ public class Add_Friend extends Fragment implements FriendCallback{
         server = new DBServer(getActivity());
         profile = session.getUserDetails();
         friends = new ArrayList<>();
+        fgAccount = new Account();
 
         Thread t1 = new Thread(new Runnable() {
             @Override
@@ -157,13 +163,82 @@ public class Add_Friend extends Fragment implements FriendCallback{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_friend, container, false);
-//        edtFindspot = (EditText) view.findViewById(R.id.edtFindspot);
+        searchfriend = (EditText) view.findViewById(R.id.edtsearchfriend);
+        txtcancel = (TextView) view.findViewById(R.id.txtcancel);
         lvfriends = (ListView) view.findViewById(R.id.friends);
-//        btnLaunch = (Button)view.findViewById(R.id.btnLaunch);
+        layout = (RelativeLayout) view.findViewById(R.id.bloc_search);
 
         registerForContextMenu(lvfriends);
 
+        txtcancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
+
+                getActivity().getSupportFragmentManager().beginTransaction().remove(fgAccount).commit();
+                fgAccount = new Account();
+                Bundle args = new Bundle();
+                args.putInt("menuactif", 2);
+                fgAccount.setArguments(args);
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.container, fgAccount, "FRIEND").commit();
+            }
+        });
+
+        searchfriend.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                if (before == 0 && count == 1 && s.charAt(start) == '\n') {
+
+                    searchfriend.getText().replace(start, start + 1, ""); //remove the <enter>
+
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
+
+                    // your action here
+                    final String cle = searchfriend.getText().toString();
+                    searchfriend.setText("");
+
+                    if (!TextUtils.isEmpty(cle)) {
+                        Thread t = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                users = server.getUsers_by_pseudo(cle);
+                            }
+                        });
+
+                        t.start(); // spawn thread
+                        try {
+                            t.join();
+                            if (users != null) {
+                                String[] items = new String[users.size()];
+                                for (int i = 0; i < users.size(); i++) {
+                                    items[i] = users.get(i).getPseudo();
+                                }
+                                Log.i("dialog friend 1", friends.toString());
+                                CustomList_Search adapter = new CustomList_Search(getActivity(), items, cle, Add_Friend.this);
+                                lvfriends.invalidate();
+                                lvfriends.setAdapter(adapter);
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    searchfriend.setText("");
+                }
+
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
         if (type == 0) {
+            layout.setVisibility(View.GONE);
             Thread t = new Thread(new Runnable() {
                 @Override
                 public void run() {

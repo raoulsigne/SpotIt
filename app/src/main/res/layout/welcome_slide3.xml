@@ -39,7 +39,7 @@
         <ImageView
             android:layout_width="@dimen/img_width_height"
             android:layout_height="@dimen/img_width_height"
-            android:src="@drawable/ic_discount" />
+            android:src="@drawable/wth3" />
 
         <TextView
             android:id="@+id/textview3"

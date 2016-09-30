@@ -85,7 +85,7 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
 
     ProgressDialog pDialog;
     private ArrayList<Spot> tampon;
-    private int offset;
+    private int offset, count, max;
     private DBServer server;
 
     private int preLast;
@@ -156,13 +156,9 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
                     if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
                         Log.i("file", "file not exists");
                         AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
-                        final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
-                        barProgressDialog.setTitle("Download from server ...");
-                        barProgressDialog.setMessage("In progress ...");
-                        barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
-                        barProgressDialog.setProgress(0);
-                        barProgressDialog.setMax(100);
-                        barProgressDialog.show();
+                        final ProgressDialog dialog = ProgressDialog.show(getActivity(), "",
+                                "Loading. Please wait...", true);
+                        dialog.show();
                         int transfertId = aws_tools.download(file, friend.getPhoto());
                         TransferUtility transferUtility = aws_tools.getTransferUtility();
                         TransferObserver observer = transferUtility.getTransferById(transfertId);
@@ -178,10 +174,9 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
                                 try {
                                     int rapport = (int) (bytesCurrent * 100);
                                     rapport /= bytesTotal;
-                                    barProgressDialog.setProgress(rapport);
                                     if (rapport == 100) {
-                                        barProgressDialog.dismiss();
                                         imgprofile.setImageBitmap(SpotAdapter.decodeSampledBitmapFromFile(file, 320, 320));
+                                        dialog.dismiss();
                                     }
                                 }catch (Exception e){
                                     Log.e("erreur", e.getMessage());
@@ -191,7 +186,7 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
                             @Override
                             public void onError(int id, Exception ex) {
                                 // do something
-                                barProgressDialog.dismiss();
+                                dialog.dismiss();
                             }
 
                         });
@@ -312,13 +307,11 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
                 folder.mkdirs();
 
             if (spots != null & spots.size() > 0) {
-                final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
-                barProgressDialog.setTitle("Telechargement des spots ...");
-                barProgressDialog.setMessage("Opération en progression ...");
-                barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
-                barProgressDialog.setProgress(0);
-                barProgressDialog.setMax(spots.size());
-                barProgressDialog.show();
+                final ProgressDialog dialog = ProgressDialog.show(getActivity(), "",
+                        "Loading. Please wait...", true);
+                dialog.show();
+
+                count = 0;
 
                 // get listview current position - used to maintain scroll position
                 final int currentPosition = offset - PORTION_TELECHARGEABLE;
@@ -327,9 +320,9 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
                     final File file = new File(DBServer.DOSSIER_IMAGE+ File.separator  + s.getPhotokey() + ".jpg");
                     if (file.exists()) {
                         Log.i("file", "file exists " + DBServer.DOSSIER_IMAGE + s.getPhotokey() + ".jpg");
-                        barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
-                        if (barProgressDialog.getProgress() == spots.size()) {
-                            barProgressDialog.dismiss();
+                        count++;
+                        if (count == spots.size()) {
+                            dialog.dismiss();
                             // Create the adapter to convert the array to views
                             adapter = new SpotFriendAdapter(getActivity(), spots, this);
                             // Attach the adapter to a ListView
@@ -357,13 +350,13 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
                                 if (bytesTotal != 0) {
                                     rapport /= bytesTotal;
                                     if (rapport == 100) {
-                                        barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
+                                        count++;
                                     }
                                 }else{
-                                    barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
+                                    count++;
                                 }
-                                if (barProgressDialog.getProgress() == spots.size()) {
-                                    barProgressDialog.dismiss();
+                                if (count == spots.size()) {
+
 //                                    // get listview current position - used to maintain scroll position
 //                                    int currentPosition = listspots.getFirstVisiblePosition();
 
@@ -374,6 +367,7 @@ public class ListeSpots_Friend extends Fragment implements SpotFriendAdapter.Ada
 
                                     // Setting new scroll position
                                     listspots.setSelectionFromTop(currentPosition, 0);
+                                    dialog.dismiss();
                                 }
                             }
 

@@ -44,7 +44,7 @@
             android:layout_width="@dimen/img_width_height"
             android:layout_height="@dimen/img_width_height"
             android:layout_marginTop="20dp"
-            android:src="@drawable/ic_food" />
+            android:src="@drawable/wth1" />
 
         <TextView
             android:id="@+id/textview3"

@@ -345,13 +345,9 @@ public class DetailSpot extends Fragment {
                     if (MapsActivity.isNetworkAvailable(MainActivity.getAppContext())) {
                         Log.i("file", "file not exists");
                         AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
-                        final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
-                        barProgressDialog.setTitle("Telechargement du spot ...");
-                        barProgressDialog.setMessage("Opération en progression ...");
-                        barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
-                        barProgressDialog.setProgress(0);
-                        barProgressDialog.setMax(100);
-                        barProgressDialog.show();
+                        final ProgressDialog dialog = ProgressDialog.show(getActivity(), "",
+                                "Loading. Please wait...", true);
+                        dialog.show();
                         int transfertId = aws_tools.download(file, friend.getPhoto());
                         TransferUtility transferUtility = aws_tools.getTransferUtility();
                         TransferObserver observer = transferUtility.getTransferById(transfertId);
@@ -367,19 +363,18 @@ public class DetailSpot extends Fragment {
                                 int rapport = (int) (bytesCurrent * 100);
                                 if (bytesTotal != 0) {
                                     rapport /= bytesTotal;
-                                    barProgressDialog.setProgress(rapport);
                                     if (rapport == 100) {
-                                        barProgressDialog.dismiss();
+                                        dialog.dismiss();
                                         imgprofile.setImageBitmap(SpotAdapter.decodeSampledBitmapFromFile(file, 320, 320));
                                     }
                                 }else
-                                    barProgressDialog.dismiss();
+                                    dialog.dismiss();
                             }
 
                             @Override
                             public void onError(int id, Exception ex) {
                                 // do something
-                                barProgressDialog.dismiss();
+                                dialog.dismiss();
                             }
 
                         });
@@ -531,8 +526,9 @@ public class DetailSpot extends Fragment {
     }
 
     private void loadComment() {
-        final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
-        barProgressDialog.setProgressStyle(barProgressDialog.STYLE_SPINNER);
+        final ProgressDialog dialog = ProgressDialog.show(getActivity(), "",
+                "Loading. Please wait...", true);
+        dialog.show();
 
         commentaires = new ArrayList<>();
         Thread t = new Thread(new Runnable() {
@@ -549,16 +545,17 @@ public class DetailSpot extends Fragment {
                 Log.i("comments", commentaires.toString());
                 adapter = new CommentAdapter(getActivity(), commentaires);
                 listView.setAdapter(adapter);
+                dialog.dismiss();
             } else {
                 // Setting new scroll position
                 listView.setSelectionFromTop(0, 0);
+                dialog.dismiss();
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
+            dialog.dismiss();
         }
 
-        // closing progress dialog
-        barProgressDialog.dismiss();
     }
 
     public void letsgo() {

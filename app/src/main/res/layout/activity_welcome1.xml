@@ -47,15 +47,14 @@
     <Button
         android:id="@+id/btn_start"
         android:layout_width="300dp"
-        android:layout_height="35dp"
+        android:layout_height="30dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="10dp"
-        android:background="@drawable/button_start"
+        android:background="@drawable/button_white"
         android:text="@string/start"
         android:textAllCaps="false"
-        android:textStyle="bold"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
+        android:textColor="@color/myblue"
+        android:textSize="14sp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"/>
 

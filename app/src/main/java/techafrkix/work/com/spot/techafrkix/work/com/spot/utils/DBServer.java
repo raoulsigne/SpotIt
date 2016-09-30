@@ -1628,7 +1628,7 @@ public class DBServer {
      * @param hash
      * @return
      */
-    public ArrayList<Spot> find_spots(String[] hash) {
+    public ArrayList<Spot> find_spots(int user_id, String[] hash) {
         ArrayList<Spot> spots = new ArrayList<>();
         Spot spot = new Spot();
 
@@ -1646,6 +1646,7 @@ public class DBServer {
         ContentValues values = new ContentValues();
         values.put("apikey", API_KEY);
         values.put("hash", liste_hash.toString());
+        values.put("user_id", user_id);
 
         try {
             url = new URL(BASE_URL + URL_FIND_ALL_SPOT + "?" + getQuery(values));

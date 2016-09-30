@@ -2,14 +2,18 @@ package techafrkix.work.com.spot.spotit;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
@@ -18,10 +22,14 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 import techafrkix.work.com.spot.bd.Spot;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.AWS_Tools;
 import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
+import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.SessionManager;
 
 
 /**
@@ -32,7 +40,7 @@ import techafrkix.work.com.spot.techafrkix.work.com.spot.utils.DBServer;
  * Use the {@link ListRespots#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ListRespots extends Fragment implements SpotAdapter.AdapterCallback{
+public class ListRespots extends Fragment implements SpotAdapter.AdapterCallback {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -50,6 +58,11 @@ public class ListRespots extends Fragment implements SpotAdapter.AdapterCallback
     //    private HashMap<String, Bitmap> spotsimages;
     private SpotAdapter adapter;
     private ListView listView;
+
+    private SessionManager session;
+    private HashMap<String, String> profile;
+    private DBServer server;
+    private int retour, type;
 
     public ListRespots() {
         // Required empty public constructor
@@ -78,10 +91,18 @@ public class ListRespots extends Fragment implements SpotAdapter.AdapterCallback
         super.onCreate(savedInstanceState);
         spots = new ArrayList<>();
 
+        // Session class instance
+        session = new SessionManager(getActivity());
+        profile = new HashMap<>();
+        server = new DBServer(getActivity());
+        profile = session.getUserDetails();
+        type = 1;
+
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
             spots = (ArrayList<Spot>) getArguments().getSerializable("spots");
+            type = getArguments().getInt("type");
         }
     }
 
@@ -97,7 +118,7 @@ public class ListRespots extends Fragment implements SpotAdapter.AdapterCallback
         return view;
     }
 
-    private void loadspots(){
+    private void loadspots() {
         final File folder = new File(DBServer.DOSSIER_IMAGE);
         if (!folder.exists())
             folder.mkdirs();
@@ -117,7 +138,7 @@ public class ListRespots extends Fragment implements SpotAdapter.AdapterCallback
                 count++;
                 if (count == spots.size()) {
                     // Create the adapter to convert the array to views
-                    adapter = new SpotAdapter(getActivity(), spots, ListRespots.this, 1);
+                    adapter = new SpotAdapter(getActivity(), spots, ListRespots.this, type);
                     // Attach the adapter to a ListView
                     listView.setAdapter(adapter);
                     dialog.dismiss();
@@ -147,7 +168,7 @@ public class ListRespots extends Fragment implements SpotAdapter.AdapterCallback
                         }
                         if (count == spots.size()) {
                             // Create the adapter to convert the array to views
-                            adapter = new SpotAdapter(getActivity(), spots, ListRespots.this, 1);
+                            adapter = new SpotAdapter(getActivity(), spots, ListRespots.this, type);
                             // Attach the adapter to a ListView
                             listView.setAdapter(adapter);
                             dialog.dismiss();
@@ -202,25 +223,116 @@ public class ListRespots extends Fragment implements SpotAdapter.AdapterCallback
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+        void onDetailSpot(ArrayList<Spot> spots, Spot spot);
+        void onDetailSpot_user(ArrayList<Spot> spots, Spot spot);
     }
 
     @Override
     public void detail(int position) {
-
+        if (type == 1) {
+            mListener.onDetailSpot_user(spots, spots.get(position));
+        } else {
+            mListener.onDetailSpot(spots, spots.get(position));
+        }
     }
 
     @Override
     public void share(int position) {
+        Uri uriToImage;
+        uriToImage = ListeSpots.getImageContentUri(getActivity(), new File(DBServer.DOSSIER_IMAGE + File.separator + spots.get(position).getPhotokey() + ".jpg"));
 
+        List<Intent> targetedShareIntents = new ArrayList<Intent>();
+
+        Intent facebookIntent = getShareIntent("facebook", "spot it", uriToImage);
+        if (facebookIntent != null)
+            targetedShareIntents.add(facebookIntent);
+
+        Intent twitterIntent = getShareIntent("twitter", "spot it", uriToImage);
+        if (twitterIntent != null)
+            targetedShareIntents.add(twitterIntent);
+
+        Intent instagramIntent = getShareIntent("instagram", "spot it", uriToImage);
+        if (instagramIntent != null)
+            targetedShareIntents.add(instagramIntent);
+
+        Intent whatsappIntent = getShareIntent("whatsapp", "spot it", uriToImage);
+        if (instagramIntent != null)
+            targetedShareIntents.add(whatsappIntent);
+
+        Intent gmailIntent = getShareIntent("gmail", "spot it", uriToImage);
+        if (instagramIntent != null)
+            targetedShareIntents.add(gmailIntent);
+
+        Intent chooser = Intent.createChooser(targetedShareIntents.remove(0), getResources().getText(R.string.send_to));
+
+        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
+
+        startActivity(chooser);
     }
 
     @Override
     public void letsgo(int position) {
+        String uri = "";
+        uri = String.format(Locale.ENGLISH, "google.navigation:q=%f,%f&mode=d,w,b", Double.valueOf(spots.get(position).getLatitude()),
+                Double.valueOf(spots.get(position).getLongitude()));
 
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+        getActivity().startActivity(intent);
     }
 
     @Override
-    public void delete(int position) {
+    public void delete(final int position) {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                retour = server.delete_spot(spots.get(position).getId());
 
+            }
+        });
+
+        t.start(); // spawn thread
+        try {
+            t.join();
+            if (retour == 1) {
+                Toast.makeText(getActivity(), "Spot deleted", Toast.LENGTH_SHORT).show();
+                if (spots.get(position).getRespot() == 1)
+                    session.decrement_nbrespot();
+                else
+                    session.decrement_nbspot();
+                adapter.remove(spots.get(position));
+
+            } else {
+                Toast.makeText(getActivity(), "unable to delete spot", Toast.LENGTH_SHORT).show();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Intent getShareIntent(String type, String subject, Uri uri) {
+        boolean found = false;
+        Intent share = new Intent(android.content.Intent.ACTION_SEND);
+        share.setType("image/*");
+
+        // gets the list of intents that can be loaded.
+        List<ResolveInfo> resInfo = getActivity().getPackageManager().queryIntentActivities(share, 0);
+        System.out.println("resinfo: " + resInfo);
+        if (!resInfo.isEmpty()) {
+            for (ResolveInfo info : resInfo) {
+                if (info.activityInfo.packageName.toLowerCase().contains(type) ||
+                        info.activityInfo.name.toLowerCase().contains(type)) {
+                    share.putExtra(Intent.EXTRA_SUBJECT, subject);
+                    share.putExtra(Intent.EXTRA_STREAM, uri);
+                    share.setPackage(info.activityInfo.packageName);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                return null;
+
+            return share;
+        }
+        return null;
     }
 }

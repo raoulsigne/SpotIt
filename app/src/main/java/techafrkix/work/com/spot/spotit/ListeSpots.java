@@ -65,7 +65,7 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
     private int offset;
 
     private int preLast;
-    private int type, retour;
+    private int type, retour, count, max;
 
 //    private ImageView imgprofile;
     private TextView txtpseudo;
@@ -173,29 +173,28 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                             folder.mkdirs();
 
                         if (spots != null & spots.size() > 0) {
-                            final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
-                            barProgressDialog.setTitle("Telechargement des spots ...");
-                            barProgressDialog.setMessage("Opération en progression ...");
-                            barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
-                            barProgressDialog.setProgress(0);
-                            barProgressDialog.setMax(spots.size());
-                            barProgressDialog.show();
+                            final ProgressDialog dialog = ProgressDialog.show(getActivity(), "",
+                                    "Loading. Please wait...", true);
+                            dialog.show();
+
+                            count = 0;
+
                             // get listview current position - used to maintain scroll position
                             final int currentPosition = offset - PORTION_TELECHARGEABLE;
 
                             for (final Spot s : spots) {
                                 final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + s.getPhotokey() + ".jpg");
                                 if (file.exists()) {
-//                                    spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
-                                    barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
-                                    if (barProgressDialog.getProgress() == spots.size()) {
-                                        barProgressDialog.dismiss();
+                                    count++;
+
+                                    if (count == spots.size()) {
                                         // Create the adapter to convert the array to views
                                         adapter = new SpotAdapter(getActivity(), spots, ListeSpots.this, type);
                                         // Attach the adapter to a ListView
                                         listView.setAdapter(adapter);
                                         // Setting new scroll position
                                         listView.setSelectionFromTop(currentPosition, 0);
+                                        dialog.dismiss();
                                     }
                                 } else {
                                     AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
@@ -215,20 +214,19 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                                             if (bytesTotal != 0) {
                                                 rapport /= bytesTotal;
                                                 if (rapport == 100) {
-                                                    barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
-//                                                    spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
+                                                    count++;
                                                 }
                                             } else {
-                                                barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
+                                                count++;
                                             }
-                                            if (barProgressDialog.getProgress() == spots.size()) {
-                                                barProgressDialog.dismiss();
+                                            if (count == spots.size()) {
                                                 // Create the adapter to convert the array to views
                                                 adapter = new SpotAdapter(getActivity(), spots, ListeSpots.this, type);
                                                 // Attach the adapter to a ListView
                                                 listView.setAdapter(adapter);
                                                 // Setting new scroll position
                                                 listView.setSelectionFromTop(currentPosition, 0);
+                                                dialog.dismiss();
                                             }
                                         }
 
@@ -259,34 +257,32 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                 folder.mkdirs();
 
             if (offset < spots.size()) {
-                final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
-                barProgressDialog.setTitle("Telechargement des spots ...");
-                barProgressDialog.setMessage("Opération en progression ...");
-                barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
-                barProgressDialog.setProgress(0);
-                barProgressDialog.show();
+                final ProgressDialog dialog = ProgressDialog.show(getActivity(), "",
+                        "Loading. Please wait...", true);
+                dialog.show();
 
-                int max = offset + PORTION_TELECHARGEABLE;
+                max = 2 * PORTION_TELECHARGEABLE;
                 if (max > spots.size())
                     max = spots.size();
-                barProgressDialog.setMax(2 * (max - offset));
+                count = 0;
+
+
                 final int currentPosition = offset;
-                for (int i = offset; i < max; i++) {
+                for (int i = offset; i < offset + PORTION_TELECHARGEABLE; i++) {
                     s = new Spot();
                     s = spots.get(i);
                     tampon.add(s);
                     final File file = new File(DBServer.DOSSIER_IMAGE + File.separator + s.getPhotokey() + ".jpg");
                     if (file.exists()) {
-                        barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
-
-                        if (barProgressDialog.getProgress() == barProgressDialog.getMax()) {
-                            barProgressDialog.dismiss();
+                        count++;
+                        if (count == max) {
                             // Create the adapter to convert the array to views
                             adapter = new SpotAdapter(getActivity(), tampon, ListeSpots.this, type);
                             // Attach the adapter to a ListView
                             listView.setAdapter(adapter);
                             // Setting new scroll position
                             listView.setSelectionFromTop(currentPosition, 0);
+                            dialog.dismiss();
                         }
                     } else {
                         AWS_Tools aws_tools = new AWS_Tools(MainActivity.getAppContext());
@@ -305,21 +301,20 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                                 if (bytesTotal != 0) {
                                     rapport /= bytesTotal;
                                     if (rapport == 100) {
-                                        barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
+                                        count++;
                                     }
                                 } else {
-                                    barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
+                                    count++;
                                     tampon.remove(s);
                                 }
-                                if (barProgressDialog.getProgress() == barProgressDialog.getMax()) {
-                                    barProgressDialog.dismiss();
-
+                                if (count == max) {
                                     // Create the adapter to convert the array to views
                                     adapter = new SpotAdapter(getActivity(), tampon, ListeSpots.this, type);
                                     // Attach the adapter to a ListView
                                     listView.setAdapter(adapter);
                                     // Setting new scroll position
                                     listView.setSelectionFromTop(currentPosition, 0);
+                                    dialog.dismiss();
                                 }
                             }
 
@@ -352,15 +347,14 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
                                 if (bytesTotal != 0) {
                                     rapport /= bytesTotal;
                                     if (rapport == 100) {
-                                        barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
+                                        count++;
 //                                        spotsimages.put(s.getPhotokey(), BitmapFactory.decodeFile(file.getAbsolutePath()));
                                     }
                                 } else {
-                                    barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
+                                    count++;
                                 }
-                                if (barProgressDialog.getProgress() == barProgressDialog.getMax()) {
-                                    barProgressDialog.dismiss();
-
+                                if (count == max) {
+                                    dialog.dismiss();
                                     // Create the adapter to convert the array to views
                                     adapter = new SpotAdapter(getActivity(), tampon, ListeSpots.this, type);
                                     // Attach the adapter to a ListView
@@ -377,9 +371,9 @@ public class ListeSpots extends Fragment implements SpotAdapter.AdapterCallback 
 
                         });
                     } else {
-                        barProgressDialog.setProgress(barProgressDialog.getProgress() + 1);
-                        if (barProgressDialog.getProgress() == barProgressDialog.getMax()) {
-                            barProgressDialog.dismiss();
+                        count++;
+                        if (count == max) {
+                            dialog.dismiss();
                             // Create the adapter to convert the array to views
                             adapter = new SpotAdapter(getActivity(), tampon, ListeSpots.this, type);
                             // Attach the adapter to a ListView
